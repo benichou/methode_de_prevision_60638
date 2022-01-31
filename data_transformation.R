@@ -76,4 +76,69 @@ print(head(data))
 print("The Ercot data is now ready appropriately transformed
 and aggregated to forecast the target at h = t+1")
 
+# read time series data from NOAA
 
+noaa_meteo <- read.csv("./meteo_data/time_series_meteo_data.csv")
+
+# read texas mesonet data to extract relative humidity metrix (in %)
+
+read.texas_mesonet <- function(year, 
+                      path="./meteo_data/TxMeso_Timeseries_KDFW_") {
+      
+      
+            texas_mesonet <- read.csv(paste(path, year, ".csv", 
+            sep = ""))
+
+            return(texas_mesonet)
+                          }
+
+mesonet_2012 <- read.texas_mesonet(2012)
+mesonet_2013 <- read.texas_mesonet(2013)
+mesonet_2014 <- read.texas_mesonet(2014)
+mesonet_2015 <- read.texas_mesonet(2015)
+mesonet_2016 <- read.texas_mesonet(2016)
+mesonet_2017 <- read.texas_mesonet(2017)
+mesonet_2018 <- read.texas_mesonet(2018)
+mesonet_2019 <- read.texas_mesonet(2019)
+mesonet_2020 <- read.texas_mesonet(2020)
+mesonet_2021 <- read.texas_mesonet(2021)
+
+mesonet_2012_13 <- rbind(mesonet_2012, mesonet_2013)
+mesonet_2014_15 <- rbind(mesonet_2014, mesonet_2015)
+mesonet_2016_17 <- rbind(mesonet_2016, mesonet_2017)
+mesonet_2018_19 <- rbind(mesonet_2018, mesonet_2019)
+mesonet_2020_21 <- rbind(mesonet_2020, mesonet_2021)
+
+mesonet_2012_15 <- rbind(mesonet_2012_13, mesonet_2014_15)
+mesonet_2016_19 <- rbind(mesonet_2016_17, mesonet_2018_19)
+mesonet_2012_19 <- rbind(mesonet_2012_15, mesonet_2016_19)
+mesonet_hum_all <- rbind(mesonet_2012_19, mesonet_2020_21)
+
+# get the average relative humidity for each day 
+# note the relative humidity data is tracked hourly so we will
+# average it on a daily basis
+
+hum = aggregate(cbind(mesonet_hum_all$Relative.Humidity) ~ 
+                      mesonet_hum_all$Date_Time, FUN=mean, 
+                      na.rm = FALSE)
+
+# rename all date columns as "DATE" to enable proper merging on
+# DATE
+colnames(data)[1] <- "DATE"
+colnames(noaa_meteo)[3] <- "DATE"
+colnames(hum)[1] <- "DATE"
+colnames(hum)[2] <- "RELATIVE_HUM_PERCENT"
+# convert to characters to allow for merging
+# same datatype is required
+data$DATE <- as.character(data$DATE)
+hum$DATE <- as.character(hum$DATE)
+# merge data with 
+data <- merge(data,noaa_meteo,by="DATE") # meteo data
+data <- merge(data,hum,by="DATE") # with humidity data
+# check the first rows of the dataframe
+head(data)
+# check the dimensions are still the same
+dim(data)
+print("The data is appropriately transformed, aggregated
+      and appended with the meterological data from
+      noaa and the humidity data from Texas Mesonet")
