@@ -73,7 +73,7 @@ names(data)[names(data) == "V2"] <- "EAST"
 names(data)[names(data) == "V3"] <- "NCENT"
 
 print(head(data))
-print("The Ercot data is now ready appropriately transformed \n
+print("The Ercot data is now ready appropriately transformed
 and aggregated to forecast the target at h = t+1")
 
 
