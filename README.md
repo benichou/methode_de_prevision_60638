@@ -1,10 +1,10 @@
 # methode_de_prevision_60638
 
 ## Purpose
-The purpose is to forecast the sum of the hourly demand for the day t
-+ 1.
-This is a short term forecast with h = 1, with available data for day
-t, and this for each day of the year. 
+- The purpose is to forecast the sum of the hourly demand for the day 
+t + 1
+- This is a short term forecast with h = 1, with available data for 
+day t, and this for each day of the year. 
 
 # Data
 The dataset is time series of hourly electricity demand from Ercot
