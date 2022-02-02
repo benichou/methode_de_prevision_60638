@@ -51,7 +51,7 @@ valeurs_remplacement = c((data[42522,2]+ data[42524,2])/2,
 
 data[is.na(data)] <- valeurs_remplacement
 
-print(data[42522,]) 
+print(data[42523,]) 
 print(sum(is.na(data))) # 0 valeurs manquantes maintenant
 
 #Bouger toutes les observations par 1 ligne vers le haut pour 
@@ -61,7 +61,7 @@ data[,-1] <- data[seq_len(nrow(data)) + 1, -1]
 data = head(data, - 1) #enlever la derniere ligne qui est vide
 
 #Aggrégation des données
-data$date = as.Date(data$DATE)
+data$DATE = as.Date(data$DATE)
 data = aggregate(cbind(data$NORTH, data$EAST, data$NCENT) ~ 
                       data$DATE, FUN=sum, na.rm = FALSE)
 
