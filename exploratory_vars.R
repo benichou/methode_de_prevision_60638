@@ -178,13 +178,15 @@ for (i in seq(1 , 180)) {
 
 #needs fixing
 is_holiday <- c()
-for (i in length(data$DATE)) {
+for (i in seq(1 , length(data$DATE))) {
   if(data$DATE[i] %in% holidays_character) {
     is_holiday[i] <- 1
   } else {
     is_holiday[i] <- 0
   }
 }
+
+data['Holiday'] <- is_holiday
 
 #saving master data_frame
 save(data , file='master_df.Rdata')
