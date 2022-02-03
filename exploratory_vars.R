@@ -39,6 +39,8 @@ plot_year <- function(series , years_seq , label) {
   }
 }
 
+
+
 #function to find the best tref
 find_tref <- function(demand , temp , tref , type) {
   
@@ -167,8 +169,22 @@ for (i in seq(2 , length(med_t))) {
 data['tef'] <- tef
 
 #holidays
-bizday <- c()
+holidays <- read.csv('holidays.csv' )
+holidays_character <- c()
 
+for (i in seq(1 , 180)) {
+  holidays_character[i] <- as.character(holidays[i , ])
+}
+
+#needs fixing
+is_holiday <- c()
+for (i in length(data$DATE)) {
+  if(data$DATE[i] %in% holidays_character) {
+    is_holiday[i] <- 1
+  } else {
+    is_holiday[i] <- 0
+  }
+}
 
 #saving master data_frame
 save(data , file='master_df.Rdata')
