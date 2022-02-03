@@ -1,3 +1,19 @@
+#
+# Program: naive_methods.R
+#
+# Purpose: evaluation of the naive methods in R
+#
+# Written by: Team G, January 30 2021
+#
+# Updated: NA
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
+
+
 # upload necessary packages
 library(forecast)
 library(timeSeries)
