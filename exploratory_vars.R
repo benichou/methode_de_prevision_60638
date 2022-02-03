@@ -16,8 +16,6 @@ plot(tavg , ylab='avg')
 
 plot(total_dem)
 
-window(tmax , start = timeDate('2014-08-17') , 
-       end = timeDate('2014-10-21'))
 
 
 #function to plot a single time series over a given period of time
@@ -75,6 +73,7 @@ tmin_range <- seq(9.5 ,13 , 0.25)
 tmax_range <- seq(17 ,26  , 0.25)
 med_t <- (tmax + tmin)/2
 med_t_range <- seq( 16,21 , 0.25)
+tavg_range <- seq( 14 , 23 , 0.25)
 
 for (j in c('HDD' , 'CDD')) {
   for (i in tmin_range){
@@ -94,6 +93,12 @@ for (j in c('HDD' , 'CDD')) {
     print(i)
   }
   print('DONE WITH med')
+  
+  for (i in tavg_range){
+    find_tref(data$SOMME , tavg , i , type=j)
+    print(i)
+  }
+  print('DONE WITH avg')
 }
 
 CDD <- c()
@@ -150,8 +155,16 @@ for (i in seq(1 , length(data$DATE))) {
 data['CP'] <- cp
 
 
-#temperature effective
+#temperature effective we will use the mid_t to 
+#stay consistent
+tef <- c()
+tef[1] <- med_t[1]
 
+for (i in seq(2 , length(med_t))) {
+  tef[i] <- (0.5 * med_t[i]) + (0.5 * med_t[i-1])
+}
+
+data['tef'] <- tef
 
 #saving master data_frame
 save(data , file='master_df.Rdata')

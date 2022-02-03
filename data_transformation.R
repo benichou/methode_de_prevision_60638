@@ -142,3 +142,4 @@ dim(data)
 print("The data is appropriately transformed, aggregated
       and appended with the meterological data from
       noaa and the humidity data from Texas Mesonet")
+save(data , file = 'master_df.Rdata')

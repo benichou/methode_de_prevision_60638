@@ -1,0 +1,30 @@
+Timeseries data for the currently selected fields listed below. 
+Timestamps are in UTC time. 
+
+Dew Point (f) 
+Peak_Wind Direction (Degrees) 
+Peak_Wind Speed (mph) 
+Precipitation 1hr (in) 
+Precipitation 24hr (in) 
+Precipitation 3hr (in) 
+Precipitation 6hr (in) 
+Relative Humidity (%) 
+Sea_level pressure (mb) 
+Snow depth (Inches) 
+Temperature (f) 
+Wind Direction (deg) 
+Wind Direction 10m (deg) 
+Wind Gust (kn) 
+Wind Gust 10m (kn) 
+Wind Speed (kn) 
+Wind Speed 10m (kn) 
+
+
+The data in the TexMesonet represents the best available information provided by the TWDB and our partner networks.  We partner 
+with Synoptic to access this public data.  (For Synoptic’s data disclaimer see  https://synopticdata.com/data-disclaimer.) 
+
+The TWDB provides its own network information via this web site as a public service. The TexMesonet systematically revises or 
+removes data discovered to be incorrect and therefore provides the data “as is” and “as available”. If you find inaccurate  
+information or have questions, please contact TexMesonet@twdb.texas.gov 
+
+Please visit https://texmesonet.org/Home/Disclaimer for the TWDB data disclaimer.
