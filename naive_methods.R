@@ -19,3 +19,4 @@ naive_next_day = naive(data_agg_ts, h=1)
 forecast <- window(naive_next_day$fitted, start=ffcast) 
 observed <- window(naive_next_day$x, start=ffcast)
 
+#naif, naive seasonal 7 jours , moyenne mobile, random walk.
