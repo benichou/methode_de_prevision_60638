@@ -1,4 +1,4 @@
-load('master_df.Rdata')
+source('./data_transformation.R')
 
 library('timeSeries')
 
@@ -166,5 +166,11 @@ for (i in seq(2 , length(med_t))) {
 
 data['tef'] <- tef
 
+#holidays
+bizday <- c()
+
+
 #saving master data_frame
 save(data , file='master_df.Rdata')
+
+
