@@ -3,7 +3,6 @@ library(forecast)
 library(timeSeries)
 
 # launch the data_transformation.R module
-setwd("C:/Users/joeyo/methode_de_prevision_60638")
 source("./data_transformation.R")
 
 # Naive forecast draft
