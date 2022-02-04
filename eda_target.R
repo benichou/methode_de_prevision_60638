@@ -81,6 +81,10 @@ plot(snwd_ts,
 #ont eus de la neige au texas seulement en 2013, 2015 et février 2021
 
 
+## check weekends with combined effect of stats holidays
+
+
+
 # check for outlier values annual, monthly basis
 
 #2012
