@@ -2,44 +2,6 @@ source('./data_transformation.R')
 
 library('timeSeries')
 
-total_dem <- timeSeries(data$SOMME, data$DATE)
-
-tmax <- timeSeries(data$TMAX, data$DATE)
-
-tmin <- timeSeries(data$TMIN, data$DATE)
-
-tavg <- timeSeries(data$TAVG, data$DATE)
-
-plot(tmax , ylab='max')
-plot(tmin , ylab='min')
-plot(tavg , ylab='avg')
-
-plot(total_dem)
-
-
-
-#function to plot a single time series over a given period of time
-plot_period <- function(time_series , start , end , ylab) {
-  sub_series <- window(time_series , start = start , end = end)
-  plot(sub_series , ylab = ylab)
-}
-
-
-plot_period(tmax , start = '2015-01-01' , end = '2016-01-01' , 
-            ylab='test')
-
-years <- seq(as.Date('2012-01-01') , as.Date('2022-01-01') , "years")
-years[11] <- '2021-12-30'
-
-#year over year exploration
-plot_year <- function(series , years_seq , label) {
-  
-  for ( i in seq(1,length(years_seq)-1)) {
-    plot_period(series , years_seq[i] , years_seq[i+1] , ylab=label )
-  }
-}
-
-
 
 #function to find the best tref
 find_tref <- function(demand , temp , tref , type) {
@@ -55,53 +17,86 @@ find_tref <- function(demand , temp , tref , type) {
       dd[i] = max(temp[i] - tref , 0)
     }
   }
-  plot(dd , demand , main = paste('Demand against' , type) ,
+  
+  plot(dd , demand , main = paste( paste('Demand against', 'HDD'),
+                                   paste('tref =', as.character(tref))),
        xlab = type ,
        ylab = "Daily electicity demand" ,
        pch = 19,
        frame = FALSE)
 }
 
+# creating timeseries for weather
+tmax <- timeSeries(data$TMAX , data$DATE)
+tmin <- timeSeries(data$TMIN , data$DATE)
+med_t <- (tmax + tmin)/2
+tavg <- timeSeries(data$TAVG , data$DATE)
+tobs <- timeSeries(data$TOBS , data$DATE)
+
+# first run of optimization ! 
+# tmin_range <- seq(round(min(tmin)) ,round(max(tmin)) , 0.25)
+# tmax_range <- seq(round(min(tmax)) ,round(max(tmax)) , 0.25)
+# med_t_range <- seq(round(min(med_t)) ,round(max(med_t)) , 0.25)
+# tavg_range <- seq(round(min(tavg)) ,round(max(tavg)) , 0.25)
+# tobs_range <- seq(round(min(tobs)) ,round(max(tobs)) , 0.25)
+
+
+# second run of optimization ! 
 # Throught observation , the optimal tref should be  
 # for HDD 
 # t_min : [9.5 : 12] , t_max : [ 17 , 12] , med_t : [ 16 : 18]
 # for CDD 
 # tmin : [12 , 13] , t_max : [24 , 26] , med_t : [18.5 , 21]
-# I found the best tref to be med_t for both CDD and HDD with 
-# tref : HDD -> 16 and tref : CDD -> 21  
-
+# tobs : [10 , 25]
 
 tmin_range <- seq(9.5 ,13 , 0.25)
 tmax_range <- seq(17 ,26  , 0.25)
 med_t <- (tmax + tmin)/2
 med_t_range <- seq( 16,21 , 0.25)
 tavg_range <- seq( 14 , 23 , 0.25)
+tobs_range <- seq(10 , 25 , 0.25)
 
-for (j in c('HDD' , 'CDD')) {
-  for (i in tmin_range){
-    find_tref(data$SOMME , tmin , i , type=j)
-    print(i)
-  }
+data['med_t'] <- (data$TMAX + data$TMIN)/2
 
-  print('DONE WITH TMIN')
+#Uncomment the below section if you want to look at all the graphs 
+#used to find the best tref
 
-  for (i in tmax_range){
-    find_tref(data$SOMME , tmax , i , type=j)
-    print(i)
-  }
-  print('DONE WITH TMAX')
-  for (i in med_t_range){
-    find_tref(data$SOMME , med_t , i , type=j)
-    print(i)
-  }
-  print('DONE WITH med')
+#--------------------------------
+# for (j in c('HDD' , 'CDD')) {
+#   for (i in tmin_range){
+#     find_tref(data$SOMME , tmin , i , type=j)
+#     print(i)
+#   }
+# 
+#   print('DONE WITH TMIN')
+# 
+#   for (i in tmax_range){
+#     find_tref(data$SOMME , tmax , i , type=j)
+#     print(i)
+#   }
+#   print('DONE WITH TMAX')
+#   for (i in med_t_range){
+#     find_tref(data$SOMME , med_t , i , type=j)
+#     print(i)
+#   }
+#   print('DONE WITH med')
+# 
+#   for (i in tavg_range){
+#     find_tref(data$SOMME , tavg , i , type=j)
+#     print(i)
+#   }
+#   print('DONE WITH avg')
+# 
+#   for (i in tobs_range){
+#     find_tref(data$SOMME , tobs , i , type=j)
+#     print(i)
+#   }
+#   print('DONE WITH obs')
+# }
+#-------------------------------------------------------
 
-  for (i in tavg_range){
-    find_tref(data$SOMME , tavg , i , type=j)
-    print(i)
-  }
-  print('DONE WITH avg')
-}
+# I found the best tref to be med_t for both CDD and HDD with 
+# tref : HDD -> 16 and tref : CDD -> 21  
 
 CDD <- c()
 for (i in seq(1 , length(med_t))) {
@@ -113,9 +108,6 @@ for (i in seq(1 , length(med_t))) {
   HDD[i] <- max(16 - med_t[i] , 0)
 }
 
-#results
-plot(CDD , data$SOMME)
-plot(HDD , data$SOMME)
 
 data['CDD'] <- CDD
 data['HDD'] <- HDD
@@ -148,7 +140,7 @@ for (i in seq(1 , length(data$DATE))) {
   if (temp_used[i] < 18.3) {
     cp[i] = round(((data$AWND[i])**(1/2)) * (18.3 - temp_used[i]) ,
                   digits = 4 )
-                   
+    
   } else {
     cp[i] = 0
   }
@@ -187,9 +179,16 @@ for (i in seq(1 , length(data$DATE))) {
 }
 
 
-
 data['Holiday'] <- is_holiday
+
+#interaction_weekend_holiday
+data['inter_holi_weekend'] <- data['Holiday'] * data['weekend']
 
 
 #saving master data_frame
 save(data , file='master_df.Rdata')
+
+#clearing useless variables 
+rm(CDD , cp , HDD , holidays_character , i , is_holiday , j , 
+   med_t_range , tavg_range , tef , tmin_range ,tmax_range , tobs_range ,
+   weekend , tavg , tmax , tmin , tobs , med_t)

@@ -1,13 +1,5 @@
 source('exploratory_vars.R')
-library('forecast')
 
-#la temperature : med_t = (tmin + tmax)/2
-#la demand : total_dem (timeSeries object)
-
-#other important timeSeries objects to use for plots
-cdd_ts <- timeSeries( data$CDD , data$DATE)
-hdd_ts <- timeSeries( data$HDD , data$DATE)
-cp_ts <- timeSeries(data$CP , data$DATE)
 
 #Satterplot de deux series chrono en fonction d'une start date
 # et d'une end date
@@ -50,5 +42,23 @@ boxplot_group_time <- function(ts , grp , start , end , ylab,
   boxplot( data[filter ,ts] ~ group,
            xlab = xlab ,
            ylab = ylab ,
-           main = main)
+           main = main ,
+           ylim = c(min(data[ts]) , max(data[ts])))
+}
+
+#function to plot a single time series over a given period of time
+plot_period <- function(time_series , start , end , ylab ,
+                        main) {
+  sub_series <- window(time_series , start = start , end = end)
+  plot(sub_series , ylab = ylab , main = main)
+}
+
+
+#year over year exploration
+plot_year <- function(series , years_seq , ylabel , main) {
+  
+  for ( i in seq(1,length(years_seq)-1)) {
+    plot_period(series , years_seq[i] , years_seq[i+1] , ylab=ylabel ,
+                main = main)
+  }
 }
