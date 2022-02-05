@@ -161,7 +161,7 @@ for (i in seq(2 , length(med_t))) {
 data['tef'] <- tef
 
 #holidays
-holidays <- read.csv('holidays.csv' )
+holidays <- read.csv('./data/holidays.csv' )
 holidays_character <- c()
 
 for (i in seq(1 , 180)) {
