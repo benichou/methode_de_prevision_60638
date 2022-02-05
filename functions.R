@@ -13,7 +13,10 @@ cp_ts <- timeSeries(data$CP , data$DATE)
 # et d'une end date
 scatter_period <- function(tsx , tsy, start, end ,
                              xlab , ylab , main) {
-  
+
+#tsx : time series en x doit etre un objet timeSeries
+#tsy : time series en y doit etre aussi un objet timeSeries
+    
   #les deux series chronos doivent etre des timeSeries object pour
   #que ca fonctionne. Utilise med_t et total dem
   ts1_wind = window(tsx , start = start , end = end)
@@ -32,6 +35,9 @@ scatter_period <- function(tsx , tsy, start, end ,
 boxplot_group_time <- function(ts , grp , start , end , ylab,
                                xlab , main , data ) {
   
+#ts : le nome de la colonne qui contient la timeSeries
+#grp : le nom de la variable qualitative pour regrouper les donnees
+
   filter <- which(data$DATE >= start & data$DATE <= end)
   
   if (grp == 'weekday' || grp == 'month') {
