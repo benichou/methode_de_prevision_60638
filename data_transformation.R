@@ -114,6 +114,7 @@ mesonet_2016_19 <- rbind(mesonet_2016_17, mesonet_2018_19)
 mesonet_2012_19 <- rbind(mesonet_2012_15, mesonet_2016_19)
 mesonet_hum_all <- rbind(mesonet_2012_19, mesonet_2020_21)
 
+
 # get the average relative humidity for each day 
 # note the relative humidity data is tracked hourly so we will
 # average it on a daily basis
@@ -142,4 +143,3 @@ dim(data)
 print("The data is appropriately transformed, aggregated
       and appended with the meterological data from
       noaa and the humidity data from Texas Mesonet")
-save(data , file = 'master_df.Rdata')

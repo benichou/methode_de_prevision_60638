@@ -82,7 +82,7 @@ for (j in c('HDD' , 'CDD')) {
     find_tref(data$SOMME , tmin , i , type=j)
     print(i)
   }
-  
+
   print('DONE WITH TMIN')
 
   for (i in tmax_range){
@@ -95,7 +95,7 @@ for (j in c('HDD' , 'CDD')) {
     print(i)
   }
   print('DONE WITH med')
-  
+
   for (i in tavg_range){
     find_tref(data$SOMME , tavg , i , type=j)
     print(i)
@@ -186,9 +186,10 @@ for (i in seq(1 , length(data$DATE))) {
   }
 }
 
+
+
 data['Holiday'] <- is_holiday
+
 
 #saving master data_frame
 save(data , file='master_df.Rdata')
-
-
