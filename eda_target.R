@@ -18,7 +18,7 @@
 library(timeSeries)
 
 # launch the data_transformation.R module
-source("./data_transformation.R")
+source("./exploratory_vars.R")
 
 #Creating timeseries
 sdate = c(2012,1)
