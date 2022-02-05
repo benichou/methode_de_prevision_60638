@@ -63,7 +63,7 @@ data = head(data, - 1) #enlever la derniere ligne qui est vide
 #Aggrégation des données
 data$DATE = as.Date(data$DATE)
 data = aggregate(cbind(data$NORTH, data$EAST, data$NCENT) ~ 
-                      data$DATE, FUN=sum, na.rm = FALSE)
+                   data$DATE, FUN=sum, na.rm = FALSE)
 
 data$SOMME <- data$V1 + data$V2 + data$V3
 
@@ -83,14 +83,14 @@ noaa_meteo <- read.csv("./meteo_data/time_series_meteo_data.csv")
 # read texas mesonet data to extract relative humidity metrix (in %)
 
 read.texas_mesonet <- function(year, 
-                      path="./meteo_data/TxMeso_Timeseries_KDFW_") {
-      
-      
-            texas_mesonet <- read.csv(paste(path, year, ".csv", 
-            sep = ""))
-
-            return(texas_mesonet)
-                          }
+                               path="./meteo_data/TxMeso_Timeseries_KDFW_") {
+  
+  
+  texas_mesonet <- read.csv(paste(path, year, ".csv", 
+                                  sep = ""))
+  
+  return(texas_mesonet)
+}
 
 mesonet_2012 <- read.texas_mesonet(2012)
 mesonet_2013 <- read.texas_mesonet(2013)
@@ -120,8 +120,8 @@ mesonet_hum_all <- rbind(mesonet_2012_19, mesonet_2020_21)
 # average it on a daily basis
 
 hum = aggregate(cbind(mesonet_hum_all$Relative.Humidity) ~ 
-                      mesonet_hum_all$Date_Time, FUN=mean, 
-                      na.rm = FALSE)
+                  mesonet_hum_all$Date_Time, FUN=mean, 
+                na.rm = FALSE)
 
 # rename all date columns as "DATE" to enable proper merging on
 # DATE
@@ -143,3 +143,11 @@ dim(data)
 print("The data is appropriately transformed, aggregated
       and appended with the meterological data from
       noaa and the humidity data from Texas Mesonet")
+
+#cleaning the global environment
+rm(hum , mesonet_2012 , mesonet_2012_13 , mesonet_2012_15 ,
+   mesonet_2012_19 , mesonet_2013 , mesonet_2014 , mesonet_2014_15,
+   mesonet_2015 , mesonet_2016 , mesonet_2016_17 , mesonet_2016_19 ,
+   mesonet_2017 , mesonet_2018 , mesonet_2018_19 , mesonet_2019 , 
+   mesonet_2020 , mesonet_2020_21 , mesonet_2021 , mesonet_hum_all ,
+   noaa_meteo , date , valeurs_remplacement , NonNAindex)
