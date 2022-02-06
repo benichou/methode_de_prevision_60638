@@ -189,6 +189,6 @@ data['inter_holi_weekend'] <- data['Holiday'] * data['weekend']
 save(data , file='master_df.Rdata')
 
 #clearing useless variables 
-rm(CDD , cp , HDD , holidays_character , i , is_holiday , j , 
+rm(CDD , cp , HDD , holidays_character , i , is_holiday , 
    med_t_range , tavg_range , tef , tmin_range ,tmax_range , tobs_range ,
    weekend , tavg , tmax , tmin , tobs , med_t)

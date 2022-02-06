@@ -62,3 +62,24 @@ plot_year <- function(series , years_seq , ylabel , main) {
                 main = main)
   }
 }
+
+stack_years <- function(df, year_list, month_list, year_col, 
+                        month_col, north_col, n_cent_col, east_col,
+                        somme_col, north_vector, north_cen_vector, 
+                        east_vector,somme_vector) {
+  for (i in year_list) {
+      df1 = df[df[year_col] == i, ] 
+      for (j in month_list) {
+            north_value = df1[df1[month_col] == j, north_col]
+            north_cen_value = df1[df1[month_col] == j, n_cent_col]
+            east_value = df1[df1[month_col] == j, east_col]
+            somme_value = df1[df1[month_col] == j, somme_col]
+            north_vector = c(north_vector, north_value)
+            north_cen_vector = c(north_cen_vector, north_cen_value)
+            east_vector = c(east_vector, east_value)
+            somme_vector = c(somme_vector, somme_value)  
+      }
+      }
+      return(list(north_vector, north_cen_vector, east_vector, 
+             somme_vector))
+                        }
