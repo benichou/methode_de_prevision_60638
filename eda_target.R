@@ -20,8 +20,38 @@ library(timeSeries)
 source("./exploratory_vars.R")
 source("./functions.R")
 
-
+pdf("./visual_output/eda_target_visual_output.pdf")
 ## Visualize Each Year on a monthly basis with seasonplot
+
+#Creating timeseries
+sdate = c(2012,1)
+data_ts = ts(data$SOMME, start=sdate, frequency=365.25)
+
+#grahpique de la demande totale jounralière d'électricité 01-01-2012 
+#au 30-12-2021 pour la région totale
+plot(data_ts, col = "blue", 
+     main = "Evolution of Daily Electricity Demand over time",
+     ylab="Texas Daily Demand (in MW)")
+
+#pour la région North
+data_ts_n = ts(data$NORTH, start=sdate, frequency=365.25)
+plot(data_ts_n, 
+     ylab="Texas Daily Demand in Region North(in MW)")
+
+#fort drop en début 2020
+#pas de tendance à la hausse, constante voir même début de tendance 
+# à la baisse ?
+
+#pour la région Nort-Central
+data_ts_nc = ts(data$NCENT, start=sdate, frequency=365.25)
+plot(data_ts_nc, 
+     ylab="Texas Daily Demand in Region North-Central(in MW)")
+
+#pour le région East
+data_ts_e = ts(data$EAST, start=sdate, frequency=365.25)
+plot(data_ts_e, 
+     ylab="Texas Daily Demand in Region East (in MW)")
+
 
 eda_df = data
 eda_df["EDA_DATE"] = as.Date(eda_df$DATE, format =  "%Y-%m-%d")
@@ -86,6 +116,16 @@ seasonplot(ts_east,
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
+plot(stl(ts_somme, "periodic"), main="stl decomposition 2012-21")
+plot(stl(ts_north, "periodic"), main="stl decomposition 2012-21")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition 2012-21")
+plot(stl(ts_east, "periodic"), main="stl decomposition 2012-21")
+
+tsdisplay(ts_somme, main="All regions 2012-21")
+tsdisplay(ts_north, main="All regions 2012-21")
+tsdisplay(ts_north_cen, main="All regions 2012-21")
+tsdisplay(ts_east, main="All regions 2012-21")
+
 ## 2012 -2017
 
 results_2012_17 = stack_years(agg_eda_df, year_list_2012_17, 
@@ -108,81 +148,330 @@ ts_north_cen = ts(north_cen_vector_2012_17, start=2012, frequency=12)
 ts_east = ts(east_vector_2012_17, start=2012, frequency=12)
 
 seasonplot(ts_somme, 
-           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 seasonplot(ts_north, 
-           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 seasonplot(ts_north_cen, 
-           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 seasonplot(ts_east, 
-           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 
+plot(stl(ts_somme, "periodic"), main="stl decomposition 2012-17")
+plot(stl(ts_north, "periodic"), main="stl decomposition 2012-17")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition 2012-17")
+plot(stl(ts_east, "periodic"), main="stl decomposition 2012-17")
 
+tsdisplay(ts_somme, main="All regions 2012-17")
+tsdisplay(ts_north, main="All regions 2012-17")
+tsdisplay(ts_north_cen, main="All regions 2012-17")
+tsdisplay(ts_east, main="All regions 2012-17")
 
+# 2012 -2015
 
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
 
+year_list_2012_15 = list("2012", "2013", "2014", "2015")
 
+results_2012_15 = stack_years(agg_eda_df, year_list_2012_15, 
+                              month_list, 
+                        "YEAR", "MONTH", "NORTH", "NCENT", "EAST",
+                        "SOMME",
+                        north_vector,
+                        north_cen_vector,
+                        east_vector,
+                        somme_vector)
 
+north_vector_2012_15 = results_2012_15[1][[1]]
+north_cen_vector_2012_15 = results_2012_15[2][[1]]
+east_vector_2012_15 = results_2012_15[3][[1]]
+somme_vector_2012_15 = results_2012_15[4][[1]]
 
-
-
-for (i in year_list) {
-     df1 = agg_eda_df[agg_eda_df["YEAR"] == i, ] 
-     for (j in month_list) {
-          north_value = df1[df1["MONTH"] == j, "NORTH"]
-          north_cen_value = df1[df1["MONTH"] == j, "NCENT"]
-          east_value = df1[df1["MONTH"] == j, "EAST"]
-          somme_value = df1[df1["MONTH"] == j, "SOMME"]
-          north_vector = c(north_vector, north_value)
-          north_cen_vector = c(north_cen_vector, north_cen_value)
-          east_vector = c(east_vector, east_value)
-          somme_vector = c(somme_vector, somme_value)  
-     }
-     }
-ts_somme = ts(somme_vector, start=2012, frequency=12)
-ts_north = ts(north_vector, start=2012, frequency=12)
-ts_north_cen = ts(north_cen_vector, start=2012, frequency=12)
-ts_east = ts(east_vector, start=2012, frequency=12)
+ts_somme = ts(somme_vector_2012_15, start=2012, frequency=12)
+ts_north = ts(north_vector_2012_15, start=2012, frequency=12)
+ts_north_cen = ts(north_cen_vector_2012_15, start=2012, frequency=12)
+ts_east = ts(east_vector_2012_15, start=2012, frequency=12)
 
 seasonplot(ts_somme, 
-           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           col=rainbow(4), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 seasonplot(ts_north, 
-           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           col=rainbow(4), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 seasonplot(ts_north_cen, 
-           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           col=rainbow(4), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 seasonplot(ts_east, 
-           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           col=rainbow(4), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
-## continue the seasonplot but on shorter periods!
 
-# Create the for statement
-
-
-
-seasonplot(AirPassengers, col=rainbow(12), year.labels=TRUE)
+plot(stl(ts_somme, "periodic"), main="stl decomposition")
+plot(stl(ts_north, "periodic"), main="stl decomposition")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
+plot(stl(ts_east, "periodic"), main="stl decomposition")
 
 
-#Creating timeseries
-sdate = c(2012,1)
-data_ts = ts(data$SOMME, start=sdate, frequency=365.25)
+tsdisplay(ts_somme)
+tsdisplay(ts_north)
+tsdisplay(ts_north_cen)
+tsdisplay(ts_east)
 
-#grahpique de la demande totale jounralière d'électricité 01-01-2012 
-#au 30-12-2021 pour la région totale
-plot(data_ts, 
-     ylab="Texas Daily Demand (in MW)")
+
+## 2016 - 2021
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+year_list_2016_21 = list("2016", "2017", "2018", "2019", "2020", 
+                         "2021")
+
+results_2016_21 = stack_years(agg_eda_df, year_list_2016_21, 
+                              month_list, 
+                        "YEAR", "MONTH", "NORTH", "NCENT", "EAST",
+                        "SOMME",
+                        north_vector,
+                        north_cen_vector,
+                        east_vector,
+                        somme_vector)
+
+north_vector_2016_21 = results_2016_21[1][[1]]
+north_cen_vector_2016_21 = results_2016_21[2][[1]]
+east_vector_2016_21 = results_2016_21[3][[1]]
+somme_vector_2016_21 = results_2016_21[4][[1]]
+
+ts_somme = ts(somme_vector_2016_21, start=2016, frequency=12)
+ts_north = ts(north_vector_2016_21, start=2016, frequency=12)
+ts_north_cen = ts(north_cen_vector_2016_21, start=2016, frequency=12)
+ts_east = ts(east_vector_2016_21, start=2016, frequency=12)
+
+seasonplot(ts_somme, 
+           col=rainbow(6), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(6), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(6), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(6), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+plot(stl(ts_somme, "periodic"), main="stl decomposition")
+plot(stl(ts_north, "periodic"), main="stl decomposition")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
+plot(stl(ts_east, "periodic"), main="stl decomposition")
+
+
+tsdisplay(ts_somme)
+tsdisplay(ts_north)
+tsdisplay(ts_north_cen)
+tsdisplay(ts_east)
+
+## 2012 - 2013 14
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+year_list_2012_14 = list("2012", "2013", "2014")
+
+results_2012_14 = stack_years(agg_eda_df, year_list_2012_14, 
+                              month_list, 
+                        "YEAR", "MONTH", "NORTH", "NCENT", "EAST",
+                        "SOMME",
+                        north_vector,
+                        north_cen_vector,
+                        east_vector,
+                        somme_vector)
+
+north_vector_2012_14 = results_2012_14[1][[1]]
+north_cen_vector_2012_14 = results_2012_14[2][[1]]
+east_vector_2012_14 = results_2012_14[3][[1]]
+somme_vector_2012_14 = results_2012_14[4][[1]]
+
+ts_somme = ts(somme_vector_2012_14, start=2012, frequency=12)
+ts_north = ts(north_vector_2012_14, start=2012, frequency=12)
+ts_north_cen = ts(north_cen_vector_2012_14, start=2012, frequency=12)
+ts_east = ts(east_vector_2012_14, start=2012, frequency=12)
+
+seasonplot(ts_somme, 
+           col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+plot(stl(ts_somme, "periodic"), main="stl decomposition")
+plot(stl(ts_north, "periodic"), main="stl decomposition")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
+plot(stl(ts_east, "periodic"), main="stl decomposition")
+
+tsdisplay(ts_somme)
+tsdisplay(ts_north)
+tsdisplay(ts_north_cen)
+tsdisplay(ts_east)
+
+
+## 2019/20/21
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+year_list_2019_21 = list("2019", "2020", "2021")
+
+results_2019_21 = stack_years(agg_eda_df, year_list_2019_21, 
+                              month_list, 
+                        "YEAR", "MONTH", "NORTH", "NCENT", "EAST",
+                        "SOMME",
+                        north_vector,
+                        north_cen_vector,
+                        east_vector,
+                        somme_vector)
+
+north_vector_2019_21 = results_2019_21[1][[1]]
+north_cen_vector_2019_21 = results_2019_21[2][[1]]
+east_vector_2019_21 = results_2019_21[3][[1]]
+somme_vector_2019_21 = results_2019_21[4][[1]]
+
+ts_somme = ts(somme_vector_2019_21, start=2019, frequency=12)
+ts_north = ts(north_vector_2019_21, start=2019, frequency=12)
+ts_north_cen = ts(north_cen_vector_2019_21, start=2019, frequency=12)
+ts_east = ts(east_vector_2019_21, start=2019, frequency=12)
+
+seasonplot(ts_somme, 
+           col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+plot(stl(ts_somme, "periodic"), main="stl decomposition")
+plot(stl(ts_north, "periodic"), main="stl decomposition")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
+plot(stl(ts_east, "periodic"), main="stl decomposition")
+
+tsdisplay(ts_somme)
+tsdisplay(ts_north)
+tsdisplay(ts_north_cen)
+tsdisplay(ts_east)
+
+## 2014/15/16/17/18
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+year_list_2014_18 = list("2014", "2015", "2016", "2017", "2018")
+
+results_2014_18 = stack_years(agg_eda_df, year_list_2014_18, 
+                              month_list, 
+                        "YEAR", "MONTH", "NORTH", "NCENT", "EAST",
+                        "SOMME",
+                        north_vector,
+                        north_cen_vector,
+                        east_vector,
+                        somme_vector)
+
+north_vector_2014_18 = results_2014_18[1][[1]]
+north_cen_vector_2014_18 = results_2014_18[2][[1]]
+east_vector_2014_18 = results_2014_18[3][[1]]
+somme_vector_2014_18 = results_2014_18[4][[1]]
+
+ts_somme = ts(somme_vector_2014_18, start=2014, frequency=12)
+ts_north = ts(north_vector_2014_18, start=2014, frequency=12)
+ts_north_cen = ts(north_cen_vector_2014_18, start=2014, frequency=12)
+ts_east = ts(east_vector_2014_18, start=2014, frequency=12)
+
+seasonplot(ts_somme, 
+           col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+plot(stl(ts_somme, "periodic"), main="stl decomposition")
+plot(stl(ts_north, "periodic"), main="stl decomposition")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
+plot(stl(ts_east, "periodic"), main="stl decomposition")
+
+tsdisplay(ts_somme)
+tsdisplay(ts_north)
+tsdisplay(ts_north_cen)
+tsdisplay(ts_east)
+
+dev.off(dev.cur())
+
+
+## CONCLUSION EDA_TARGET ##
+## Data is not stationary because we can see a trend and several
+## seasonality
+## 2 climatic seasons in winter and summer
+## an overall increasing trend in all regions and the whole
+##  holidays?
+## week end?
+## combined holidays and week end?
+## outliers?
+
+
+
+
+
+
+
+
+
+
+
 
 #il y a bien une saisonnalité annuelle de la demande jounralière 
 #d'électricité dans nos 3 régions du texas qui reste relativement 
@@ -191,23 +480,7 @@ plot(data_ts,
 #en a (e.g. : hiver 2016 très doux ? Voir avec données méteo)
 
 
-#pour la région North
-data_ts_n = ts(data$NORTH, start=sdate, frequency=365.25)
-plot(data_ts_n, 
-     ylab="Texas Daily Demand in Region North(in MW)")
-#fort drop en début 2020
-#pas de tendance à la hausse, constante voir même début de tendance 
-# à la baisse ?
 
-#pour la région Nort-Central
-data_ts_nc = ts(data$NCENT, start=sdate, frequency=365.25)
-plot(data_ts_nc, 
-     ylab="Texas Daily Demand in Region North-Central(in MW)")
-
-#pour le région East
-data_ts_e = ts(data$EAST, start=sdate, frequency=365.25)
-plot(data_ts_e, 
-     ylab="Texas Daily Demand in Region East (in MW)")
 
 #pic hiver 2021 et 2018, faible demande en 2013, beaucoup plus de
 #variations pour le demande hivernale que d'été
