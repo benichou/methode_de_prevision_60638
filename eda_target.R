@@ -84,8 +84,8 @@ agg_eda_season_df = aggregate(.~YEAR+SEASON,
                    agg_eda_season_df,
                    FUN=sum, na.rm = FALSE)
 
-## calculate descriptive statistics for each region for each main 
-## season of each year : avg, std, median, mode, Q1, Q3, IQR
+## calculate descriptive statistics for each region
+## : avg, std, median, mode, Q1, Q3, IQR
 
 ## Fall season :
 fall_df = agg_eda_season_df[
@@ -113,6 +113,9 @@ summer_df_summary = summary(summer_df)
 std_summer = colSds(as.matrix(summer_df[
        sapply(summer_df, is.numeric)]))
 
+## what is the standard deviation of the daily electric demand 
+## for each region in each season?
+
 std_summary_seasons <- data.frame(REGION = c("NORTH", "EAST", 
                                              "NCENT", "SOMME"),
                                   FALL = c("", "", "", ""), 
@@ -123,6 +126,84 @@ std_summary_seasons["FALL"] = as.matrix(t(t(std_fall)))
 std_summary_seasons["WINTER"] = as.matrix(t(t(std_winter)))
 std_summary_seasons["SPRING"] = as.matrix(t(t(std_spring)))
 std_summary_seasons["SUMMER"] = as.matrix(t(t(std_summer)))
+
+## what is the standard deviation of the daily electric demand 
+## for each region in each year?
+
+demand_2012 = agg_eda_df[agg_eda_df["YEAR"] == "2012", ]
+std_2012 = colSds(as.matrix(demand_2012[
+       sapply(demand_2012, is.numeric)]))
+demand_2013 = agg_eda_df[agg_eda_df["YEAR"] == "2013", ]
+std_2013 = colSds(as.matrix(demand_2013[
+       sapply(demand_2013, is.numeric)]))
+demand_2014 = agg_eda_df[agg_eda_df["YEAR"] == "2014", ]
+std_2014 = colSds(as.matrix(demand_2014[
+       sapply(demand_2014, is.numeric)]))
+demand_2015 = agg_eda_df[agg_eda_df["YEAR"] == "2015", ]
+std_2015 = colSds(as.matrix(demand_2015[
+       sapply(demand_2015, is.numeric)]))
+demand_2016 = agg_eda_df[agg_eda_df["YEAR"] == "2016", ]
+std_2016 = colSds(as.matrix(demand_2016[
+       sapply(demand_2016, is.numeric)]))
+demand_2017 = agg_eda_df[agg_eda_df["YEAR"] == "2017", ]
+std_2017 = colSds(as.matrix(demand_2017[
+       sapply(demand_2017, is.numeric)]))
+demand_2017 = agg_eda_df[agg_eda_df["YEAR"] == "2017", ]
+std_2017 = colSds(as.matrix(demand_2017[
+       sapply(demand_2017, is.numeric)]))
+demand_2018 = agg_eda_df[agg_eda_df["YEAR"] == "2018", ]
+std_2018 = colSds(as.matrix(demand_2018[
+       sapply(demand_2018, is.numeric)]))
+demand_2019 = agg_eda_df[agg_eda_df["YEAR"] == "2019", ]
+std_2019 = colSds(as.matrix(demand_2019[
+       sapply(demand_2019, is.numeric)]))
+demand_2020 = agg_eda_df[agg_eda_df["YEAR"] == "2020", ]
+std_2020 = colSds(as.matrix(demand_2020[
+       sapply(demand_2020, is.numeric)]))
+demand_2021 = agg_eda_df[agg_eda_df["YEAR"] == "2021", ]
+std_2021 = colSds(as.matrix(demand_2021[
+       sapply(demand_2021, is.numeric)]))
+
+std_summary_year <- data.frame(YEAR = c("2012", "2013", 
+                                           "2014", "2015", 
+                                           "2016", "2017", 
+                                           "2018", "2019", 
+                                           "2020", "2021"),
+                                  NORTH = c("", "", "", "", 
+                                            "", "", "", "",
+                                            "", ""), 
+                                  EAST =c("", "", "", "", 
+                                            "", "", "", "",
+                                            "", ""),
+                                  NCENT = c("", "", "", "", 
+                                            "", "", "", "",
+                                            "", ""), 
+                                  SOMME = c("", "", "", "", 
+                                            "", "", "", "",
+                                            "", ""))
+std_summary_year[std_summary_year["YEAR"] == "2012", 
+                                             -c(1)] = std_2012
+std_summary_year[std_summary_year["YEAR"] == "2013", 
+                                             -c(1)] = std_2013
+std_summary_year[std_summary_year["YEAR"] == "2014", 
+                                             -c(1)] = std_2014
+std_summary_year[std_summary_year["YEAR"] == "2015", 
+                                             -c(1)] = std_2015
+std_summary_year[std_summary_year["YEAR"] == "2016", 
+                                             -c(1)] = std_2016
+std_summary_year[std_summary_year["YEAR"] == "2017", 
+                                             -c(1)] = std_2017
+std_summary_year[std_summary_year["YEAR"] == "2018", 
+                                             -c(1)] = std_2018
+std_summary_year[std_summary_year["YEAR"] == "2019", 
+                                             -c(1)] = std_2019
+std_summary_year[std_summary_year["YEAR"] == "2020", 
+                                             -c(1)] = std_2020
+std_summary_year[std_summary_year["YEAR"] == "2021", 
+                                             -c(1)] = std_2021
+
+## By How much has the demand increased from 2012 to 2021?
+## do the aggregation only with year
 
 
 
@@ -378,12 +459,10 @@ tsdisplay(ts_east, main="All regions 2012-15")
 
 # season
 
-
 north_vector <- c()
 north_cen_vector <- c()
 east_vector <- c()
 somme_vector <- c()
-
 
 results = stack_seasons(agg_eda_season_df, year_list_2012_15, 
                         season_list, "YEAR", 
@@ -401,7 +480,6 @@ ts_north = ts(north_vector, start=2012, frequency=4)
 ts_north_cen = ts(north_cen_vector, start=2012, frequency=4)
 ts_east = ts(east_vector, start=2012, frequency=4)
 
-
 seasonplot(ts_somme, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
@@ -417,8 +495,6 @@ seasonplot(ts_north_cen,
 seasonplot(ts_east, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
-
-
 
 ## 2016 - 2021
 
@@ -475,6 +551,45 @@ tsdisplay(ts_north, main="All regions 2016-21")
 tsdisplay(ts_north_cen, main="All regions 2016-21")
 tsdisplay(ts_east, main="All regions 2016-21")
 
+# season
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+results = stack_seasons(agg_eda_season_df, year_list_2016_21, 
+                        season_list, "YEAR", 
+              "SEASON", "NORTH", "NCENT", "EAST",
+                        "SOMME", north_vector, north_cen_vector, 
+                        east_vector,somme_vector)
+
+north_vector = results[1][[1]]
+north_cen_vector = results[2][[1]]
+east_vector = results[3][[1]]
+somme_vector = results[4][[1]]
+
+ts_somme = ts(somme_vector, start=2016, frequency=4)
+ts_north = ts(north_vector, start=2016, frequency=4)
+ts_north_cen = ts(north_cen_vector, start=2016, frequency=4)
+ts_east = ts(east_vector, start=2016, frequency=4)
+
+seasonplot(ts_somme, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
 ## 2012 - 2013 14
 
 north_vector <- c()
@@ -529,6 +644,45 @@ tsdisplay(ts_north, main="All regions 2012-14")
 tsdisplay(ts_north_cen, main="All regions 2012-14")
 tsdisplay(ts_east, main="All regions 2012-14")
 
+# season
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+results = stack_seasons(agg_eda_season_df, year_list_2012_14, 
+                        season_list, "YEAR", 
+              "SEASON", "NORTH", "NCENT", "EAST",
+                        "SOMME", north_vector, north_cen_vector, 
+                        east_vector,somme_vector)
+
+north_vector = results[1][[1]]
+north_cen_vector = results[2][[1]]
+east_vector = results[3][[1]]
+somme_vector = results[4][[1]]
+
+ts_somme = ts(somme_vector, start=2012, frequency=4)
+ts_north = ts(north_vector, start=2012, frequency=4)
+ts_north_cen = ts(north_cen_vector, start=2012, frequency=4)
+ts_east = ts(east_vector, start=2012, frequency=4)
+
+seasonplot(ts_somme, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
 ## 2019/20/21
 
 north_vector <- c()
@@ -582,6 +736,46 @@ tsdisplay(ts_somme, main="All regions 2019-21")
 tsdisplay(ts_north, main="All regions 2019-21")
 tsdisplay(ts_north_cen, main="All regions 2019-21")
 tsdisplay(ts_east, main="All regions 2019-21")
+
+# season 
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+results = stack_seasons(agg_eda_season_df, year_list_2016_21, 
+                        season_list, "YEAR", 
+              "SEASON", "NORTH", "NCENT", "EAST",
+                        "SOMME", north_vector, north_cen_vector, 
+                        east_vector,somme_vector)
+
+north_vector = results[1][[1]]
+north_cen_vector = results[2][[1]]
+east_vector = results[3][[1]]
+somme_vector = results[4][[1]]
+
+ts_somme = ts(somme_vector, start=2016, frequency=4)
+ts_north = ts(north_vector, start=2016, frequency=4)
+ts_north_cen = ts(north_cen_vector, start=2016, frequency=4)
+ts_east = ts(east_vector, start=2016, frequency=4)
+
+seasonplot(ts_somme, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
 
 ## 2014/15/16/17/18
 
@@ -638,16 +832,6 @@ tsdisplay(ts_north_cen, main="All regions 2014-18")
 tsdisplay(ts_east, main="All regions 2014-18")
 
 
-
-
-
-
-
-
-
-
-
-
 dev.off(dev.cur())
 
 
@@ -657,6 +841,9 @@ dev.off(dev.cur())
 ## seasonality
 ## 2 climatic seasons in winter and summer
 ## an overall increasing trend in all regions and the whole
+## interesting insight about yearly variability that has is stable
+## at the year level may help with planning
+##
 ##  holidays?
 ## week end?
 ## combined holidays and week end?
