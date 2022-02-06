@@ -184,6 +184,24 @@ data['Holiday'] <- is_holiday
 #interaction_weekend_holiday
 data['inter_holi_weekend'] <- data['Holiday'] * data['weekend']
 
+#type of day 1 : weekday , 2 : weekend , 3 : holiday ,
+# 4 : holiday and weekend
+type_of_day <- c()
+for (i in seq(1 , length(data$DATE))) {
+  if (data[i , 'inter_holi_weekend'] == 1) {
+    type_of_day[i] = 4
+  } else if (data[i , 'inter_holi_weekend'] == 0 & 
+             data[i , 'Holiday'] == 1) {
+    type_of_day[i] = 3
+  } else if (data[i , 'inter_holi_weekend'] == 0 &
+             data[i , 'weekend'] == 1) {
+    type_of_day[i] = 2
+  } else {
+    type_of_day[i] = 1
+  }
+}
+
+data['type_of_day'] <- type_of_day
 
 #saving master data_frame
 save(data , file='master_df.Rdata')

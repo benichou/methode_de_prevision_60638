@@ -128,6 +128,36 @@ for (month in months_data) {
                      add_filter = (data$month == month))
 }
 
+# Looking at holiday vs non holiday
+boxplot_group_time('SOMME',
+                   'Holiday' , 
+                   start = '2012-01-01',
+                   end = '2021-12-31', 
+                   ylab='Total energy demand' ,
+                   xlab = 'Holiday' , 
+                   main= 'Distribution of the demand',
+                   data = data )
+
+
+# Looking at weekday vs weekend
+boxplot_group_time('SOMME',
+                   'weekend' , 
+                   start = '2012-01-01',
+                   end = '2021-12-31', 
+                   ylab='Total energy demand' ,
+                   xlab = 'Weekend' , 
+                   main= 'Distribution of the demand',
+                   data = data )
+
+boxplot_group_time('SOMME',
+                   'type_of_day' , 
+                   start = '2012-01-01',
+                   end = '2021-12-31', 
+                   ylab='Total energy demand' ,
+                   xlab = 'Type of day' , 
+                   main= 'Distribution of the demand',
+                   data = data )
+
 #Looking at the temperature by month
 
 for (year in year_b) {
