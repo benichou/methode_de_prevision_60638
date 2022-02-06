@@ -25,12 +25,19 @@ scatter_period <- function(tsx , tsy, start, end ,
 
 #Boxplot d'une serie chrono par groupe pour une periode donnee
 boxplot_group_time <- function(ts , grp , start , end , ylab,
-                               xlab , main , data ) {
+                               xlab , main , data ,
+                               add_filter = NULL) {
   
 #ts : le nome de la colonne qui contient la timeSeries
 #grp : le nom de la variable qualitative pour regrouper les donnees
-
-  filter <- which(data$DATE >= start & data$DATE <= end)
+  
+  if (is.null(add_filter)) {
+    filter <- which(data$DATE >= start & data$DATE <= end)
+  } else {
+    filter <- which(data$DATE >= start & data$DATE <= end &
+                      add_filter)
+  }
+  
   
   if (grp == 'weekday' || grp == 'month') {
     group <- factor(data[filter , grp] , 
