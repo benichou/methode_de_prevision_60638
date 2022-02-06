@@ -64,6 +64,69 @@ agg_eda_df = eda_df[c("NORTH", "EAST", "NCENT", "SOMME",
 agg_eda_df = aggregate(.~YEAR+MONTH,
                    agg_eda_df,
                    FUN=sum, na.rm = FALSE)
+agg_eda_df["SEASON"] = "0"
+agg_eda_df[agg_eda_df["MONTH"] == "12", "SEASON"] = "WINTER"
+agg_eda_df[agg_eda_df["MONTH"] == "01", "SEASON"] = "WINTER"                         
+agg_eda_df[agg_eda_df["MONTH"] == "02", "SEASON"] = "WINTER" 
+agg_eda_df[agg_eda_df["MONTH"] == "03", "SEASON"] = "SPRING"
+agg_eda_df[agg_eda_df["MONTH"] == "04", "SEASON"] = "SPRING"
+agg_eda_df[agg_eda_df["MONTH"] == "05", "SEASON"] = "SPRING"
+agg_eda_df[agg_eda_df["MONTH"] == "06", "SEASON"] = "SUMMER"
+agg_eda_df[agg_eda_df["MONTH"] == "07", "SEASON"] = "SUMMER"
+agg_eda_df[agg_eda_df["MONTH"] == "08", "SEASON"] = "SUMMER"
+agg_eda_df[agg_eda_df["MONTH"] == "09", "SEASON"] = "FALL"
+agg_eda_df[agg_eda_df["MONTH"] == "10", "SEASON"] = "FALL"
+agg_eda_df[agg_eda_df["MONTH"] == "11", "SEASON"] = "FALL"
+
+agg_eda_season_df = agg_eda_df[,-2]
+
+agg_eda_season_df = aggregate(.~YEAR+SEASON,
+                   agg_eda_season_df,
+                   FUN=sum, na.rm = FALSE)
+
+## calculate descriptive statistics for each region for each main 
+## season of each year : avg, std, median, mode, Q1, Q3, IQR
+
+## Fall season :
+fall_df = agg_eda_season_df[
+        agg_eda_season_df["SEASON"] == "FALL", -c(1, 2)]
+fall_df_summary = summary(fall_df)
+std_fall = colSds(as.matrix(fall_df[
+       sapply(fall_df, is.numeric)]))
+
+# winter season:
+winter_df = agg_eda_season_df[
+        agg_eda_season_df["SEASON"] == "WINTER", -c(1, 2)]
+winter_df_summary = summary(winter_df)
+std_winter = colSds(as.matrix(winter_df[
+       sapply(winter_df, is.numeric)]))
+# spring season:
+spring_df = agg_eda_season_df[
+        agg_eda_season_df["SEASON"] == "SPRING", -c(1, 2)]
+spring_df_summary = summary(spring_df)
+std_spring = colSds(as.matrix(spring_df[
+       sapply(spring_df, is.numeric)]))
+# summer season:
+summer_df = agg_eda_season_df[
+        agg_eda_season_df["SEASON"] == "SUMMER", -c(1, 2)]
+summer_df_summary = summary(summer_df)
+std_summer = colSds(as.matrix(summer_df[
+       sapply(summer_df, is.numeric)]))
+
+std_summary_seasons <- data.frame(REGION = c("NORTH", "EAST", 
+                                             "NCENT", "SOMME"),
+                                  FALL = c("", "", "", ""), 
+                                  WINTER =c("", "", "", ""),
+                                  SPRING = c("", "", "", ""), 
+                                  SUMMER = c("", "", "", ""))
+std_summary_seasons["FALL"] = as.matrix(t(t(std_fall)))
+std_summary_seasons["WINTER"] = as.matrix(t(t(std_winter)))
+std_summary_seasons["SPRING"] = as.matrix(t(t(std_spring)))
+std_summary_seasons["SUMMER"] = as.matrix(t(t(std_summer)))
+
+
+
+## ploting electricity in stacked years per month/season
 
 north_vector <- c()
 north_cen_vector <- c()
@@ -78,6 +141,7 @@ year_list = list("2012", "2013", "2014", "2015", "2016", "2017",
               "2018", "2019", "2020", "2021")
 month_list = list("01", "02", "03", "04", "05", "06", "07", "08", 
               "09", "10", "11", "12")
+season_list = list("FALL", "WINTER", "SPRING", "SUMMER")
 
 
 ## entire period 2012-21
@@ -125,6 +189,48 @@ tsdisplay(ts_somme, main="All regions 2012-21")
 tsdisplay(ts_north, main="All regions 2012-21")
 tsdisplay(ts_north_cen, main="All regions 2012-21")
 tsdisplay(ts_east, main="All regions 2012-21")
+
+# season
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+
+results = stack_seasons(agg_eda_season_df, year_list, 
+                        season_list, "YEAR", 
+              "SEASON", "NORTH", "NCENT", "EAST",
+                        "SOMME", north_vector, north_cen_vector, 
+                        east_vector,somme_vector)
+
+north_vector_2012_21 = results[1][[1]]
+north_cen_vector_2012_21 = results[2][[1]]
+east_vector_2012_21 = results[3][[1]]
+somme_vector_2012_21 = results[4][[1]]
+
+ts_somme = ts(somme_vector_2012_21, start=2012, frequency=4)
+ts_north = ts(north_vector_2012_21, start=2012, frequency=4)
+ts_north_cen = ts(north_cen_vector_2012_21, start=2012, frequency=4)
+ts_east = ts(east_vector_2012_21, start=2012, frequency=4)
+
+
+seasonplot(ts_somme, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
 
 ## 2012 -2017
 
@@ -174,6 +280,47 @@ tsdisplay(ts_north, main="All regions 2012-17")
 tsdisplay(ts_north_cen, main="All regions 2012-17")
 tsdisplay(ts_east, main="All regions 2012-17")
 
+# season
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+
+results = stack_seasons(agg_eda_season_df, year_list_2012_17, 
+                        season_list, "YEAR", 
+              "SEASON", "NORTH", "NCENT", "EAST",
+                        "SOMME", north_vector, north_cen_vector, 
+                        east_vector,somme_vector)
+
+north_vector = results[1][[1]]
+north_cen_vector = results[2][[1]]
+east_vector = results[3][[1]]
+somme_vector = results[4][[1]]
+
+ts_somme = ts(somme_vector, start=2012, frequency=4)
+ts_north = ts(north_vector, start=2012, frequency=4)
+ts_north_cen = ts(north_cen_vector, start=2012, frequency=4)
+ts_east = ts(east_vector, start=2012, frequency=4)
+
+
+seasonplot(ts_somme, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
 # 2012 -2015
 
 north_vector <- c()
@@ -218,16 +365,59 @@ seasonplot(ts_east,
            col=rainbow(4), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
-plot(stl(ts_somme, "periodic"), main="stl decomposition")
-plot(stl(ts_north, "periodic"), main="stl decomposition")
-plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
-plot(stl(ts_east, "periodic"), main="stl decomposition")
+plot(stl(ts_somme, "periodic"), main="stl decomposition 2012-15")
+plot(stl(ts_north, "periodic"), main="stl decomposition 2012-15")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition 2012-15")
+plot(stl(ts_east, "periodic"), main="stl decomposition 2012-15")
+
+tsdisplay(ts_somme, main="All regions 2012-15")
+tsdisplay(ts_north, main="All regions 2012-15")
+tsdisplay(ts_north_cen, main="All regions 2012-15")
+tsdisplay(ts_east, main="All regions 2012-15")
 
 
-tsdisplay(ts_somme)
-tsdisplay(ts_north)
-tsdisplay(ts_north_cen)
-tsdisplay(ts_east)
+# season
+
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+
+results = stack_seasons(agg_eda_season_df, year_list_2012_15, 
+                        season_list, "YEAR", 
+              "SEASON", "NORTH", "NCENT", "EAST",
+                        "SOMME", north_vector, north_cen_vector, 
+                        east_vector,somme_vector)
+
+north_vector = results[1][[1]]
+north_cen_vector = results[2][[1]]
+east_vector = results[3][[1]]
+somme_vector = results[4][[1]]
+
+ts_somme = ts(somme_vector, start=2012, frequency=4)
+ts_north = ts(north_vector, start=2012, frequency=4)
+ts_north_cen = ts(north_cen_vector, start=2012, frequency=4)
+ts_east = ts(east_vector, start=2012, frequency=4)
+
+
+seasonplot(ts_somme, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
 
 
 ## 2016 - 2021
@@ -275,16 +465,15 @@ seasonplot(ts_east,
            col=rainbow(6), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
-plot(stl(ts_somme, "periodic"), main="stl decomposition")
-plot(stl(ts_north, "periodic"), main="stl decomposition")
-plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
-plot(stl(ts_east, "periodic"), main="stl decomposition")
+plot(stl(ts_somme, "periodic"), main="stl decomposition 2016-21")
+plot(stl(ts_north, "periodic"), main="stl decomposition 2016-21")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition 2016-21")
+plot(stl(ts_east, "periodic"), main="stl decomposition 2016-21")
 
-
-tsdisplay(ts_somme)
-tsdisplay(ts_north)
-tsdisplay(ts_north_cen)
-tsdisplay(ts_east)
+tsdisplay(ts_somme, main="All regions 2016-21")
+tsdisplay(ts_north, main="All regions 2016-21")
+tsdisplay(ts_north_cen, main="All regions 2016-21")
+tsdisplay(ts_east, main="All regions 2016-21")
 
 ## 2012 - 2013 14
 
@@ -330,16 +519,15 @@ seasonplot(ts_east,
            col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
-plot(stl(ts_somme, "periodic"), main="stl decomposition")
-plot(stl(ts_north, "periodic"), main="stl decomposition")
-plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
-plot(stl(ts_east, "periodic"), main="stl decomposition")
+plot(stl(ts_somme, "periodic"), main="stl decomposition 2012-14")
+plot(stl(ts_north, "periodic"), main="stl decomposition 2012-14")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition 2012-14")
+plot(stl(ts_east, "periodic"), main="stl decomposition 2012-14")
 
-tsdisplay(ts_somme)
-tsdisplay(ts_north)
-tsdisplay(ts_north_cen)
-tsdisplay(ts_east)
-
+tsdisplay(ts_somme, main="All regions 2012-14")
+tsdisplay(ts_north, main="All regions 2012-14")
+tsdisplay(ts_north_cen, main="All regions 2012-14")
+tsdisplay(ts_east, main="All regions 2012-14")
 
 ## 2019/20/21
 
@@ -385,15 +573,15 @@ seasonplot(ts_east,
            col=rainbow(3), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
-plot(stl(ts_somme, "periodic"), main="stl decomposition")
-plot(stl(ts_north, "periodic"), main="stl decomposition")
-plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
-plot(stl(ts_east, "periodic"), main="stl decomposition")
+plot(stl(ts_somme, "periodic"), main="stl decomposition 2019-21")
+plot(stl(ts_north, "periodic"), main="stl decomposition 2019-21")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition 2019-21")
+plot(stl(ts_east, "periodic"), main="stl decomposition 2019-21")
 
-tsdisplay(ts_somme)
-tsdisplay(ts_north)
-tsdisplay(ts_north_cen)
-tsdisplay(ts_east)
+tsdisplay(ts_somme, main="All regions 2019-21")
+tsdisplay(ts_north, main="All regions 2019-21")
+tsdisplay(ts_north_cen, main="All regions 2019-21")
+tsdisplay(ts_east, main="All regions 2019-21")
 
 ## 2014/15/16/17/18
 
@@ -439,20 +627,32 @@ seasonplot(ts_east,
            col=rainbow(5), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
-plot(stl(ts_somme, "periodic"), main="stl decomposition")
-plot(stl(ts_north, "periodic"), main="stl decomposition")
-plot(stl(ts_north_cen, "periodic"), main="stl decomposition")
-plot(stl(ts_east, "periodic"), main="stl decomposition")
+plot(stl(ts_somme, "periodic"), main="stl decomposition 2014-18")
+plot(stl(ts_north, "periodic"), main="stl decomposition 2014-18")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition 2014-18")
+plot(stl(ts_east, "periodic"), main="stl decomposition 2014-18")
 
-tsdisplay(ts_somme)
-tsdisplay(ts_north)
-tsdisplay(ts_north_cen)
-tsdisplay(ts_east)
+tsdisplay(ts_somme, main="All regions 2014-18")
+tsdisplay(ts_north, main="All regions 2014-18")
+tsdisplay(ts_north_cen, main="All regions 2014-18")
+tsdisplay(ts_east, main="All regions 2014-18")
+
+
+
+
+
+
+
+
+
+
+
 
 dev.off(dev.cur())
 
 
 ## CONCLUSION EDA_TARGET ##
+
 ## Data is not stationary because we can see a trend and several
 ## seasonality
 ## 2 climatic seasons in winter and summer
