@@ -274,9 +274,11 @@ seasonplot(ts_east,
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
-
 ## holidays?
-## week end?
+
+
+
+## week end vs week day?
 ## combined holidays and week end?
 
 
@@ -294,100 +296,3 @@ print("visual output in pdf created")
 ## an overall increasing trend in all regions and the whole
 ## interesting insight about yearly variability that has is stable
 ## at the year level may help with planning
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#il y a bien une saisonnalité annuelle de la demande jounralière 
-#d'électricité dans nos 3 régions du texas qui reste relativement 
-#constante. Les plus hauts pics ont l'air de se dérouler en éte
-#les plus bas pics ont quant à aux l'air d'être en hiver quand il y 
-#en a (e.g. : hiver 2016 très doux ? Voir avec données méteo)
-
-
-
-
-#pic hiver 2021 et 2018, faible demande en 2013, beaucoup plus de
-#variations pour le demande hivernale que d'été
-#legère tendance à la hausse ces dernière années, essayer de voir ça 
-#via le delta ? A cause de quoi ? Cette tendance ne se reflète pas 
-#dans les autres régions
-
-# check out analysis per weather type events 
-t_med = ((data$TMAX + data$TMIN)/2)
-sdate_met = c(2012,1)
-t_med_ts = ts(t_med, start=sdate_met, frequency=365.25)
-
-plot(t_med_ts, 
-     ylab="Texas Daily Temperature (in Celsius)")
-
-#hiver 2021 a été le plus froid ce qui corrobore avec la forte demande 
-#et avec l'hiver rude qui a mené à la panne générale (Ted Cruz)
-#l'hiver 2016 et 2020 ont été les plus doux en effet
-# max été constant alors que min hiver non-constant
-
-#Snow Depth Time Series
-snwd_ts = ts(data$SNWD, start=sdate_met, frequency=365.25)
-plot(snwd_ts, 
-     ylab="Texas Daily Snow Depth (in Celsius)")
-
-#ont eus de la neige au texas seulement en 2013, 2015 et février 2021
-
-
-## check weekends with combined effect of stats holidays
-
-
-
-# check for outlier values annual, monthly basis
-
-
-
-# check for seasonality annual monthly and weekly
-### all regions, separate regions
-# --> done annually but not monthly for all, monthly by region 
-#necessary ? 
-
-## check for delta (growth or not) of electricity demand over time
-
-## check for overall trend over the overall period, 
-### all regions and each separate regions
-
-
-
-## analyze days when the military go out of their 3 bases in 
-### our region,
-#haven't found when they go out yet, doesn't seem like we 
-#have weeks where the daily demand of electricity is impacted by 
-#military trainings 
-
-
-## check out analysis per week end --> need help for coding that one, 
-## statutory holidays, 
-
-
-
-
-
-## do the analysis to make the choice of traning, validation, and
-## test
-
-
-
-
-
-
-
-
-
-
-
