@@ -4,9 +4,9 @@
 #  and special effects of week ends, stats holidays etc on 
 # daily electricity demand
 #
-# Written by: Team G, January 30 2021
+# Written by: Team G, January 30 2022
 #
-# Updated: NA
+# Updated: Team G, Feb 6th 2022
 #          
 #         
 #          
