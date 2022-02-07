@@ -275,24 +275,71 @@ seasonplot(ts_east,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 ## holidays?
-
-
+### somme
+boxplot(data$SOMME~data$Holiday, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="Somme", xlab="Holidays (1) or No H (0)",
+ylab="Daily Energy Demand in MW/h")
+### north cen
+boxplot(data$NCENT~data$Holiday, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="NORTH CENTRAL", xlab="Holidays (1) or No H (0)",
+ylab="Daily Energy Demand in MW/h")
+### north
+boxplot(data$NORTH~data$Holiday, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="NORTH", xlab="Holidays (1) or No H (0)",
+ylab="Daily Energy Demand in MW/h")
+### east
+boxplot(data$EAST~data$Holiday, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="EAST", xlab="Holidays (1) or No H (0)",
+ylab="Daily Energy Demand in MW/h")
 
 ## week end vs week day?
+boxplot(data$SOMME~data$weekend, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="Somme", xlab="Weekend (1) or Week Day(0)",
+ylab="Daily Energy Demand in MW/h")
+### north cen
+boxplot(data$NCENT~data$weekend, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="NORTH CENTRAL", xlab="Weekend (1) or Week Day(0)",
+ylab="Daily Energy Demand in MW/h")
+### north
+boxplot(data$NORTH~data$weekend, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="NORTH", xlab="Weekend (1) or Week Day(0)",
+ylab="Daily Energy Demand in MW/h")
+### east
+boxplot(data$EAST~data$weekend, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="EAST", xlab="Weekend (1) or Week Day(0)",
+ylab="Daily Energy Demand in MW/h")
+
 ## combined holidays and week end?
-
-
-## outliers?
+boxplot(data$SOMME~data$inter_holi_weekend, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="Somme", xlab="Interaction Holiday Week end or not)",
+ylab="Daily Energy Demand in MW/h")
+### north cen
+boxplot(data$NCENT~data$inter_holi_weekend, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="NORTH CENTRAL", xlab="Interaction Holiday Week end or not",
+ylab="Daily Energy Demand in MW/h")
+### north
+boxplot(data$NORTH~data$inter_holi_weekend, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="NORTH", xlab="Interaction Holiday Week end or not",
+ylab="Daily Energy Demand in MW/h")
+### east
+boxplot(data$EAST~data$inter_holi_weekend, data=data, notch=TRUE,
+col=(c("gold","darkgreen")),
+main="EAST", xlab="Interaction Holiday Week end or not)",
+ylab="Daily Energy Demand in MW/h")
 
 
 dev.off(dev.cur())
 print("visual output in pdf created")
 
-## CONCLUSION EDA_TARGET ##
 
-## Data is not stationary because we can see a trend and several
-## seasonality
-## 2 climatic seasons in winter and summer
-## an overall increasing trend in all regions and the whole
-## interesting insight about yearly variability that has is stable
-## at the year level may help with planning
