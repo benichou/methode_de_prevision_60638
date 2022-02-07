@@ -15,6 +15,7 @@
 # ------------------------------------------------------
 # upload necessary packages
 library(timeSeries)
+library(forecast)
 
 # launch the data_transformation.R module
 source("./exploratory_vars.R")
@@ -202,9 +203,16 @@ std_summary_year[std_summary_year["YEAR"] == "2020",
 std_summary_year[std_summary_year["YEAR"] == "2021", 
                                              -c(1)] = std_2021
 
+
+
 ## By How much has the demand increased from 2012 to 2021?
 ## do the aggregation only with year
 
+year_agg = agg_eda_df[, -c(2,7)]
+
+agg_year = aggregate(.~YEAR,
+                   year_agg,
+                   FUN=sum, na.rm = FALSE)
 
 
 ## ploting electricity in stacked years per month/season
@@ -235,10 +243,10 @@ results_2012_21 = stack_years(agg_eda_df, year_list, month_list,
                         east_vector,
                         somme_vector)
 
-north_vector_2012_21 = results[1][[1]]
-north_cen_vector_2012_21 = results[2][[1]]
-east_vector_2012_21 = results[3][[1]]
-somme_vector_2012_21 = results[4][[1]]
+north_vector_2012_21 = results_2012_21[1][[1]]
+north_cen_vector_2012_21 = results_2012_21[2][[1]]
+east_vector_2012_21 = results_2012_21[3][[1]]
+somme_vector_2012_21 = results_2012_21[4][[1]]
 
 ts_somme = ts(somme_vector_2012_21, start=2012, frequency=12)
 ts_north = ts(north_vector_2012_21, start=2012, frequency=12)
