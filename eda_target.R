@@ -1,4 +1,3 @@
-#
 # Program: eda_target.R
 #
 # Purpose: exploration of the target to check for trends, seasonality
@@ -16,9 +15,14 @@
 # ------------------------------------------------------
 # upload necessary packages
 library(timeSeries)
+library(forecast)
 
 # launch the data_transformation.R module
 source("./exploratory_vars.R")
+source("./functions.R")
+
+pdf("./visual_output/eda_target_visual_output.pdf")
+## Visualize Each Year on a monthly basis with seasonplot
 
 #Creating timeseries
 sdate = c(2012,1)
@@ -26,20 +30,15 @@ data_ts = ts(data$SOMME, start=sdate, frequency=365.25)
 
 #grahpique de la demande totale jounralière d'électricité 01-01-2012 
 #au 30-12-2021 pour la région totale
-plot(data_ts, 
+plot(data_ts, col = "blue", 
+     main = "Evolution of Daily Electricity Demand over time",
      ylab="Texas Daily Demand (in MW)")
-
-#il y a bien une saisonnalité annuelle de la demande jounralière 
-#d'électricité dans nos 3 régions du texas qui reste relativement 
-#constante. Les plus hauts pics ont l'air de se dérouler en éte
-#les plus bas pics ont quant à aux l'air d'être en hiver quand il y 
-#en a (e.g. : hiver 2016 très doux ? Voir avec données méteo)
-
 
 #pour la région North
 data_ts_n = ts(data$NORTH, start=sdate, frequency=365.25)
 plot(data_ts_n, 
      ylab="Texas Daily Demand in Region North(in MW)")
+
 #fort drop en début 2020
 #pas de tendance à la hausse, constante voir même début de tendance 
 # à la baisse ?
@@ -53,6 +52,265 @@ plot(data_ts_nc,
 data_ts_e = ts(data$EAST, start=sdate, frequency=365.25)
 plot(data_ts_e, 
      ylab="Texas Daily Demand in Region East (in MW)")
+
+
+eda_df = data
+eda_df["EDA_DATE"] = as.Date(eda_df$DATE, format =  "%Y-%m-%d")
+eda_df["YEAR"] = format(eda_df["EDA_DATE"], format = "%Y")
+eda_df["MONTH"] = format(eda_df["EDA_DATE"], format = "%m")
+
+agg_eda_df = eda_df[c("NORTH", "EAST", "NCENT", "SOMME", 
+                      "YEAR", "MONTH")]
+
+agg_eda_df = aggregate(.~YEAR+MONTH,
+                   agg_eda_df,
+                   FUN=sum, na.rm = FALSE)
+eda_df["SEASON"] = "0"
+eda_df[eda_df["MONTH"] == "12", "SEASON"] = "WINTER"
+eda_df[eda_df["MONTH"] == "01", "SEASON"] = "WINTER"                         
+eda_df[eda_df["MONTH"] == "02", "SEASON"] = "WINTER" 
+eda_df[eda_df["MONTH"] == "03", "SEASON"] = "SPRING"
+eda_df[eda_df["MONTH"] == "04", "SEASON"] = "SPRING"
+eda_df[eda_df["MONTH"] == "05", "SEASON"] = "SPRING"
+eda_df[eda_df["MONTH"] == "06", "SEASON"] = "SUMMER"
+eda_df[eda_df["MONTH"] == "07", "SEASON"] = "SUMMER"
+eda_df[eda_df["MONTH"] == "08", "SEASON"] = "SUMMER"
+eda_df[eda_df["MONTH"] == "09", "SEASON"] = "FALL"
+eda_df[eda_df["MONTH"] == "10", "SEASON"] = "FALL"
+eda_df[eda_df["MONTH"] == "11", "SEASON"] = "FALL"
+
+agg_eda_season_df = eda_df[c("NORTH", "EAST", "NCENT", "SOMME", 
+                      "YEAR", "SEASON")]
+
+agg_eda_season_df = aggregate(.~YEAR+SEASON,
+                   agg_eda_season_df,
+                   FUN=mean, na.rm = FALSE)
+
+## Fall season :
+fall_df = agg_eda_season_df[
+        agg_eda_season_df["SEASON"] == "FALL", -c(1, 2)]
+fall_df_summary = summary(fall_df)
+std_fall = colSds(as.matrix(fall_df[
+       sapply(fall_df, is.numeric)]))
+mean_fall = colMeans(as.matrix(fall_df[
+            sapply(fall_df, is.numeric)]))
+
+# winter season:
+winter_df = agg_eda_season_df[
+        agg_eda_season_df["SEASON"] == "WINTER", -c(1, 2)]
+winter_df_summary = summary(winter_df)
+std_winter = colSds(as.matrix(winter_df[
+       sapply(winter_df, is.numeric)]))
+mean_winter = colMeans(as.matrix(winter_df[
+            sapply(fall_df, is.numeric)]))
+# spring season:
+spring_df = agg_eda_season_df[
+        agg_eda_season_df["SEASON"] == "SPRING", -c(1, 2)]
+spring_df_summary = summary(spring_df)
+std_spring = colSds(as.matrix(spring_df[
+       sapply(spring_df, is.numeric)]))
+mean_spring = colMeans(as.matrix(spring_df[
+            sapply(fall_df, is.numeric)]))
+# summer season:
+summer_df = agg_eda_season_df[
+        agg_eda_season_df["SEASON"] == "SUMMER", -c(1, 2)]
+summer_df_summary = summary(summer_df)
+std_summer = colSds(as.matrix(summer_df[
+       sapply(summer_df, is.numeric)]))
+mean_summer = colMeans(as.matrix(summer_df[
+            sapply(fall_df, is.numeric)]))
+
+## what is the standard deviation and mean of the daily 
+## electric demand 
+## for each region in each season?
+
+
+std_summary_seasons <- data.frame(REGION = c("NORTH", "EAST", 
+                                             "NCENT", "SOMME"),
+                                  FALL = c("", "", "", ""), 
+                                  WINTER =c("", "", "", ""),
+                                  SPRING = c("", "", "", ""), 
+                                  SUMMER = c("", "", "", ""))
+std_summary_seasons["FALL"] = as.matrix(t(t(std_fall)))
+std_summary_seasons["WINTER"] = as.matrix(t(t(std_winter)))
+std_summary_seasons["SPRING"] = as.matrix(t(t(std_spring)))
+std_summary_seasons["SUMMER"] = as.matrix(t(t(std_summer)))
+
+# mean
+
+mean_summary_seasons <- data.frame(REGION = c("NORTH", "EAST", 
+                                             "NCENT", "SOMME"),
+                                  FALL = c("", "", "", ""), 
+                                  WINTER =c("", "", "", ""),
+                                  SPRING = c("", "", "", ""), 
+                                  SUMMER = c("", "", "", ""))
+mean_summary_seasons["FALL"] = as.matrix(t(t(mean_fall)))
+mean_summary_seasons["WINTER"] = as.matrix(t(t(mean_winter)))
+mean_summary_seasons["SPRING"] = as.matrix(t(t(mean_spring)))
+mean_summary_seasons["SUMMER"] = as.matrix(t(t(mean_summer)))
+
+
+## By How much has the daily demand increased from 2012 to 2021?
+## do the aggregation only with year
+
+agg_eda_df = eda_df[c("NORTH", "EAST", "NCENT", "SOMME", 
+                      "YEAR")]
+
+year_agg = aggregate(.~YEAR,
+                   agg_eda_df,
+                   FUN=mean, na.rm = FALSE)
+
+
+## ploting electricity in stacked years per month/season
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+year_list = list("2012", "2013", "2014", "2015", "2016", "2017", 
+              "2018", "2019", "2020", "2021")
+month_list = list("01", "02", "03", "04", "05", "06", "07", "08", 
+              "09", "10", "11", "12")
+season_list = list("FALL", "WINTER", "SPRING", "SUMMER")
+
+## entire period 2012-21
+
+results_2012_21 = stack_years(agg_eda_df, year_list, month_list, 
+                        "YEAR", "MONTH", "NORTH", "NCENT", "EAST",
+                        "SOMME",
+                        north_vector,
+                        north_cen_vector,
+                        east_vector,
+                        somme_vector)
+
+north_vector_2012_21 = results_2012_21[1][[1]]
+north_cen_vector_2012_21 = results_2012_21[2][[1]]
+east_vector_2012_21 = results_2012_21[3][[1]]
+somme_vector_2012_21 = results_2012_21[4][[1]]
+
+ts_somme = ts(somme_vector_2012_21, start=2012, frequency=12)
+ts_north = ts(north_vector_2012_21, start=2012, frequency=12)
+ts_north_cen = ts(north_cen_vector_2012_21, start=2012, frequency=12)
+ts_east = ts(east_vector_2012_21, start=2012, frequency=12)
+
+## seasonal plot of stacked years, month after month
+
+seasonplot(ts_somme, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand Somme in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand North in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand North Cen in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand East in MW/h")
+
+## stl decomposition to find trend, season, and remainder useful
+## to check for outliers too
+
+plot(stl(ts_somme, "periodic"), main="stl decomposition Somme
+                                      2012-21")
+plot(stl(ts_north, "periodic"), main="stl decomposition
+                                     North 2012-21")
+plot(stl(ts_north_cen, "periodic"), main="stl decomposition 
+                                     North Central 2012-21")
+plot(stl(ts_east, "periodic"), main="stl decomposition 
+                                     East 2012-21")
+
+## check for acf and pacf to check for stationarity or not
+## there is no stationarity of course
+
+tsdisplay(ts_somme, main="All regions Somme 2012-21")
+tsdisplay(ts_north, main="All regions North 2012-21")
+tsdisplay(ts_north_cen, main="All regions North Central 2012-21")
+tsdisplay(ts_east, main="All regions East 2012-21")
+
+# season
+
+north_vector <- c()
+north_cen_vector <- c()
+east_vector <- c()
+somme_vector <- c()
+
+
+results = stack_seasons(agg_eda_season_df, year_list, 
+                        season_list, "YEAR", 
+              "SEASON", "NORTH", "NCENT", "EAST",
+                        "SOMME", north_vector, north_cen_vector, 
+                        east_vector,somme_vector)
+
+north_vector_2012_21 = results[1][[1]]
+north_cen_vector_2012_21 = results[2][[1]]
+east_vector_2012_21 = results[3][[1]]
+somme_vector_2012_21 = results[4][[1]]
+
+ts_somme = ts(somme_vector_2012_21, start=2012, frequency=4)
+ts_north = ts(north_vector_2012_21, start=2012, frequency=4)
+ts_north_cen = ts(north_cen_vector_2012_21, start=2012, frequency=4)
+ts_east = ts(east_vector_2012_21, start=2012, frequency=4)
+
+## season plot of each season frequency 4 of time series above
+
+seasonplot(ts_somme, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_north_cen, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+seasonplot(ts_east, 
+           col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
+           continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+
+dev.off(dev.cur())
+
+
+## CONCLUSION EDA_TARGET ##
+
+## Data is not stationary because we can see a trend and several
+## seasonality
+## 2 climatic seasons in winter and summer
+## an overall increasing trend in all regions and the whole
+## interesting insight about yearly variability that has is stable
+## at the year level may help with planning
+##
+##  holidays?
+## week end?
+## combined holidays and week end?
+## outliers?
+
+
+
+
+
+
+
+
+
+
+
+
+#il y a bien une saisonnalité annuelle de la demande jounralière 
+#d'électricité dans nos 3 régions du texas qui reste relativement 
+#constante. Les plus hauts pics ont l'air de se dérouler en éte
+#les plus bas pics ont quant à aux l'air d'être en hiver quand il y 
+#en a (e.g. : hiver 2016 très doux ? Voir avec données méteo)
+
+
+
 
 #pic hiver 2021 et 2018, faible demande en 2013, beaucoup plus de
 #variations pour le demande hivernale que d'été
@@ -87,666 +345,6 @@ plot(snwd_ts,
 
 # check for outlier values annual, monthly basis
 
-#2012
-plot(data_ts[1:366], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-01-01 to 2012-12-31")
-#RAs si ce n'est mi-février
-
-#2012-01
-plot(data_ts[1:31], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-01-01 to 2012-01-31")
-
-#2012-02
-plot(data_ts[32:60], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-02-01 to 2012-02-29")
-#assez haut aux alentours du 10-15 février
-
-#2012-03
-plot(data_ts[61:91], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-03-01 to 2012-03-31")
-
-#2012-04
-plot(data_ts[92:121], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-04-01 to 2012-04-30")
-
-#2012-05
-plot(data_ts[122:152], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-05-01 to 2012-05-31")
-
-#2012-06
-plot(data_ts[153:182], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-06-01 to 2012-06-30")
-
-#2012-07
-plot(data_ts[183:213], 
-ylab="Texas Daily Demand (in MW)",
-xlab="2012-07-01 to 2012-07-31")
-
-#2012-08
-plot(data_ts[214:244], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-08-01 to 2012-08-31")
-
-#2012-09
-plot(data_ts[245:274], 
-ylab="Texas Daily Demand (in MW)",
-xlab="2012-09-01 to 2012-09-30")
-
-#2012-10
-plot(data_ts[275:305], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-10-01 to 2012-10-31")
-
-#2012-11
-plot(data_ts[306:335], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2012-11-01 to 2012-11-30")
-
-#2012-12
-plot(data_ts[336:366], 
-ylab="Texas Daily Demand (in MW)",
-xlab="2012-12-01 to 2012-12-31")
-#il y a l'air d'avoir une certaine saisonnalité mensuelle, 
-# quelques trait sinusoïdaux?
-
-#2013
-plot(data_ts[367:731], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-01-01 to 2013-12-31")
-#grosse montée à la fin voir si lié avec les chutes de neige observées
-#plus tôt
-
-#2013-01
-plot(data_ts[367:397], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-01-01 to 2013-01-31")
-
-#2013-02
-plot(data_ts[398:425], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-02-01 to 2013-02-28")
-
-#2013-03
-plot(data_ts[426:456], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-03-01 to 2013-03-31")
-#2013-04
-plot(data_ts[457:486], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-04-01 to 2013-04-30")
-
-#2013-05
-plot(data_ts[487:517], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-05-01 to 2013-05-31")
-
-#2013-06
-plot(data_ts[518:546], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-06-01 to 2013-06-30")
-
-#2013-07
-plot(data_ts[547:578], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-07-01 to 2013-07-31")
-
-#2013-08
-plot(data_ts[579:608], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-08-01 to 2013-08-31")
-
-#2013-09
-plot(data_ts[609:639], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-09-01 to 2013-09-30")
-
-#2013-10
-plot(data_ts[640:670], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-10-01 to 2013-10-31")
-
-#2013-11
-plot(data_ts[671:700], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-11-01 to 2013-11-30")
-
-#2013-12
-plot(data_ts[701:731], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2013-12-01 to 2013-12-31")
-
-
-#2014
-plot(data_ts[732:1096], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-01-01 to 2014-12-31")
-
-#2014-01
-plot(data_ts[732:762], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-01-01 to 2014-01-31")
-
-#2014-02
-plot(data_ts[763:790], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-02-01 to 2014-02-28")
-
-#2014-03
-plot(data_ts[791:821], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-03-01 to 2014-03-31")
-
-#2014-04
-plot(data_ts[822:851], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-04-01 to 2014-04-30")
-
-#2014-05
-plot(data_ts[852:882], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-05-01 to 2014-05-31")
-
-#2014-06
-plot(data_ts[883:912], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-06-01 to 2014-06-30")
-
-#2014-07
-plot(data_ts[913:943], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-07-01 to 2014-07-31")
-
-#2014-08
-plot(data_ts[944:974], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-08-01 to 2014-08-31")
-
-#2014-09
-plot(data_ts[975:1004], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-09-01 to 2014-09-30")
-
-#2014-10
-plot(data_ts[1005:1035], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-10-01 to 2014-10-31")
-
-#2014-11
-plot(data_ts[1036:1065], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-11-01 to 2014-11-30")
-
-#2014-12
-plot(data_ts[1066:1096], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2014-12-01 to 2014-12-31")
-
-#2015
-plot(data_ts[1097:1461], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-01-01 to 2015-12-31")
-
-#2015-01
-plot(data_ts[1097:1127], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-01-01 to 2015-01-31")
-
-#2015-02
-plot(data_ts[1128:1155], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-02-01 to 2015-02-28")
-
-#2015-03
-plot(data_ts[1156:1186], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-03-01 to 2015-03-31")
-
-#2015-04
-plot(data_ts[1187:1216], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-04-01 to 2015-04-30")
-
-#2015-05
-plot(data_ts[1217:1247], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-05-01 to 2015-05-31")
-
-#2015-06
-plot(data_ts[1248:1277], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-06-01 to 2015-06-30")
-
-#2015-07
-plot(data_ts[1278:1308], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-07-01 to 2015-07-31")
-
-#2015-08
-plot(data_ts[1309:1339], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-08-01 to 2015-08-31")
-
-#2015-09
-plot(data_ts[1340:1369], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-09-01 to 2015-09-30")
-
-#2015-10
-plot(data_ts[1370:1400], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-10-01 to 2015-10-31")
-
-#2015-11
-plot(data_ts[1401:1430], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-11-01 to 2015-11-30")
-
-#2015-12
-plot(data_ts[1431:1461], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2015-12-01 to 2015-12-31")
-
-#2016
-plot(data_ts[1462:1827], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-01-01 to 2016-12-31")
-
-#2016-01
-plot(data_ts[1462:1492], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-01-01 to 2016-01-31")
-
-#2016-02
-plot(data_ts[1493:1521], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-02-01 to 2016-02-29")
-
-#2016-03
-plot(data_ts[1522:1552], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-03-01 to 2016-03-31")
-
-#2016-04
-plot(data_ts[1553:1582], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-04-01 to 2016-04-30")
-
-#2016-05
-plot(data_ts[1583:1613], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-05-01 to 2016-05-31")
-
-#2016-06
-plot(data_ts[1614:1643], 
-    ylab="Texas Daily Demand (in MW)",
-    xlab="2016-06-01 to 2016-06-30")
-
-#2016-07
-plot(data_ts[1644:1674], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-07-01 to 2016-07-31")
-
-#2016-08
-plot(data_ts[1675:1705], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-08-01 to 2016-08-31")
-
-#2016-09
-plot(data_ts[1706:1735], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-09-01 to 2016-09-30")
-
-#2016-10
-plot(data_ts[1736:1766], 
-    ylab="Texas Daily Demand (in MW)",
-    xlab="2016-10-01 to 2016-10-31")
-
-#2016-11
-plot(data_ts[1767:1796], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-11-01 to 2016-11-30")
-
-#2016-12
-plot(data_ts[1797:1827], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2016-12-01 to 2016-12-31")
-
-#2017
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-01-01 to 2017-12-31")
-
-#2017-01
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-01-01 to 2017-01-31")
-
-#2017-02
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-02-01 to 2017-02-28")
-
-#2017-03
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-03-01 to 2017-03-31")
-
-#2017-04
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-04-01 to 2017-04-30")
-
-#2017-05
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-05-01 to 2017-05-31")
-
-#2017-06
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-06-01 to 2017-06-30")
-
-#2017-07
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-07-01 to 2017-07-31")
-
-#2017-08
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-08-01 to 2017-08-31")
-
-#2017-09
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-09-01 to 2017-09-30")
-
-#2017-10
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-10-01 to 2017-10-31")
-
-#2017-11
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-11-01 to 2017-11-31")
-
-#2017-12
-plot(data_ts[1828:2192], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2017-12-01 to 2017-12-31")
-
-#2018
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-01-01 to 2018-12-31")
-
-#2018-01
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-01-01 to 2018-01-31")
-
-#2018-02
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-02-01 to 2018-02-28")
-
-#2018-03
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-03-01 to 2018-03-31")
-
-#2018-04
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-04-01 to 2018-04-30")
-
-#2018-05
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-05-01 to 2018-05-31")
-
-#2018-06
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-06-01 to 2018-06-30")
-
-#2018-07
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-07-01 to 2018-07-31")
-
-#2018-08
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-08-01 to 2018-08-31")
-
-#2018-09
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-09-01 to 2018-09-30")
-
-#2018-10
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-10-01 to 2018-10-31")
-
-#2018-11
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-11-01 to 2018-11-30")
-
-#2018-12
-plot(data_ts[2193:2557], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2018-12-01 to 2018-12-31")
-
-
-#2019
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-01-01 to 2019-12-31")
-
-
-#2019-01
-plot(data_ts[2558:2922], 
-    ylab="Texas Daily Demand (in MW)",
-    xlab="2019-01-01 to 2019-01-31")
-
-#2019-02
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-02-01 to 2019-02-28")
-
-#2019-03
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-03-01 to 2019-03-31")
-
-#2019-04
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-04-01 to 2019-04-30")
-
-#2019-05
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-05-01 to 2019-05-31")
-
-#2019-06
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-06-01 to 2019-06-30")
-
-#2019-07
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-07-01 to 2019-07-31")
-
-#2019-08
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-08-01 to 2019-08-31")
-
-#2019-09
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-09-01 to 2019-09-30")
-
-#2019-10
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-10-01 to 2019-10-31")
-
-#2019-11
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-11-01 to 2019-11-30")
-
-#2019-12
-plot(data_ts[2558:2922], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2019-12-01 to 2019-12-31")
-
-#2020
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-01-01 to 2020-12-31")
-
-#2020-01
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-01-01 to 2020-01-31")
-
-#2020-02
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-02-01 to 2020-02-29")
-
-#2020-03
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-03-01 to 2020-03-31")
-
-#2020-04
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-04-01 to 2020-04-30")
-
-#2020-05
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-05-01 to 2020-05-31")
-
-#2020-06
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-06-01 to 2020-06-30")
-
-#2020-07
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-07-01 to 2020-07-31")
-
-#2020-08
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-08-01 to 2020-08-31")
-
-#2020-09
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-09-01 to 2020-09-30")
-
-#2020-10
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-10-01 to 2020-10-31")
-
-#2020-11
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-11-01 to 2020-11-30")
-
-#2020-12
-plot(data_ts[2923:3288], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2020-12-01 to 2020-12-31")
-
-#2021
-plot(data_ts[3289:3652], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-01-01 to 2021-12-30")
-
-plot(snwd_ts[3289:3652], 
-     ylab="Texas Daily Snow Depth (in Celsius)")
-
-#2021-01
-plot(data_ts[3289:3319], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-01-01 to 2021-01-31")
-
-#2021-02
-plot(data_ts[3320:3347], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-02-01 to 2021-02-28")
-
-#2021-03
-plot(data_ts[3348:3378], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-03-01 to 2021-03-31")
-
-#2021-04
-plot(data_ts[3379:3408], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-04-01 to 2021-04-30")
-
-#2021-05
-plot(data_ts[3409:3439], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-05-01 to 2021-05-31")
-
-#2021-06
-plot(data_ts[3440:3469], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-06-01 to 2021-06-30")
-
-#2021-07
-plot(data_ts[3470:3500], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-07-01 to 2021-07-31")
-
-#2021-08
-plot(data_ts[3501:3531], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-08-01 to 2021-08-31")
-
-#2021-09
-plot(data_ts[3532:3561], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-09-01 to 2021-09-30")
-
-#2021-10
-plot(data_ts[3562:3592], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-10-01 to 2021-10-31")
-
-#2021-11
-plot(data_ts[3593:3622], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-11-01 to 2021-11-30")
-
-#2021-12
-plot(data_ts[3622:3652], 
-     ylab="Texas Daily Demand (in MW)",
-     xlab="2021-12-01 to 2021-12-30")
 
 
 # check for seasonality annual monthly and weekly
