@@ -1,4 +1,3 @@
-source('exploratory_vars.R')
 
 
 #Satterplot de deux series chrono en fonction d'une start date
@@ -53,7 +52,7 @@ plot_period <- function(time_series , start , end , ylab ,
   plot(sub_series , ylab = ylab , main = main)
 }
 
-
+print("hello")
 #year over year exploration
 plot_year <- function(series , years_seq , ylabel , main) {
   

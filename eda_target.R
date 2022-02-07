@@ -153,13 +153,13 @@ mean_summary_seasons["SUMMER"] = as.matrix(t(t(mean_summer)))
 ## By How much has the daily demand increased from 2012 to 2021?
 ## do the aggregation only with year
 
-agg_eda_df = eda_df[c("NORTH", "EAST", "NCENT", "SOMME", 
+agg_eda_df1 = eda_df[c("NORTH", "EAST", "NCENT", "SOMME", 
                       "YEAR")]
 
 year_agg = aggregate(.~YEAR,
-                   agg_eda_df,
+                   agg_eda_df1,
                    FUN=mean, na.rm = FALSE)
-
+print("hello again")
 
 ## ploting electricity in stacked years per month/season
 
@@ -275,8 +275,16 @@ seasonplot(ts_east,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
 
 
-dev.off(dev.cur())
+## holidays?
+## week end?
+## combined holidays and week end?
 
+
+## outliers?
+
+
+dev.off(dev.cur())
+print("visual output in pdf created")
 
 ## CONCLUSION EDA_TARGET ##
 
@@ -286,11 +294,8 @@ dev.off(dev.cur())
 ## an overall increasing trend in all regions and the whole
 ## interesting insight about yearly variability that has is stable
 ## at the year level may help with planning
-##
-##  holidays?
-## week end?
-## combined holidays and week end?
-## outliers?
+
+
 
 
 
