@@ -8,20 +8,21 @@ library('timeSeries')
 
 #timeSeries objects to use for plots
 
-# temperature related
 cdd_ts <- timeSeries( data$CDD , data$DATE)
 hdd_ts <- timeSeries( data$HDD , data$DATE)
 cp_ts <- timeSeries(data$CP , data$DATE)
-
-# electricity demand
 total_dem_ts <- timeSeries(data$SOMME , data$DATE)
 north_ts <- timeSeries(data$NORTH , data$DATE)
 nc_ts <- timeSeries(data$NCENT , data$DATE)
 east_ts <- timeSeries(data$EAST , data$DATE)
-
-
-
-
+humidity <- timeSeries(data$RELATIVE_HUM_PERCENT , data$DATE)
+precipitation <- timeSeries(data$PRCP , data$DATE)
+snowfall <-timeSeries(data$SNOW , data$DATE)
+snowdepth <- timeSeries(data$SNWD , data$DATE)
+wind_d2 <- timeSeries(data$WDF2 , data$DATE)
+wind_s2 <- timeSeries(data$WSF2 , data$DATE)
+wind_chill <- timeSeries(data$CP , data$DATE)
+tef <- timeSeries(data$tef , data$DATE)
 
 pdf("Explanatory_variables.pdf")
 
@@ -187,6 +188,120 @@ for (i in seq(20 , 14 , -1)) {
 for (i in seq(14 , 23, 1)) {
   find_tref(data$SOMME , data$med_t , i , type ='CDD')
 }
+
+#Humidity
+scatter_period(humidity , total_dem_ts , start ='2012-01-01' ,
+               end='2021-12-31' , xlab='Humidity' , 
+               ylab='Daily demand' , main='Demand against Humidity')
+
+#Demand vs humidity in different seasons
+summer <- c('June' , 'July' , 'August' , 'September')
+filter <- which(data$month %in% summer)
+demand_summer <- data[filter , 'SOMME']
+humidity_summer <- data[filter , 'RELATIVE_HUM_PERCENT']
+plot(x =humidity_summer , y = demand_summer , 
+     main = "Demand against Humidity during summer months",
+     xlab = 'Humidity' ,
+     ylab = 'Daily demand' ,
+     pch = 19,
+     frame = FALSE)
+
+#Demand vs percipitation -To remove
+scatter_period(precipitation , total_dem_ts , start ='2012-01-01' ,
+               end='2021-12-31' , xlab='Precipitation' , 
+               ylab='Daily demand',
+               main='Demand against Precipitation')
+
+#Demand vs snowfall -To remove
+scatter_period(snowfall , total_dem_ts , start='2012-01-01' ,
+               end = '2021-12-31' ,
+               xlab = 'Snowfall in mm' ,
+               ylab = 'Daily Electricity Demand',
+               main = 'Demand against snowfall')
+
+#Demand vs snowdepth -To remove
+scatter_period(snowdepth , total_dem_ts , start='2012-01-01' ,
+               end = '2021-12-31' ,
+               xlab = 'Snowdepth in mm' ,
+               ylab = 'Daily Electricity Demand',
+               main = 'Demand against snowdepth')
+
+#Demand vs wind direction -To remove
+scatter_period(wind_d2 , total_dem_ts , start='2012-01-01' ,
+               end = '2021-12-31' ,
+               xlab = 'Fastest 2 min wind direction' ,
+               ylab = 'Daily Electricity Demand',
+               main = 'Electricity demand against wind direction')
+
+#Demand vs wind speed -To remove
+scatter_period(wind_s2 , total_dem_ts , start='2012-01-01' ,
+               end = '2021-12-31' ,
+               xlab = 'Fastest 2 min wind speed' ,
+               ylab = 'Daily Electricity Demand',
+               main = 'Electricity demand against wind speed')
+
+#Demand distribution by Fog
+boxplot_group_time('SOMME',
+                   'WT01' , 
+                   start = '2012-01-01',
+                   end = '2021-12-31', 
+                   ylab='Total energy demand' ,
+                   xlab = 'Fog' , 
+                   main= 'Distribution of the demand',
+                   data = data )
+
+#Demand distribution by heavy fog
+boxplot_group_time('SOMME',
+                   'WT02' , 
+                   start = '2012-01-01',
+                   end = '2021-12-31', 
+                   ylab='Total energy demand' ,
+                   xlab = 'Heavy fog' , 
+                   main= 'Distribution of the demand',
+                   data = data )
+
+#Deman distribution by thunder
+boxplot_group_time('SOMME',
+                   'WT03' , 
+                   start = '2012-01-01',
+                   end = '2021-12-31', 
+                   ylab='Total energy demand' ,
+                   xlab = 'Heavy fog' , 
+                   main= 'Distribution of the demand',
+                   data = data )
+
+
+
+#Demand distribution by smoke or haze
+boxplot_group_time('SOMME',
+                   'WT08' , 
+                   start = '2012-01-01',
+                   end = '2021-12-31', 
+                   ylab='Total energy demand' ,
+                   xlab = 'Smoke or haze' , 
+                   main= 'Distribution of the demand',
+                   data = data )
+
+#Demand  vs wind chill
+scatter_period(wind_chill , total_dem_ts , start='2012-01-01' ,
+               end = '2021-12-31' ,
+               xlab = 'Wind chill' ,
+               ylab = 'Daily Electricity Demand',
+               main = 'Electricity demand against wind chill')
+
+#Demand vs effective temp
+scatter_period(tef , total_dem_ts , start='2012-01-01' ,
+               end = '2021-12-31' ,
+               xlab = 'Effective temperature' ,
+               ylab = 'Daily Electricity Demand',
+               main = 'Electricity demand against effective temp')
+
+# WT04 , WT05, WT06 , WT07 , WT09 , WT11 , WT13 , 
+# WT14 , WT16, WT18 not enough observations or already captured
+useless_vars <- c('WT04' , 'WT05' , 'WT06' , 'WT07' , 'WT09' ,
+                  'WT11' , 'WT13' , 'WT14' , 'WT16' , 'WT18' ,
+                  'TMIN' , 'TOBS' , 'TAVG' , 'WDF2' , 'WDF5' ,
+                  'WSF2' , 'WSF5')
 
 
 dev.off(dev.cur())
