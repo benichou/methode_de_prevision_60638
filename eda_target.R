@@ -138,17 +138,34 @@ std_summary_seasons["SUMMER"] = as.matrix(t(t(std_summer)))
 
 # mean
 
-mean_summary_seasons <- data.frame(REGION = c("NORTH", "EAST", 
-                                             "NCENT", "SOMME"),
-                                  FALL = c("", "", "", ""), 
-                                  WINTER =c("", "", "", ""),
-                                  SPRING = c("", "", "", ""), 
-                                  SUMMER = c("", "", "", ""))
-mean_summary_seasons["FALL"] = as.matrix(t(t(mean_fall)))
-mean_summary_seasons["WINTER"] = as.matrix(t(t(mean_winter)))
-mean_summary_seasons["SPRING"] = as.matrix(t(t(mean_spring)))
-mean_summary_seasons["SUMMER"] = as.matrix(t(t(mean_summer)))
+mean_summary_seasons <- data.frame(REGION = c("FALL", "WINTER", 
+                                             "SPRING", "SUMMER"),
+                                  NORTH = c("", "", "", ""), 
+                                  EAST =c("", "", "", ""),
+                                  NCENT = c("", "", "", ""), 
+                                  SOMME = c("", "", "", ""))
+mean_summary_seasons["NORTH"] = mean_fall
+mean_summary_seasons["EAST"] = mean_winter
+mean_summary_seasons["NCENT"] = mean_spring
+mean_summary_seasons["SOMME"] = mean_summer
 
+fall <- c(north=mean_fall[1], east=mean_fall[2], 
+         ncent=mean_fall[3], somme=mean_fall[4])
+winter <- c(north=mean_winter[1], east=mean_winter[2], 
+         ncent=mean_winter[3], somme=mean_winter[4])
+spring <-c(north=mean_spring[1], east=mean_spring[2], 
+         ncent=mean_spring[3], somme=mean_spring[4])
+summer <- c(north=mean_summer[1], east=mean_summer[2], 
+         ncent=mean_summer[3], somme=mean_summer[4])
+summary_seasons = rbind(fall,winter,spring, summer)
+
+colnames(summary_seasons) = c("NORTH", "EAST", "NCENT", "SOMME")
+
+barplot(summary_seasons,
+        col=c("dodgerblue3", "skyblue1", "green", "red"),
+        legend.text = rownames(summary_seasons),
+        args.legend=list(cex=0.95,x = "topleft"), 
+        horiz=FALSE, beside=TRUE)
 
 ## By How much has the daily demand increased from 2012 to 2021?
 ## do the aggregation only with year
@@ -273,6 +290,180 @@ seasonplot(ts_north_cen,
 seasonplot(ts_east, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Energy Demand in MW/h")
+
+## Outlier analysis plot the daily data
+
+## somme --> one outlier on 2021
+daily_2012_somme = eda_df[eda_df$YEAR == "2012",c("SOMME")]
+daily_2013_somme = eda_df[eda_df$YEAR == "2013",c("SOMME")]
+daily_2014_somme = eda_df[eda_df$YEAR == "2014",c("SOMME")]
+daily_2015_somme = eda_df[eda_df$YEAR == "2015",c("SOMME")]
+daily_2016_somme = eda_df[eda_df$YEAR == "2016",c("SOMME")]
+daily_2017_somme = eda_df[eda_df$YEAR == "2017",c("SOMME")]
+daily_2018_somme = eda_df[eda_df$YEAR == "2018",c("SOMME")]
+daily_2019_somme = eda_df[eda_df$YEAR == "2019",c("SOMME")]
+daily_2020_somme = eda_df[eda_df$YEAR == "2020",c("SOMME")]
+daily_2021_somme = eda_df[eda_df$YEAR == "2021",c("SOMME")]
+# no outliers in 2012
+boxplot(daily_2012_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2012")
+# no outliers in 2013
+boxplot(daily_2013_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2013")
+# no outliers 2014
+boxplot(daily_2014_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2014")
+# no outliers in 2015
+boxplot(daily_2015_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2015")
+# no outliers in 2016
+boxplot(daily_2016_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2016")
+# no outliers in 2017
+boxplot(daily_2017_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2017")
+# no outliers in 2018
+boxplot(daily_2018_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2018")
+# no outliers in 2019
+boxplot(daily_2019_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2019")
+# no outliers in 2020
+boxplot(daily_2020_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2020")
+# One outlier in 2021
+boxplot(daily_2021_somme, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis Somme 2021")
+
+## north --> one outlier in 2017 and one in 2021
+daily_2012_north = eda_df[eda_df$YEAR == "2012",c("NORTH")]
+daily_2013_north = eda_df[eda_df$YEAR == "2013",c("NORTH")]
+daily_2014_north = eda_df[eda_df$YEAR == "2014",c("NORTH")]
+daily_2015_north = eda_df[eda_df$YEAR == "2015",c("NORTH")]
+daily_2016_north = eda_df[eda_df$YEAR == "2016",c("NORTH")]
+daily_2017_north = eda_df[eda_df$YEAR == "2017",c("NORTH")]
+daily_2018_north = eda_df[eda_df$YEAR == "2018",c("NORTH")]
+daily_2019_north = eda_df[eda_df$YEAR == "2019",c("NORTH")]
+daily_2020_north = eda_df[eda_df$YEAR == "2020",c("NORTH")]
+daily_2021_north = eda_df[eda_df$YEAR == "2021",c("NORTH")]
+# no outliers in 2012
+boxplot(daily_2012_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2012")
+# no outliers in 2013
+boxplot(daily_2013_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2013")
+# no outliers in 2014
+boxplot(daily_2014_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2014")
+# no outliers in 2015
+boxplot(daily_2015_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2015")
+# no outliers in 2016
+boxplot(daily_2016_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2016")
+# One outlier in 2017
+boxplot(daily_2017_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2017")
+# no outliers in 2018
+boxplot(daily_2018_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2018")
+# no outliers in 2019
+boxplot(daily_2019_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2019")
+# no outliers in 2020
+boxplot(daily_2020_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2020")
+# one outlier in 2021
+boxplot(daily_2021_north, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North 2021")
+
+
+## north central --> one outlier in 2021
+daily_2012_north_c = eda_df[eda_df$YEAR == "2012",c("NCENT")]
+daily_2013_north_c = eda_df[eda_df$YEAR == "2013",c("NCENT")]
+daily_2014_north_c = eda_df[eda_df$YEAR == "2014",c("NCENT")]
+daily_2015_north_c = eda_df[eda_df$YEAR == "2015",c("NCENT")]
+daily_2016_north_c = eda_df[eda_df$YEAR == "2016",c("NCENT")]
+daily_2017_north_c = eda_df[eda_df$YEAR == "2017",c("NCENT")]
+daily_2018_north_c = eda_df[eda_df$YEAR == "2018",c("NCENT")]
+daily_2019_north_c = eda_df[eda_df$YEAR == "2019",c("NCENT")]
+daily_2020_north_c = eda_df[eda_df$YEAR == "2020",c("NCENT")]
+daily_2021_north_c = eda_df[eda_df$YEAR == "2021",c("NCENT")]
+# no outliers in 2012
+boxplot(daily_2012_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2012")
+# no outliers in 2013
+boxplot(daily_2013_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2013")
+# no outliers in 2014
+boxplot(daily_2014_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2014")
+# no outliers in 2015
+boxplot(daily_2015_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2015")
+# no outliers in 2016
+boxplot(daily_2016_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2016")
+# No outlier in 2017
+boxplot(daily_2017_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2017")
+# no outliers in 2018
+boxplot(daily_2018_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2018")
+# no outliers in 2019
+boxplot(daily_2019_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2019")
+# no outliers in 2020
+boxplot(daily_2020_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2020")
+# one outlier in 2021
+boxplot(daily_2021_north_c, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis North Central 2021")
+
+## east --> 2 outliers in 2021
+daily_2012_east = eda_df[eda_df$YEAR == "2012",c("EAST")]
+daily_2013_east = eda_df[eda_df$YEAR == "2013",c("EAST")]
+daily_2014_east = eda_df[eda_df$YEAR == "2014",c("EAST")]
+daily_2015_east = eda_df[eda_df$YEAR == "2015",c("EAST")]
+daily_2016_east = eda_df[eda_df$YEAR == "2016",c("EAST")]
+daily_2017_east = eda_df[eda_df$YEAR == "2017",c("EAST")]
+daily_2018_east = eda_df[eda_df$YEAR == "2018",c("EAST")]
+daily_2019_east = eda_df[eda_df$YEAR == "2019",c("EAST")]
+daily_2020_east = eda_df[eda_df$YEAR == "2020",c("EAST")]
+daily_2021_east = eda_df[eda_df$YEAR == "2021",c("EAST")]
+# no outliers in 2012
+boxplot(daily_2012_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2012")
+# no outliers in 2013
+boxplot(daily_2013_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2013")
+# no outliers in 2014
+boxplot(daily_2014_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2014")
+# no outliers in 2015
+boxplot(daily_2015_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2015")
+# no outliers in 2016
+boxplot(daily_2016_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2016")
+# No outlier in 2017
+boxplot(daily_2017_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2017")
+# no outliers in 2018
+boxplot(daily_2018_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2018")
+# no outliers in 2019
+boxplot(daily_2019_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2019")
+# no outliers in 2020
+boxplot(daily_2020_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2020")
+# 2 outliera in 2021
+boxplot(daily_2021_east, ylab = "Daily Energy Demand in MW/h", 
+main="Outlier Analysis East 2021")
+
+
+
 
 ## holidays?
 ### somme
