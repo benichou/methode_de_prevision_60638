@@ -83,7 +83,7 @@ noaa_meteo <- read.csv("./meteo_data/time_series_meteo_data.csv")
 # read texas mesonet data to extract relative humidity metrix (in %)
 
 read.texas_mesonet <- function(year, 
-                               path="./meteo_data/TxMeso_Timeseries_KDFW_") {
+                    path="./meteo_data/TxMeso_Timeseries_KDFW_") {
   
   
   texas_mesonet <- read.csv(paste(path, year, ".csv", 
