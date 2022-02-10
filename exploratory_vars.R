@@ -1,6 +1,26 @@
+#
+# Program: exploratory_vars.R
+#
+# Purpose: Exploratory analysis of the explanatory variables
+# searching for variables that have the most linear relationship
+# with target 
+# 
+# 
+# Written by: Team G, January 30 2022
+#
+# Updated: Feb 10th 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
+
+
+
 source('./data_transformation.R')
 
-library('timeSeries')
+# library('timeSeries')
 
 
 #function to find the best tref

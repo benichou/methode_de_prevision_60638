@@ -1,11 +1,11 @@
 #
 # Program: naive_methods.R
 #
-# Purpose: evaluation of the naive methods in R
+# Purpose: evaluation of the naive methods in R + pdf reporting
 #
 # Written by: Team G, January 30 2021
 #
-# Updated: NA
+# Updated: Feb 10th 2022
 #          
 #         
 #          

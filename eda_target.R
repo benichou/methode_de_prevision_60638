@@ -14,8 +14,8 @@
 #          
 # ------------------------------------------------------
 # upload necessary packages
-library(timeSeries)
-library(forecast)
+# library(timeSeries)
+# library(forecast)
 
 # launch the data_transformation.R module
 # source("./exploratory_vars.R")
