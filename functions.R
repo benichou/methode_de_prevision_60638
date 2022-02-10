@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 056365313b875521d6ac9aeb2698b3b710103bfc
-
 
 #Satterplot de deux series chrono en fonction d'une start date
 # et d'une end date
