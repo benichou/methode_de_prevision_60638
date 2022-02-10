@@ -1,3 +1,4 @@
+source('exploratory_vars.R')
 source('functions.R')
 
 library('timeSeries')

@@ -141,7 +141,7 @@ head(data)
 # check the dimensions are still the same
 dim(data)
 print("The data is appropriately transformed, aggregated
-      and appended with the meterological data from
+      and appended with the meterological data fro
       noaa and the humidity data from Texas Mesonet")
 
 #cleaning the global environment

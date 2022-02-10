@@ -143,7 +143,7 @@ df_fall_val = subset(df_fall_val, select=c("SOMME", "month",
 
 
 #Resultats des residus par saison
-residuals_col <- c('next_day_res','s_res', 'mm3_res' , 'mm7_res')
+residuals_col <- c('next_day_res','s_res')
 #winter
 
 winter_mapes <- c()
@@ -161,7 +161,14 @@ for (i in seq(1, length(residuals_col))) {
                                 df_fall_val$SOMME))
 }
 
-
+print(accuracy(df_winter_val$fc_mm3 , df_winter_val$SOMME))
+print(accuracy(df_summer_val$fc_mm3 , df_summer_val$SOMME))
+print(accuracy(df_spring_val$fc_mm3 , df_spring_val$SOMME))
+print(accuracy(df_fall_val$fc_mm3 , df_fall_val$SOMME))
+print(accuracy(df_fall_val$fc_mm7 , df_fall_val$SOMME))
+print(accuracy(df_summer_val$fc_mm7 , df_summer_val$SOMME))
+print(accuracy(df_spring_val$fc_mm7 , df_spring_val$SOMME))
+print(accuracy(df_winter_val$fc_mm7 , df_winter_val$SOMME))
 
 
 pdf("./visual_output/Residus.pdf")
