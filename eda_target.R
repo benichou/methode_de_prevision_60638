@@ -220,7 +220,8 @@ barplot(summary_seasons,
         col=c("dodgerblue3", "skyblue1", "green", "red"),
         legend.text = rownames(summary_seasons),
         args.legend=list(cex=0.95,x = "topleft"), 
-        horiz=FALSE, beside=TRUE)
+        horiz=FALSE, beside=TRUE, 
+        main= "Average Daily Electricity Demand MW/H per Season")
 
 ## By How much has the daily demand increased from 2012 to 2021?
 ## do the aggregation only with year
@@ -234,7 +235,8 @@ year_agg = aggregate(.~YEAR,
 
 plot(year_agg$YEAR, year_agg$NORTH, col = "red", type = "l", 
      lty = 1, ylim = c(0, 400000), xlab="YEAR", 
-     ylab = "Average Daily Demand")
+     ylab = "Average Daily Electricity Demand MW/H", 
+     main= "Average Daily Electricity Demand MW/H")
 lines(year_agg$YEAR, year_agg$EAST, col = "blue",
       lty=2, lwd=1.8, type="l")
 lines(year_agg$YEAR, year_agg$NCENT, col = "green",
@@ -277,7 +279,8 @@ year_agg_delta[year_agg_delta$YEAR > 2012,
 plot(year_agg_delta$YEAR, year_agg_delta$NORTH, 
      col = "red", type = "l", 
      lty = 1, ylim = c(-10, 20), xlab="YEAR", 
-     ylab = "% Evolution of Average Daily Demand")
+     ylab = "% Evolution of Average Daily Demand MW/H",
+     main= "% Evolution of Electricity Demand MW/H")
 lines(year_agg_delta$YEAR, year_agg_delta$EAST, col = "blue",
       lty=2, lwd=1.8, type="l")
 lines(year_agg_delta$YEAR, year_agg_delta$NCENT, col = "green",
