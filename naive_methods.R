@@ -23,16 +23,26 @@ library(zoo)
 source("./data_transformation.R")
 
 #Creation de la variable "season"
+
 winter = c("December", "January", "February")
 spring = c("March", "April", "May")
 summer = c("June", "July", "August")
 fall = c("September", "October", "November")
 
-data = data.frame(data, season = 
-        ifelse(data$DATE %in% winter, "Winter",
-             ifelse(data$month %in% spring,"Spring",
-                  ifelse(data$month %in% summer, "Summer",
-                        ifelse(data$month %in% fall,"Fall", NA)))))
+season <- c()
+for (i in seq(1 , length(data$DATE))) {
+  if (data[i , 'month'] %in% winter) {
+    season[i] = 'winter'
+  } else if (data[i ,'month'] %in% spring) {
+    season[i] = 'spring'
+  } else if (data[i , 'month'] %in% summer) {
+    season[i] = 'summer'
+  } else {
+    season[i] = 'fall'
+  }
+}
+
+data['season'] <- season
 
 # Naive forecast draft
 data_training = data[1:2192,] #2012-2017
@@ -93,41 +103,72 @@ observed_val_mm7 <- window(data_val_ts, start = ffcast_mm7)
 print(accuracy(forecast_mobile7, observed_val_mm7)[,1:5])
 
 
-#Résultats
+#Resultats
 print(accuracy(forecast_next_day, observed_val)[,1:5])
 print(accuracy(forecast_s, observed_val_s)[,1:5])
 print(accuracy(forecast_mobile3, observed_val_mm3)[,1:5])
 print(accuracy(forecast_mobile7, observed_val_mm7)[,1:5])
 
-#Inclusion des différents residus dans le dataset
+#Inclusion des differents residus dans le dataset
 next_day_res = c(naive_next_day$residuals)
 s_res = c(naive_s$residuals)
 mm3_res = c(naive_mobile3$residuals)
 mm7_res = c(naive_mobile7$residuals)
 
-#Rendre les vecteurs pour avoir des longueures égales
+#Rendre les vecteurs pour avoir des longueures egales
 mm3_res=c(rep(NA,2),mm3_res)
 mm7_res = c(rep(NA,6),mm7_res)
 
-#Ajouter au dataframe
+fc_nextday = c(NA, forecast_next_day)
+fc_s = c(rep(NA,7), forecast_s)
+fc_mm3 = c(rep(NA,3), forecast_mobile3)
+fc_mm7 =  c(rep(NA,7), forecast_mobile7)
+
+
+#Ajouter au dataframe les residus et les forecast
 data_validation = cbind(data_validation, next_day_res, s_res,
                         mm3_res, mm7_res)
 
+data_validation = cbind(data_validation, fc_nextday, 
+                        fc_s, fc_mm3, fc_mm7)
+
 #Diebold-Mariano entre naive next day et moyenne mobile 3j
-print(dm.test((forecast_next_day-observed_val), (forecast_mobile3-observed_val_mm3)))
+#print(dm.test((forecast_next_day-observed_val), 
+#(forecast_mobile3-observed_val_mm3)))
 
 #Nouveaux dataframes par saison
-df_winter_val = select(data_validation[which(data_validation$
-      season=="Winter"),], next_day_res, s_res, mm3_res, mm7_res)
-df_winter_val = 
-df_spring_val = data_validation[which(data_validation$
-                                        season=="Spring"),]
-df_summer_val = data_validation[which(data_validation$
-                                        season=="Summer"),]
-df_fall_val = data_validation[which(data_validation$
-                                      season=="Fall"),]
+df_winter_val = data_validation[which(data_validation$
+      season=="winter"),]
+df_winter_val = subset(df_winter_val, select=c("SOMME", "month",
+                      "next_day_res", "s_res", "mm3_res", "mm7_res",
+                      "fc_nextday", "fc_s", "fc_mm3", "fc_mm7"))
 
-print(mean())
+df_spring_val = data_validation[which(data_validation$
+                                        season=="spring"),]
+df_spring_val = subset(df_spring_val, select=c("SOMME", "month",
+                      "next_day_res", "s_res", "mm3_res", "mm7_res",
+                      "fc_nextday", "fc_s", "fc_mm3", "fc_mm7"))
+
+df_summer_val = data_validation[which(data_validation$
+                                        season=="summer"),]
+df_summer_val = subset(df_summer_val, select=c("SOMME", "month",
+                      "next_day_res", "s_res", "mm3_res", "mm7_res",
+                      "fc_nextday", "fc_s", "fc_mm3", "fc_mm7"))
+
+
+df_fall_val = data_validation[which(data_validation$
+                                      season=="fall"),]
+df_fall_val = subset(df_fall_val, select=c("SOMME", "month",
+                     "next_day_res", "s_res", "mm3_res", "mm7_res",
+                     "fc_nextday", "fc_s", "fc_mm3", "fc_mm7"))
+
+
+#Resultats des residus par saison
+
+print(mean(abs((forecast3-observed3)/observed3)*100))
+print(summary(df_spring_val))
+print(summary(df_summer_val))
+print(summary(df_fall_val))
 
 
 
@@ -136,68 +177,77 @@ pdf("./visual_output/Residus.pdf")
 ###Graphiques
 
 
-#Analyse graphique des résidus sur la validation
+#Analyse graphique des residus sur la validation
 options(scipen=10000)
-plot(naive_next_day$residuals[1:730], lwd=1.5, type="o", 
-ylim=c(-250000,200000), ylab= "Résidus (MW/h)", col="blue",
+plot(naive_next_day$residuals, lwd=1.5, type="o", 
+ylim=c(-250000,200000), ylab= "Residus (MW/h)", col="blue",
 xlab="Jour", 
-main = "Résidus des méthodes sur l'échantillon validation 2018-2019")
+main = "Residus du naive no change sur 
+l'echantillon validation 2018-2019")
 lines(naive_s$residuals[1:730], type="o",lwd=1.5, col="red")
 lines(naive_mobile3$residuals[1:730], type="o",lwd=1.5, col="yellow")
 lines(naive_mobile7$residuals[1:730], type="o",lwd=1.5, col="green")
 abline(0,0)
-legend(x="bottomleft", legend=c("Naïve no change","Naïve seasonal 7j",
+legend(x="bottomleft", legend=c("Naive no change","Naive seasonal 7j",
       "Moyenne mobile 3j", "Moyenne mobile 7j"), 
       col=c("blue", "red", "yellow", "green"), 
       lty=1, bg="light blue", cex=0.8)
 
-#Prévisions des mois de janvier et février 2018
+#Previsions des mois de janvier et fevrier 2018
 plot.start = which(data_validation$DATE=="2018-01-01")
 plot.end = which(data_validation$DATE=="2018-02-28")
 
 plot(observed_val[plot.start:plot.end], 
      type="o", lwd=2, xlab="Jour", 
-     ylab = "Prévisions et observations (MW/h)",
-     main="Prévisions VS observations de janvier et février 2018")
-lines(naive_next_day$fitted[plot.start:plot.end],type="o" , col="blue", lwd=2)
-lines(naive_s$fitted[plot.start:plot.end],type="o" ,col="red", lwd=2)
-lines(naive_mobile3$fitted[plot.start:plot.end],type="o" ,col="yellow", lwd=2)
-lines(naive_mobile7$fitted[plot.start:plot.end],type="o" ,col="green", lwd=2)
-legend(x="topright", legend=c("Observations", "Naïve no change",
-       "Naïve seasonal 7j","Moyenne mobile 3j", "Moyenne mobile 7j"), 
+     ylab = "Previsions et observations (MW/h)",
+     main="Previsions VS observations de janvier et fevrier 2018")
+lines(naive_next_day$fitted[plot.start:plot.end],
+      type="o" , col="blue", lwd=2)
+lines(naive_s$fitted[plot.start:plot.end],
+      type="o" ,col="red", lwd=2)
+lines(naive_mobile3$fitted[plot.start:plot.end],
+      type="o" ,col="yellow", lwd=2)
+lines(naive_mobile7$fitted[plot.start:plot.end],
+      type="o" ,col="green", lwd=2)
+legend(x="topright", legend=c("Observations", "Naive no change",
+       "Naive seasonal 7j","Moyenne mobile 3j", "Moyenne mobile 7j"), 
        col=c("blue", "red", "yellow", "green"), 
        lty=1, bg="light blue", cex=0.8)
 
-#Prévisions des mois de juillet et août 2018
+#Previsions des mois de juillet et aoC;t 2018
 plot.start2 = which(data_validation$DATE=="2018-07-01")
 plot.end2 = which(data_validation$DATE=="2018-08-31")
 
 plot(observed_val[plot.start2:plot.end2], type="o", 
      lwd=2, xlab="Jour", 
-     ylab = "Prévisions et observations (MW/h)",
-     main="Prévisions VS observations de juillet et août 2018")
-lines(naive_next_day$fitted[plot.start2:plot.end2],type="o" , col="blue", lwd=2)
-lines(naive_s$fitted[plot.start2:plot.end2],type="o" ,col="red", lwd=2)
-lines(naive_mobile3$fitted[plot.start2:plot.end2],type="o" ,col="yellow", lwd=2)
-lines(naive_mobile7$fitted[plot.end2],type="o" ,col="green", lwd=2)
-legend(x="topright", legend=c("Naïve no change","Naïve seasonal 7j",
+     ylab = "Previsions et observations (MW/h)",
+     main="Previsions VS observations de juillet et aoC;t 2018")
+lines(naive_next_day$fitted[plot.start2:plot.end2],
+      type="o" , col="blue", lwd=2)
+lines(naive_s$fitted[plot.start2:plot.end2],
+      type="o" ,col="red", lwd=2)
+lines(naive_mobile3$fitted[plot.start2:plot.end2],
+      type="o" ,col="yellow", lwd=2)
+lines(naive_mobile7$fitted[plot.end2],
+      type="o" ,col="green", lwd=2)
+legend(x="topright", legend=c("Naive no change","Naive seasonal 7j",
                             "Moyenne mobile 3j", "Moyenne mobile 7j"), 
        col=c("blue", "red", "yellow", "green"), 
        lty=1, bg="light blue", cex=0.8)
 
-#Prévisions des mois de juillet et août 2018
+#Previsions des mois de juillet et aoC;t 2018
 plot.start2 = which(data_validation$DATE=="2018-07-01")
-plot.end2 = which(data_validation$DATE=="201-08-31")
+plot.end2 = which(data_validation$DATE=="2018-08-31")
 
 plot(observed_val[plot.start2:plot.end2], type="l", 
      lwd=2, xlab="Jour", 
-     ylab = "Prévisions et observations (MW/h)",
-     main="Prévisions VS observations de juillet et août 2018")
+     ylab = "Previsions et observations (MW/h)",
+     main="Previsions VS observations de juillet et aoC;t 2018")
 lines(window(forecast_next_day, start=ffcast)[plot.start2:plot.end2],type="l" , col="blue", lwd=2)
 lines(window(forecast_s, start=ffcast)[plot.start2:plot.end2],type="l" ,col="red", lwd=2)
 lines(window(forecast_mobile3, start=ffcast)[plot.start2:plot.end2],type="l" ,col="yellow", lwd=2)
 lines(window(forecast_mobile7, start=ffcast)[plot.start2:plot.end2],type="l" ,col="green", lwd=2)
-legend(x="topright", legend=c("Naïve no change","Naïve seasonal 7j",
+legend(x="topright", legend=c("Naive no change","Naive seasonal 7j",
                               "Moyenne mobile 3j", "Moyenne mobile 7j"), 
        col=c("blue", "red", "yellow", "green"), 
        lty=1, bg="light blue", cex=0.8)
