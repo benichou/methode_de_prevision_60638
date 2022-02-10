@@ -1,5 +1,5 @@
 #
-# Program: naive_methods.R 
+# Program: naive_methods.R
 #
 # Purpose: evaluation of the naive methods in R + pdf reporting
 #

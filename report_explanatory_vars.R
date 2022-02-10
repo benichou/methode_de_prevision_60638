@@ -1,5 +1,5 @@
 #
-# Program: report_explanatory_vars.R 
+# Program: report_explanatory_vars.R
 #
 # Purpose: reporting in a dedicated script all necessary charts 
 # covering the explanatory variables in the script called
