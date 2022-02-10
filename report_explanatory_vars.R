@@ -325,8 +325,7 @@ demand_summer <- data[filter , 'SOMME']
 humidity_summer <- data[filter , 'RELATIVE_HUM_PERCENT']
 plot(x =humidity_summer , y = demand_summer , 
      xlab = 'Humidité relative',
-     ylab = '' ,
-     pch = 19,
+     ylab = 'Somme de la demande horaire' ,
      frame = FALSE)
 title("Juin, Juillet , Août , Septembre" , line=-0.2)
 mtext("Demande d'électricité en fonction de l'humidité" , outer= TRUE, 
@@ -340,11 +339,39 @@ humidity_o <- data[filter_o , 'RELATIVE_HUM_PERCENT']
 plot(x =humidity_o , y = demand_o , 
      xlab = 'Humidité relative',
      ylab = '' ,
-     pch = 19,
      frame = FALSE)
 title("Tous les autres mois" , line=-0.2)
 mtext("Demande d'électricité en fonction de l'humidité" , outer= TRUE, 
       line=-1.5 , cex = 1.4)
+
+#wind chill
+par(mfrow= c(1,2) , cex.main = 0.95)
+#wind without transformation
+plot(data$AWND , data$SOMME ,
+     xlab = 'Moyenne journalière de la vitesse du vent',
+     ylab = 'Somme de la demande horaire')
+title("Sans transformation" , line = 0.5)
+
+#wind chill
+plot(data$CP , data$SOMME ,
+     xlab = 'Effet de refroidissement',
+     ylab = '')
+title("Avec transformation" , line = 0.5)
+mtext("Demande d'électricité en fonction du vent" , outer= TRUE, 
+      line=-1.5 , cex = 1.4)
+
+# special days plot
+par(mfrow = c(1,1))
+boxplot_group_time('SOMME' , 'type_of_day' , start = '2012-01-01' ,
+                   end = '2021-12-31',
+                   ylab ='Somme de la demande horaire',
+                   xlab = 'Type de la journée' ,
+                   main = 'Distribution de la demande en fonction du type de la journée' ,
+                   data = data)
+legend('topright' , legend = c('1 = Jour de semaine' ,
+                          '2 = Weekend',
+                          '3 = Jour férié',
+                          '4 = jour férié et weekend'))
 
 
 dev.off(dev.cur())
