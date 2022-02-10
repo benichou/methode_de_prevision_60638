@@ -13,6 +13,8 @@ for the period of January 1st 2012 to December 31st 2021.
 Meteorological data from the National Centers for Environmental
 Information is used and merged with the Ercot data.
 
+Texas mesonet data that include relative humidity is also used
+
 The output is a dataframe called data
 
 # Running Instructions
@@ -20,4 +22,4 @@ The output is a dataframe called data
 at methode_de_prevision_60638
 2. Enter a R interactive console
 3. Launch the following command
-> source("naive_methods.R")
+> source("main.R")
