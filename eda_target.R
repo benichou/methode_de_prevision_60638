@@ -215,7 +215,7 @@ summer <- c(north=mean_summer[1], east=mean_summer[2],
 summary_seasons = rbind(fall,winter,spring, summer)
 
 colnames(summary_seasons) = c("NORTH", "EAST", "NCENT", "SOMME")
-
+options(scipen=10000)
 barplot(summary_seasons,
         col=c("dodgerblue3", "skyblue1", "green", "red"),
         legend.text = rownames(summary_seasons),
@@ -232,7 +232,8 @@ agg_eda_df1 = eda_df[c("NORTH", "EAST", "NCENT", "SOMME",
 year_agg = aggregate(.~YEAR,
                    agg_eda_df1,
                    FUN=mean, na.rm = FALSE)
-
+## TODO:
+options(scipen=10000)
 plot(year_agg$YEAR, year_agg$NORTH, col = "red", type = "l", 
      lty = 1, ylim = c(0, 400000), xlab="YEAR", 
      ylab = "Average Daily Electricity Demand MW/H", 
@@ -275,7 +276,7 @@ year_agg_delta[year_agg_delta$YEAR > 2012,
  c("SOMME")] = 100 *(year_agg_delta[year_agg_delta$YEAR > 2012,
  c("SOMME")] - p_somme) / p_somme
 
-
+options(scipen=10000)
 plot(year_agg_delta$YEAR, year_agg_delta$NORTH, 
      col = "red", type = "l", 
      lty = 1, ylim = c(-10, 20), xlab="YEAR", 
@@ -345,20 +346,20 @@ ts_north_cen = ts(north_cen_vector_2012_21, start=2012, frequency=12)
 ts_east = ts(east_vector_2012_21, start=2012, frequency=12)
 
 ## seasonal plot of stacked years, month after month
-
+options(scipen=10000)
 seasonplot(ts_somme, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Electricity Demand Somme in MW/h")
-
+options(scipen=10000)
 seasonplot(ts_north, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Electricity Demand North in MW/h")
-
+options(scipen=10000)
 seasonplot(ts_north_cen, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, 
            ylab= "Electricity Demand North Cen in MW/h")
-
+options(scipen=10000)
 seasonplot(ts_east, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Electricity Demand East in MW/h")
@@ -408,19 +409,19 @@ ts_north_cen = ts(north_cen_vector_2012_21, start=2012, frequency=4)
 ts_east = ts(east_vector_2012_21, start=2012, frequency=4)
 
 ## season plot of each season frequency 4 of time series above
-
+options(scipen=10000)
 seasonplot(ts_somme, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Electricity Demand in MW/h")
-
+options(scipen=10000)
 seasonplot(ts_north, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Electricity Demand in MW/h")
-
+options(scipen=10000)
 seasonplot(ts_north_cen, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Electricity Demand in MW/h")
-
+options(scipen=10000)
 seasonplot(ts_east, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
            continuous=TRUE, ylab= "Electricity Demand in MW/h")
@@ -613,64 +614,73 @@ main="Outlier Analysis East 2021")
 ### somme
 boxplot(data$SOMME~data$Holiday, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="Somme", xlab="Holidays (1) or No H (0)",
+main="Effet Jour Ferie SOMME", xlab="Holidays (1) or No H (0)",
 ylab="Daily Electricity Demand in MW/h")
 ### north cen
 boxplot(data$NCENT~data$Holiday, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="NORTH CENTRAL", xlab="Holidays (1) or No H (0)",
+main="Effet Jour Ferie NORTH CENTRAL", 
+xlab="Holidays (1) or No H (0)",
 ylab="Daily Electricity Demand in MW/h")
 ### north
 boxplot(data$NORTH~data$Holiday, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="NORTH", xlab="Holidays (1) or No H (0)",
+main="Effet Jour Ferie NORTH", xlab="Holidays (1) or No H (0)",
 ylab="Daily Electricity Demand in MW/h")
 ### east
 boxplot(data$EAST~data$Holiday, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="EAST", xlab="Holidays (1) or No H (0)",
+main="Effet Jours Ferie EAST", xlab="Holidays (1) or No H (0)",
 ylab="Daily Electricity Demand in MW/h")
 
 ## week end vs week day?
 boxplot(data$SOMME~data$weekend, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="Somme", xlab="Weekend (1) or Week Day(0)",
+main="Effet Fin de Semaine Somme",
+ xlab="Weekend (1) or Week Day(0)",
 ylab="Daily Electricity Demand in MW/h")
 ### north cen
 boxplot(data$NCENT~data$weekend, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="NORTH CENTRAL", xlab="Weekend (1) or Week Day(0)",
+main="Effet Fin de Semaine NORTH CENTRAL", 
+xlab="Weekend (1) or Week Day(0)",
 ylab="Daily Electricity Demand in MW/h")
 ### north
 boxplot(data$NORTH~data$weekend, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="NORTH", xlab="Weekend (1) or Week Day(0)",
+main="Effet Fin de Semaine NORTH", 
+xlab="Weekend (1) or Week Day(0)",
 ylab="Daily Electricity Demand in MW/h")
 ### east
 boxplot(data$EAST~data$weekend, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="EAST", xlab="Weekend (1) or Week Day(0)",
+main="Effet Fin de Semaine EAST", 
+xlab="Weekend (1) or Week Day(0)",
 ylab="Daily Electricity Demand in MW/h")
 
 ## combined holidays and week end?
 boxplot(data$SOMME~data$inter_holi_weekend, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="Somme", xlab="Interaction Holiday Week end or not)",
+main="Jour Ferie Week end Somme", 
+xlab="Interaction Holiday Week end (1) or not (0)",
 ylab="Daily Electricity Demand in MW/h")
 ### north cen
 boxplot(data$NCENT~data$inter_holi_weekend, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="NORTH CENTRAL", xlab="Interaction Holiday Week end or not",
+main="Jour Ferie Week end NORTH CENTRAL", 
+xlab="Interaction Holiday Week end or not",
 ylab="Daily Electricity Demand in MW/h")
 ### north
 boxplot(data$NORTH~data$inter_holi_weekend, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="NORTH", xlab="Interaction Holiday Week end or not",
+main="Jour Ferie Week end NORTH", 
+xlab="Interaction Holiday Week end or not",
 ylab="Daily Electricity Demand in MW/h")
 ### east
 boxplot(data$EAST~data$inter_holi_weekend, data=data, notch=TRUE,
 col=(c("gold","darkgreen")),
-main="EAST", xlab="Interaction Holiday Week end or not)",
+main="Jour Ferie Week end EAST", 
+xlab="Interaction Holiday Week end or not)",
 ylab="Daily Electricity Demand in MW/h")
 
 
