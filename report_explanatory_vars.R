@@ -262,7 +262,7 @@ boxplot_group_time('SOMME',
                    main= 'Distribution of the demand',
                    data = data )
 
-#Deman distribution by thunder
+#Deman distribution by thunder - Remove
 boxplot_group_time('SOMME',
                    'WT03' , 
                    start = '2012-01-01',
@@ -302,6 +302,49 @@ useless_vars <- c('WT04' , 'WT05' , 'WT06' , 'WT07' , 'WT09' ,
                   'WT11' , 'WT13' , 'WT14' , 'WT16' , 'WT18' ,
                   'TMIN' , 'TOBS' , 'TAVG' , 'WDF2' , 'WDF5' ,
                   'WSF2' , 'WSF5')
+
+#plots to present in the paper
+
+#CDD and HDD
+par(mfrow=c(1,2))
+plot(data$HDD , data$SOMME , main = 'Tref = 16' , xlab='HDD', 
+     ylab='Somme de la demande horaire')
+plot(data$CDD , data$SOMME , main = 'Tref = 21' , xlab='CDD',
+     ylab='')
+mtext("Demande d'électricité en fonction du HDD et du CDD" ,
+      cex=1.4 , outer=TRUE , line = -1.3)
+
+#Humidity plots
+
+par(mfrow = c(1,2) , cex.main = 0.95)
+
+#Demand vs humidity in different seasons
+summer <- c('June' , 'July' , 'August' , 'September')
+filter <- which(data$month %in% summer)
+demand_summer <- data[filter , 'SOMME']
+humidity_summer <- data[filter , 'RELATIVE_HUM_PERCENT']
+plot(x =humidity_summer , y = demand_summer , 
+     xlab = 'Humidité relative',
+     ylab = '' ,
+     pch = 19,
+     frame = FALSE)
+title("Juin, Juillet , Août , Septembre" , line=-0.2)
+mtext("Demande d'électricité en fonction de l'humidité" , outer= TRUE, 
+      line=-1.5 , cex = 1.4)
+
+
+`%ni%` <- Negate(`%in%`)
+filter_o <- which(data$month %ni% summer)
+demand_o <- data[filter_o , 'SOMME']
+humidity_o <- data[filter_o , 'RELATIVE_HUM_PERCENT']
+plot(x =humidity_o , y = demand_o , 
+     xlab = 'Humidité relative',
+     ylab = '' ,
+     pch = 19,
+     frame = FALSE)
+title("Tous les autres mois" , line=-0.2)
+mtext("Demande d'électricité en fonction de l'humidité" , outer= TRUE, 
+      line=-1.5 , cex = 1.4)
 
 
 dev.off(dev.cur())

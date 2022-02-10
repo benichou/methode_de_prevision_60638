@@ -203,6 +203,29 @@ for (i in seq(1 , length(data$DATE))) {
 
 data['type_of_day'] <- type_of_day
 
+
+#Season variable for ploting
+winter <- c('January' , 'February' , 'March')
+spring <- c('April' , 'May' , 'June')
+summer <- c('July' , 'August' , 'September')
+fall <- c('October', 'November' , 'December')
+
+
+season <- c()
+for (i in seq(1 , length(data$DATE))) {
+  if (data[i , 'month'] %in% winter) {
+    season[i] = 'winter'
+  } else if (data[i ,'month'] %in% spring) {
+    season[i] = 'spring'
+  } else if (data[i , 'month'] %in% summer) {
+    season[i] = 'summer'
+  } else {
+    season[i] = 'fall'
+  }
+}
+
+data['season'] <- season
+
 #saving master data_frame
 save(data , file='master_df.Rdata')
 
