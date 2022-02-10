@@ -1,5 +1,5 @@
 #
-# Program: exploratory_vars.R
+# Program: exploratory_vars.R 
 #
 # Purpose: Exploratory analysis of the explanatory variables
 # searching for variables that have the most linear relationship

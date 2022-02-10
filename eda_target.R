@@ -28,27 +28,27 @@ pdf("./visual_output/eda_target_visual_output.pdf")
 sdate = c(2012,1)
 data_ts = ts(data$SOMME, start=sdate, frequency=365.25)
 
-#grahpique de la demande totale jounralière d'électricité 01-01-2012 
-#au 30-12-2021 pour la région totale
+#grahpique de la demande totale jounraliC(re d'C)lectricitC) 01-01-2012 
+#au 30-12-2021 pour la rC)gion totale
 plot(data_ts, col = "blue", 
      main = "Evolution of Daily Electricity Demand over time",
      ylab="Texas Daily Demand (in MW)")
 
-#pour la région North
+#pour la rC)gion North
 data_ts_n = ts(data$NORTH, start=sdate, frequency=365.25)
 plot(data_ts_n, 
      ylab="Texas Daily Demand in Region North(in MW)")
 
-#fort drop en début 2020
-#pas de tendance à la hausse, constante voir même début de tendance 
-# à la baisse ?
+#fort drop en dC)but 2020
+#pas de tendance C  la hausse, constante voir mC*me dC)but de tendance 
+# C  la baisse ?
 
-#pour la région Nort-Central
+#pour la rC)gion Nort-Central
 data_ts_nc = ts(data$NCENT, start=sdate, frequency=365.25)
 plot(data_ts_nc, 
      ylab="Texas Daily Demand in Region North-Central(in MW)")
 
-#pour le région East
+#pour le rC)gion East
 data_ts_e = ts(data$EAST, start=sdate, frequency=365.25)
 plot(data_ts_e, 
      ylab="Texas Daily Demand in Region East (in MW)")
