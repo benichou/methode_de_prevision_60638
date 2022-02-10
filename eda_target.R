@@ -6,7 +6,7 @@
 #
 # Written by: Team G, January 30 2022
 #
-# Updated: Team G, Feb 6th 2022
+# Updated: Team G, Feb 10th 2022
 #          
 #         
 #          
@@ -18,8 +18,8 @@ library(timeSeries)
 library(forecast)
 
 # launch the data_transformation.R module
-source("./exploratory_vars.R")
-source("./functions.R")
+# source("./exploratory_vars.R")
+# source("./functions.R")
 
 pdf("./visual_output/eda_target_visual_output.pdf")
 ## Visualize Each Year on a monthly basis with seasonplot
@@ -232,7 +232,7 @@ agg_eda_df1 = eda_df[c("NORTH", "EAST", "NCENT", "SOMME",
 year_agg = aggregate(.~YEAR,
                    agg_eda_df1,
                    FUN=mean, na.rm = FALSE)
-## TODO:
+
 options(scipen=10000)
 plot(year_agg$YEAR, year_agg$NORTH, col = "red", type = "l", 
      lty = 1, ylim = c(0, 400000), xlab="YEAR", 

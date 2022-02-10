@@ -1,4 +1,17 @@
-
+#
+# Program: functions.R
+#
+# Purpose: script that contain all utility functions used 
+# throughout the script
+# Written by: Team G, January 30 2022
+#
+# Updated: Feb 10th 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
 
 #Satterplot de deux series chrono en fonction d'une start date
 # et d'une end date
@@ -24,12 +37,20 @@ scatter_period <- function(tsx , tsy, start, end ,
 
 #Boxplot d'une serie chrono par groupe pour une periode donnee
 boxplot_group_time <- function(ts , grp , start , end , ylab,
-                               xlab , main , data ) {
+                               xlab , main , data ,
+                               add_filter = NULL) {
   
-#ts : le nome de la colonne qui contient la timeSeries
-#grp : le nom de la variable qualitative pour regrouper les donnees
-
-  filter <- which(data$DATE >= start & data$DATE <= end)
+  #ts : le nome de la colonne qui contient la timeSeries
+  #grp : le nom de la variable qualitative pour regrouper
+  # les donnees
+  
+  if (is.null(add_filter)) {
+    filter <- which(data$DATE >= start & data$DATE <= end)
+  } else {
+    filter <- which(data$DATE >= start & data$DATE <= end &
+                      add_filter)
+  }
+  
   
   if (grp == 'weekday' || grp == 'month') {
     group <- factor(data[filter , grp] , 
@@ -56,7 +77,8 @@ plot_period <- function(time_series , start , end , ylab ,
 plot_year <- function(series , years_seq , ylabel , main) {
   
   for ( i in seq(1,length(years_seq)-1)) {
-    plot_period(series , years_seq[i] , years_seq[i+1] , ylab=ylabel ,
+    plot_period(series , years_seq[i] , years_seq[i+1] , 
+    ylab=ylabel ,
                 main = main)
   }
 }
