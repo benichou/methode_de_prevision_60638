@@ -19,30 +19,9 @@ library(forecast)
 library(timeSeries)
 library(zoo)
 
-# launch the data_transformation.R module
-source("./data_transformation.R")
+# launch the exploratory_vars to get the full dataset
+source("./exploratory_vars.R")
 
-#Creation de la variable "season"
-
-winter = c("December", "January", "February")
-spring = c("March", "April", "May")
-summer = c("June", "July", "August")
-fall = c("September", "October", "November")
-
-season <- c()
-for (i in seq(1 , length(data$DATE))) {
-  if (data[i , 'month'] %in% winter) {
-    season[i] = 'winter'
-  } else if (data[i ,'month'] %in% spring) {
-    season[i] = 'spring'
-  } else if (data[i , 'month'] %in% summer) {
-    season[i] = 'summer'
-  } else {
-    season[i] = 'fall'
-  }
-}
-
-data['season'] <- season
 
 # Naive forecast draft
 data_training = data[1:2192,] #2012-2017
@@ -164,11 +143,24 @@ df_fall_val = subset(df_fall_val, select=c("SOMME", "month",
 
 
 #Resultats des residus par saison
+residuals_col <- c('next_day_res','s_res', 'mm3_res' , 'mm7_res')
+#winter
 
-print(mean(abs((forecast3-observed3)/observed3)*100))
-print(summary(df_spring_val))
-print(summary(df_summer_val))
-print(summary(df_fall_val))
+winter_mapes <- c()
+spring_mapes <- c()
+summer_mapes <- c()
+fall_mapes <- c()
+for (i in seq(1, length(residuals_col))) {
+  winter_mapes[i] <- mean(abs(df_winter_val[,residuals_col[i]]/
+                                df_winter_val$SOMME) , na.rm = TRUE)
+  spring_mapes[i] <- mean(abs(df_spring_val[,residuals_col[i]]/
+                                df_spring_val$SOMME))
+  summer_mapes[i] <- mean(abs(df_summer_val[,residuals_col[i]]/
+                                df_summer_val$SOMME))
+  fall_mapes[i] <- mean(abs(df_fall_val[,residuals_col[i]]/
+                                df_fall_val$SOMME))
+}
+
 
 
 
@@ -243,12 +235,18 @@ plot(observed_val[plot.start2:plot.end2], type="l",
      lwd=2, xlab="Jour", 
      ylab = "Previsions et observations (MW/h)",
      main="Previsions VS observations de juillet et aoC;t 2018")
-lines(window(forecast_next_day, start=ffcast)[plot.start2:plot.end2],type="l" , col="blue", lwd=2)
-lines(window(forecast_s, start=ffcast)[plot.start2:plot.end2],type="l" ,col="red", lwd=2)
-lines(window(forecast_mobile3, start=ffcast)[plot.start2:plot.end2],type="l" ,col="yellow", lwd=2)
-lines(window(forecast_mobile7, start=ffcast)[plot.start2:plot.end2],type="l" ,col="green", lwd=2)
-legend(x="topright", legend=c("Naive no change","Naive seasonal 7j",
-                              "Moyenne mobile 3j", "Moyenne mobile 7j"), 
+lines(window(forecast_next_day, start=ffcast)[plot.start2:plot.end2],
+      type="l" , col="blue", lwd=2)
+lines(window(forecast_s, start=ffcast)[plot.start2:plot.end2],
+      type="l",col="red", lwd=2)
+lines(window(forecast_mobile3, start=ffcast)[plot.start2:plot.end2],
+      type="l" ,col="yellow", lwd=2)
+lines(window(forecast_mobile7, start=ffcast)[plot.start2:plot.end2],
+      type="l" ,col="green", lwd=2)
+legend(x="topright", 
+       legend=c("Naive no change","Naive seasonal 7j",
+                              "Moyenne mobile 3j", 
+                "Moyenne mobile 7j"), 
        col=c("blue", "red", "yellow", "green"), 
        lty=1, bg="light blue", cex=0.8)
 
