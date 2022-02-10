@@ -181,9 +181,9 @@ lines(naive_mobile3$residuals[1:730], type="o",lwd=1.5, col="yellow")
 lines(naive_mobile7$residuals[1:730], type="o",lwd=1.5, col="green")
 abline(0,0)
 legend(x="bottomleft", legend=c("Naive no change","Naive seasonal 7j",
-      "Moyenne mobile 3j", "Moyenne mobile 7j"), 
-      col=c("blue", "red", "yellow", "green"), 
-      lty=1, bg="light blue", cex=0.8)
+"Moyenne mobile 3j", "Moyenne mobile 7j"), 
+col=c("blue", "red", "yellow", "green"), 
+lty=1, bg="light blue", cex=0.8)
 
 #Previsions des mois de janvier et fevrier 2018
 plot.start = which(data_validation$DATE=="2018-01-01")

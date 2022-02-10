@@ -1,4 +1,3 @@
-source('exploratory_vars.R')
 
 
 #Satterplot de deux series chrono en fonction d'une start date
@@ -29,7 +28,8 @@ boxplot_group_time <- function(ts , grp , start , end , ylab,
                                add_filter = NULL) {
   
   #ts : le nome de la colonne qui contient la timeSeries
-  #grp : le nom de la variable qualitative pour regrouper les donnees
+  #grp : le nom de la variable qualitative pour regrouper
+  # les donnees
   
   if (is.null(add_filter)) {
     filter <- which(data$DATE >= start & data$DATE <= end)
@@ -65,7 +65,8 @@ plot_period <- function(time_series , start , end , ylab ,
 plot_year <- function(series , years_seq , ylabel , main) {
   
   for ( i in seq(1,length(years_seq)-1)) {
-    plot_period(series , years_seq[i] , years_seq[i+1] , ylab=ylabel ,
+    plot_period(series , years_seq[i] , years_seq[i+1] , 
+    ylab=ylabel ,
                 main = main)
   }
 }
