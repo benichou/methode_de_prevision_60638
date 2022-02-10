@@ -36,6 +36,8 @@ plot_period(total_dem_ts , start = '2012-01-01' ,
 years <- seq(as.Date('2012-01-01') , as.Date('2022-01-01') , "years")
 years[11] <- '2021-12-30'
 
+
+
 plot_year(total_dem_ts , years_seq = years , 
           'Daily Electricity Demand', main ="North ,North Central and
           East Daily's Electricity demand for the year")
@@ -269,8 +271,6 @@ boxplot_group_time('SOMME',
                    xlab = 'Heavy fog' , 
                    main= 'Distribution of the demand',
                    data = data )
-
-
 
 #Demand distribution by smoke or haze
 boxplot_group_time('SOMME',

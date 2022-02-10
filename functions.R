@@ -28,8 +28,8 @@ boxplot_group_time <- function(ts , grp , start , end , ylab,
                                xlab , main , data ,
                                add_filter = NULL) {
   
-#ts : le nome de la colonne qui contient la timeSeries
-#grp : le nom de la variable qualitative pour regrouper les donnees
+  #ts : le nome de la colonne qui contient la timeSeries
+  #grp : le nom de la variable qualitative pour regrouper les donnees
   
   if (is.null(add_filter)) {
     filter <- which(data$DATE >= start & data$DATE <= end)
