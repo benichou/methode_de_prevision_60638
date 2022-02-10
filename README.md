@@ -1,6 +1,6 @@
 # methode_de_prevision_60638
 
-## Purpose
+# Purpose
 - The purpose is to forecast the sum of the hourly demand for the day 
 t + 1
 - This is a short term forecast with h = 1, with available data for 
