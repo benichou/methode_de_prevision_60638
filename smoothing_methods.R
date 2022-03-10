@@ -637,3 +637,7 @@ rownames(dshwQ.eval3) <- make.names(c("ValQ1    dshw",
                                     "ValQ3      dshw",
                                     "ValQ4      dshw"))
 print(dshwQ.eval3)
+
+## TODO: compare the best 2 with a diebold mariano
+
+
