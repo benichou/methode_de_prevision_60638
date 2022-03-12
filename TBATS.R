@@ -7,7 +7,7 @@
 options(digits=3)
 source('dataAggregation.r')
 
-pdf("viz/TBATS.pdf")
+pdf("visual_output/TBATS.pdf")
 
 # Training set  : 2012/01/01-2017/12/31
 # Validation set: 2018/01/01-2019/12/31
@@ -85,6 +85,20 @@ rownames(Q.eval) <- make.names(c("Q1_2017","Q2_2017","Q3_2017",
                                  "Q4_2017","Q1_2018","Q2_2018",
                                  "Q3_2018","Q4_2018"))
 print(Q.eval)
+
+Q1.eval <- rbind(accuracy(fc.exp[c(1:90,366:455)], 
+           out.sample[c(1:90,366:455)])[,1:5], 
+  accuracy(fc.exp[c(91:181,456:547 )], 
+           out.sample[c(91:181,456:547)])[,1:5],
+  accuracy(fc.exp[c(182:273, 548:638)], 
+           out.sample[c(182:273, 548:638)])[,1:5],
+  accuracy(fc.exp[c(274:365, 639:730)], 
+           out.sample[c(274:365, 639:730)])[,1:5])
+
+rownames(Q1.eval) <- make.names(c("Q1","Q2","Q3",
+                                 "Q4"))
+print(Q1.eval)
+
 
 # ==================================================================
 #   Re-train after 1 year
