@@ -1,6 +1,18 @@
-#********************************************************#
-#   TBATS Model
-#********************************************************#
+# Program: TBATS.R
+#
+# Purpose: Adjusts the TBATS model between moving and expanding 
+# window with and without retraining
+# 
+#
+# Written by: Team G, March 12 2022
+#
+# Updated: Team G NA
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
 
 # library(timeSeries)
 # library(forecast)
@@ -134,8 +146,8 @@ R.eval <- rbind(
   accuracy(fcasts.r[182:273], out.sample.r[182:273])[,1:5],
   accuracy(fcasts.r[274:365], out.sample.r[274:365])[,1:5])
 
-rownames(R.eval) <- make.names(c("Q1_2018","Q2_2018",
-                                 "Q3_2018","Q4_2018"))
+rownames(R.eval) <- make.names(c("Q1_2019","Q2_2019",
+                                 "Q3_2019","Q4_2019"))
 print(R.eval)
 
 # ==================================================================
