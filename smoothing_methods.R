@@ -128,7 +128,7 @@ print(ses1Q.eval)
 
 
 ## no difference between moving and expanding window, we will
-## keep the moving window
+## keep the expanding window
 
 
 #==========================================================
@@ -181,14 +181,14 @@ print("SES Expanding Window")
 print(ses.eval)
 print("SES Moving Window")
 print(ses1.eval)
-print("SES Moving Window Retrain")
+print("SES Expanding Window Retrain")
 print(ses2.eval)
 
 print("SES Expanding Window - Quarterly")
 print(sesQ.eval)
 print("SES Moving Window - Quarterly")
 print(ses1Q.eval)
-print("SES Moving Window Retrain - Quarterly")
+print("SES Expanding Window Retrain - Quarterly")
 print(ses2Q.eval)
 
 #==========================================================
@@ -281,6 +281,8 @@ print(holt1.eval)
 # (2) Holt Method expanding window with Retraining every year
 #==========================================================
 
+#TODO: Make sure to have a logging of the parameters during each 
+## retraining
 
 holt2.val <- ts(numeric(n.out))
 newEndTrainHolt = endTrain
