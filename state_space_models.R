@@ -903,8 +903,33 @@ print(rep)
 # Prediction.interval.95.      676   730   92.60274
 
 ## Ranking of methods
+# 1. ETS(A,Ad,A) with expanding window
+# (Holt Winters Damped trend with Additive error)
+# MAPE :  5.838487
+# 2. ETS(A, A, A) and 
+# then ETS(M,A, A) in retraining (expanding window): 
+# MAPE : 5.859101
+# 3: ETS(M, A, A) expanding window
+# : Holt Winters Multiplicative error with retraining
+# every year: MAPE  5.868139
 
+# --> The performance in terms of validation MAPE is not much lower
+# than the holt winter s methods (MAPE: 5.840536) validation MAPE.
+# Given the ets also gives us forecast interval we can pick 
+# ETS(A, Ad, A) as a our new best model
 
+# DM test with the naive no change method and our next
+# best ets(A, Ad, A)
 
-# DM test
+print(dm.test((ets.valnew [c(1:729)]-out.sample[c(1:729)]), 
+              (forecast_next_day-out.sample[c(1:729)])))
+
+# ETS(A, A, A) vs naive no change forecast in DM test
+# DM = 13, Forecast horizon = 1, Loss function power = 2, p-value
+# <0.0000000000000002
+# alternative hypothesis: two.sided
+## We can reject the null hypothesis that the quadratic average error
+## on the forecast is the same between ETSHolt Winters with damped
+# trend and additive error and naive no change # change
+# ETS(A, Ad, A) is our new baseline 
 

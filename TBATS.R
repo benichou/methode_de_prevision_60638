@@ -14,6 +14,11 @@
 #          
 # ------------------------------------------------------
 
+# REMINDER: OUR NEW BASELINE is ETS(A, Ad, A) with MAPE at 5.838487
+# we are going to compare based on performance of course
+#and also assess the forecast intervals produced by the 
+# models
+
 # library(timeSeries)
 # library(forecast)
 options(digits=3)
@@ -283,15 +288,47 @@ dev.off(dev.cur())
 
 
 
-## Final Ranking of methods
+## Final Ranking of methods and models
+## amongst the smoothing methods/models, the state space models
+## and the TBATS
 
-
+# 1. TBATS with retrain (expanding window) : 5.347029
+# 2. No retrain TBATS (expanding window) : 5.360130
+# 3. ETS(A, Ad, A) : MAPE: 5.838487
+# 4. Holt Winters : MAPE: 5.840536
+# Part 1 Baseline: naive no change: MAPE: 6.34
 
 # DM test
 
+# The previous best in state space models was ETS(A, Ad, A)
+# so let us compare with TBATS with retrain to see if they 
+# are different
 
+print((dm.test(c(fc.exp[1:365],fcasts.r)-c(out.sample), 
+              c(ets.valnew)-c(out.sample)))
+
+# data:  
+# c(fc.exp[1:365], fcasts.r) - c(out.sample)
+# c(ets.valnew) - c(out.sample)
+# DM = -5, Forecast horizon = 1, Loss function power = 2, p-value =
+# 0.000002
+# alternative hypothesis: two.sided
+## We can reject the null hypothesis that the quadratic average error
+## on the forecast is the same between ETSHolt Winters with damped
+# trend and additive error and TBATS with retraining.
+# Thus TBATS with retraining can be selected over ETS(A, Ad, A)
 
 ## CONCLUSION SMOOTHING METHODS VS ETS VS TBATS
+
+# The TBATS model with retraining can be selected
+# with forecast interval as follows:
+#                         Observed Total Percentage
+# Prediction.interval.80.      606   730       83.0
+# Prediction.interval.95.      687   730       94.1
+
+
+
+
 
 
 
