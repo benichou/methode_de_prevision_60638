@@ -28,6 +28,9 @@
 # Validation set: 2018/01/01-2019/12/31
 # Test set      : 2019/01/01-2021/12/31
 
+
+pdf("visual_output/state_space_models.pdf")
+
 SOMME.ts <- ts(data$SOMME, start=1)
 
 # in.sample  = training set
@@ -902,10 +905,13 @@ print(rep)
 # Prediction.interval.80.      599   730   82.05479
 # Prediction.interval.95.      676   730   92.60274
 
-## Ranking of methods
-# 1. ETS(A,Ad,A) with expanding window
+## Ranking of models
+# 1. ETS(A,Ad,A) with expanding window no retrain
 # (Holt Winters Damped trend with Additive error)
 # MAPE :  5.838487
+#                         Observed Total Percentage
+# Prediction.interval.80.      599   730   82.05479
+# Prediction.interval.95.      676   730   92.60274
 # 2. ETS(A, A, A) and 
 # then ETS(M,A, A) in retraining (expanding window): 
 # MAPE : 5.859101
@@ -924,7 +930,7 @@ print(rep)
 print(dm.test((ets.valnew [c(1:729)]-out.sample[c(1:729)]), 
               (forecast_next_day-out.sample[c(1:729)])))
 
-# ETS(A, A, A) vs naive no change forecast in DM test
+# ETS(A, Ad, A) vs naive no change forecast in DM test
 # DM = 13, Forecast horizon = 1, Loss function power = 2, p-value
 # <0.0000000000000002
 # alternative hypothesis: two.sided
@@ -932,4 +938,8 @@ print(dm.test((ets.valnew [c(1:729)]-out.sample[c(1:729)]),
 ## on the forecast is the same between ETSHolt Winters with damped
 # trend and additive error and naive no change # change
 # ETS(A, Ad, A) is our new baseline 
+#                         Observed Total Percentage
+# Prediction.interval.80.      599   730   82.05479
+# Prediction.interval.95.      676   730   92.60274
 
+dev.off(dev.cur())
