@@ -1,5 +1,5 @@
 #
-# Program: main.R 
+# Program: main.R
 #
 # Purpose: running the whole pipeline at once and modular view for
 # ease of debugging

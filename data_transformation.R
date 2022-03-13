@@ -1,5 +1,5 @@
 #
-# Program: data_transformation.R
+# Program: data_transformation.R 
 #
 # Purpose: appropriate data transformation and data aggregattion
 #
@@ -25,7 +25,7 @@ date = as.POSIXct(date, tzone = "CST") #Changement de fuseau horaire
 date = format(date, tz="US/Central",usetz=TRUE)
 data = data.frame(date, ercotdata$NORTH, ercotdata$EAST, 
                   ercotdata$NCENT)
-data = data[-c(1:5),] # Retirer les premieres obs qui étaient en GMT
+data = data[-c(1:5),] # Retirer les premieres obs qui C)taient en GMT
 
 data = head(data, - 18) # Retirer les dernieres obs 
 #qui ne complete pas la journee
@@ -44,7 +44,7 @@ print(sum(is.na(data))) # 3 valeurs manquantes
 NonNAindex = which(is.na(data), arr.ind=TRUE) #Ligne 42523
 print(data[42523,]) # Ligne 42523 = 6 novembre 2016 18h
 
-#Remplacer valeurs manquantes avec la moy de la ligne avant et après
+#Remplacer valeurs manquantes avec la moy de la ligne avant et aprC(s
 valeurs_remplacement = c((data[42522,2]+ data[42524,2])/2,
                          (data[42522,3]+ data[42524,3])/2,
                          (data[42522,4]+ data[42524,4])/2)
@@ -60,7 +60,7 @@ print(sum(is.na(data))) # 0 valeurs manquantes maintenant
 data[,-1] <- data[seq_len(nrow(data)) + 1, -1]
 data = head(data, - 1) #enlever la derniere ligne qui est vide
 
-#Aggrégation des données
+#AggrC)gation des donnC)es
 data$DATE = as.Date(data$DATE)
 data = aggregate(cbind(data$NORTH, data$EAST, data$NCENT) ~ 
                    data$DATE, FUN=sum, na.rm = FALSE)

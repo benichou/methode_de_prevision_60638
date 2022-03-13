@@ -1,6 +1,6 @@
 # Program: eda_target.R
 #
-# Purpose: exploration of the target to check for trends, seasonality
+# Purpose: exploration of the target to check for trends,seasonality
 #  and special effects of week ends, stats holidays etc on 
 # daily Electricity demand
 #
@@ -28,7 +28,8 @@ pdf("./visual_output/eda_target_visual_output.pdf")
 sdate = c(2012,1)
 data_ts = ts(data$SOMME, start=sdate, frequency=365.25)
 
-#grahpique de la demande totale jounraliC(re d'C)lectricitC) 01-01-2012 
+#grahpique de la demande totale jounraliC(re d'C)lectricitC) 
+# 01-01-2012 
 #au 30-12-2021 pour la rC)gion totale
 plot(data_ts, col = "blue", 
      main = "Evolution of Daily Electricity Demand over time",
@@ -40,7 +41,8 @@ plot(data_ts_n,
      ylab="Texas Daily Demand in Region North(in MW)")
 
 #fort drop en dC)but 2020
-#pas de tendance C  la hausse, constante voir mC*me dC)but de tendance 
+#pas de tendance C  la hausse, constante voir mC*me dC)but de 
+# tendance 
 # C  la baisse ?
 
 #pour la rC)gion Nort-Central
@@ -342,18 +344,20 @@ somme_vector_2012_21 = results_2012_21[4][[1]]
 
 ts_somme = ts(somme_vector_2012_21, start=2012, frequency=12)
 ts_north = ts(north_vector_2012_21, start=2012, frequency=12)
-ts_north_cen = ts(north_cen_vector_2012_21, start=2012, frequency=12)
+ts_north_cen = ts(north_cen_vector_2012_21, start=2012,frequency=12)
 ts_east = ts(east_vector_2012_21, start=2012, frequency=12)
 
 ## seasonal plot of stacked years, month after month
 options(scipen=10000)
 seasonplot(ts_somme, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
-           continuous=TRUE, ylab= "Electricity Demand Somme in MW/h")
+           continuous=TRUE, 
+           ylab= "Electricity Demand Somme in MW/h")
 options(scipen=10000)
 seasonplot(ts_north, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
-           continuous=TRUE, ylab= "Electricity Demand North in MW/h")
+           continuous=TRUE, 
+           ylab= "Electricity Demand North in MW/h")
 options(scipen=10000)
 seasonplot(ts_north_cen, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
@@ -362,7 +366,8 @@ seasonplot(ts_north_cen,
 options(scipen=10000)
 seasonplot(ts_east, 
            col=rainbow(12), year.labels=TRUE,year.labels.left=TRUE,
-           continuous=TRUE, ylab= "Electricity Demand East in MW/h")
+           continuous=TRUE, 
+           ylab= "Electricity Demand East in MW/h")
 
 ## stl decomposition to find trend, season, and remainder useful
 ## to check for outliers too

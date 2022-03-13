@@ -1,5 +1,5 @@
 #
-# Program: report_explanatory_vars.R 
+# Program: report_explanatory_vars.R
 #
 # Purpose: reporting in a dedicated script all necessary charts 
 # covering the explanatory variables in the script called
@@ -55,8 +55,8 @@ years[11] <- '2021-12-30'
 
 
 plot_year(total_dem_ts , years_seq = years , 
-          'Daily Electricity Demand', main ="North ,North Central and
-          East Daily's Electricity demand for the year")
+     'Daily Electricity Demand', main ="North ,North Central and
+     East Daily's Electricity demand for the year")
 
 plot_year(north_ts , years_seq = years , 
           'Daily Electricity Demand' ,
