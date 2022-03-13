@@ -17,7 +17,6 @@
 # library(timeSeries)
 # library(forecast)
 options(digits=3)
-source('dataAggregation.r')
 
 pdf("visual_output/TBATS.pdf")
 
@@ -194,7 +193,7 @@ df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
 matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
         col=c("lightblue","lightblue"), ylim=c(700, 2000),
-        ylab="WFEC daily peak demand (in MWh)", xlab="Date")
+        ylab="Sum daily demand (in MWh)", xlab="Date")
 polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
         col = "lightblue", border=F)
 polygon(c(df$date, rev(df$date)), c(df$lo80, rev(df$hi80)),

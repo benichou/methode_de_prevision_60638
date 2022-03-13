@@ -819,7 +819,7 @@ print(dshwQ.eval3)
 # ValQ3......dshw  1367.913 29877.39 22700.14  0.0164799 4.947959
 # ValQ4......dshw -2753.406 31225.30 23371.66 -1.3716041 6.751846
 
-# METHODS Ranking
+# METHODS Ranking TAKEAWAYS
 
 # 1) Holt winters MAPE :5.840536 Expanding window + retraining
 # 2) Taylor's method MAPE : 6.144760  expanding window re-training 
