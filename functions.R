@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-=======
-#
 # Program: functions.R
 #
 # Purpose: script that contain all utility functions used 
@@ -14,7 +11,6 @@
 #         
 #          
 # ------------------------------------------------------
->>>>>>> dev
 
 #Satterplot de deux series chrono en fonction d'une start date
 # et d'une end date
