@@ -280,3 +280,19 @@ dev.off(dev.cur())
 # #                         Observed Total Percentage
 # Prediction.interval.80.      606   730   83.01370
 # Prediction.interval.95.      687   730   94.10959
+
+
+
+## Final Ranking of methods
+
+
+
+# DM test
+
+
+
+## CONCLUSION SMOOTHING METHODS VS ETS VS TBATS
+
+
+
+

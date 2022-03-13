@@ -901,3 +901,10 @@ print(rep)
 #                         Observed Total Percentage
 # Prediction.interval.80.      599   730   82.05479
 # Prediction.interval.95.      676   730   92.60274
+
+## Ranking of methods
+
+
+
+# DM test
+
