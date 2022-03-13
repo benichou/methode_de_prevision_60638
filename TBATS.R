@@ -6,7 +6,7 @@
 #
 # Written by: Team G, March 12 2022
 #
-# Updated: Team G NA
+# Updated: Team G, March 13 2022
 #          
 #         
 #          
@@ -110,6 +110,32 @@ rownames(Q1.eval) <- make.names(c("Q1","Q2","Q3",
                                  "Q4"))
 print(Q1.eval)
 
+## SUMMARY MOVING AND EXPANDING WINDOW NO RETRAINING
+
+# TBATS(0.772, {1,2}, -, {<7,3>, <365.25,2>})
+
+# Call: tbats(y = in.sample)
+
+# Parameters
+#   Lambda: 0.771715
+#   Alpha: 0.8272725
+#   Gamma-1 Values: 0.0001424344 0.0003011435
+#   Gamma-2 Values: 0.00009269187 -0.0002007421
+#   AR coefficients: 0.664784
+#   MA coefficients: -0.531989 -0.453573
+
+#                      ME     RMSE      MAE        MPE     MAPE
+# Training         727.4340 26338.20 18697.50 -0.2857807 5.171782
+# Validati.Expanding  634.1568 28476.57 20721.05 -0.3740767 5.360130
+# Validat..Moving -19334.2071 38606.46 31544.56 -6.2552918 8.884415
+
+# FOR EXPANDING A DEEPER ANALYSIS SINCE IT IS BETTER 
+#           ME     RMSE      MAE        MPE     MAPE
+# Q1   540.379 34497.48 24223.67 -0.6196787 6.408772
+# Q2  2042.827 24505.36 18821.70  0.1265523 4.984795
+# Q3  2011.426 27105.29 20899.22  0.1241521 4.587163
+# Q4 -2044.903 26926.93 19006.41 -1.1272429 5.476346
+
 
 # ==================================================================
 #   Re-train after 1 year
@@ -148,6 +174,29 @@ R.eval <- rbind(
 rownames(R.eval) <- make.names(c("Q1_2019","Q2_2019",
                                  "Q3_2019","Q4_2019"))
 print(R.eval)
+
+## SUMMARY RETRAIN
+# TBATS(0, {2,1}, -, {<7,3>, <365.25,5>})
+
+# Call: tbats(y = in.sample.r)
+
+# Parameters
+#   Lambda: 0.000003
+#   Alpha: 0.01295757
+#   Gamma-1 Values: -0.0001150675 -0.0009998646
+#   Gamma-2 Values: 0.0007998321 -0.0004689449
+#   AR coefficients: 0.528947 0.04136
+#   MA coefficients: 0.418922
+
+#                      ME     RMSE      MAE        MPE     MAPE
+# Training_set   1284.866 26475.28 18661.72 -0.1236762 5.083095
+# Validation_set 1511.150 29632.85 21722.36 -0.1926832 5.597554
+
+#                ME     RMSE      MAE        MPE     MAPE
+# Q1_2019  4899.271 33692.29 24327.08  0.6325301 6.413325
+# Q2_2019 -4627.117 26190.66 18697.74 -1.5752442 5.181551
+# Q3_2019  8356.568 28596.12 23411.26  1.5403419 4.927446
+# Q4_2019 -2577.188 29615.27 20477.10 -1.3654488 5.881107
 
 # ==================================================================
 # Overall evaluation (with/without annual re-training)
@@ -192,7 +241,7 @@ df <- data.frame(CI)
 df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
 matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
-        col=c("lightblue","lightblue"), ylim=c(700, 2000),
+        col=c("lightblue","lightblue"), ylim=c(200000, 650000),
         ylab="Sum daily demand (in MWh)", xlab="Date")
 polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
         col = "lightblue", border=F)
@@ -216,3 +265,18 @@ print(rep)
 
 
 dev.off(dev.cur())
+
+## SUMMARY
+
+# EXPANDING WINDOW
+#            Overall_MAPE
+# No_retrain     5.360130
+# Retrain        5.347029
+
+#                  Q1       Q2       Q3       Q4
+# No_retrain 6.408772 5.003329 4.570991 5.476346
+# Retrain    6.213673 4.966751 4.718078 5.504322
+
+# #                         Observed Total Percentage
+# Prediction.interval.80.      606   730   83.01370
+# Prediction.interval.95.      687   730   94.10959

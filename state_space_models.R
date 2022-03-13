@@ -1,6 +1,19 @@
-#********************************************************#
-#   State Space Model expanding window
-#********************************************************#
+# Program: state_space_models.R
+#
+# Purpose: Adjusts the state space models both manually and 
+## automatically with moving and expanding window and with or without
+## retraining to minimize the forecast error
+# 
+#
+# Written by: Team G, March 12 2022
+#
+# Updated: Team G, March 13 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
 
 # library(timeSeries)
 # library(forecast)
