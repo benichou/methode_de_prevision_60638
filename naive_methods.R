@@ -1,11 +1,11 @@
 #
 # Program: naive_methods.R
 #
-# Purpose: evaluation of the naive methods in R
+# Purpose: evaluation of the naive methods in R + pdf reporting
 #
 # Written by: Team G, January 30 2021
 #
-# Updated: NA
+# Updated: Feb 10th 2022
 #          
 #         
 #          
@@ -20,7 +20,7 @@ library(timeSeries)
 library(zoo)
 
 # launch the exploratory_vars to get the full dataset
-source("./exploratory_vars.R")
+# source("./exploratory_vars.R")
 
 
 # Naive forecast draft
@@ -187,7 +187,8 @@ lines(naive_s$residuals[1:730], type="o",lwd=1.5, col="red")
 lines(naive_mobile3$residuals[1:730], type="o",lwd=1.5, col="yellow")
 lines(naive_mobile7$residuals[1:730], type="o",lwd=1.5, col="green")
 abline(0,0)
-legend(x="bottomleft", legend=c("Naive no change","Naive seasonal 7j",
+legend(x="bottomleft", legend=c("Naive no change",
+"Naive seasonal 7j",
 "Moyenne mobile 3j", "Moyenne mobile 7j"), 
 col=c("blue", "red", "yellow", "green"), 
 lty=1, bg="light blue", cex=0.8)
@@ -257,7 +258,7 @@ legend(x="topright",
        col=c("blue", "red", "yellow", "green"), 
        lty=1, bg="light blue", cex=0.8)
 
-
+print("The entire pipeline ran successfully")
 dev.off(dev.cur())
 
 # plot(observedS, ylab="Monthly demand (TWh)")

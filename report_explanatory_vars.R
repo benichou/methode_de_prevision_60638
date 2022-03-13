@@ -1,7 +1,29 @@
+<<<<<<< HEAD
 source('exploratory_vars.R')
 source('functions.R')
 
 library('timeSeries')
+=======
+#
+# Program: report_explanatory_vars.R
+#
+# Purpose: reporting in a dedicated script all necessary charts 
+# covering the explanatory variables in the script called
+# exploratory_vars.R
+# Written by: Team G, January 30 2022
+#
+# Updated: Feb 10th 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
+
+ source('functions.R')
+
+# library('timeSeries')
+>>>>>>> dev
 
 #Timeseries objects needed
 #la temperature : med_t = (tmin + tmax)/2
@@ -25,7 +47,7 @@ wind_s2 <- timeSeries(data$WSF2 , data$DATE)
 wind_chill <- timeSeries(data$CP , data$DATE)
 tef <- timeSeries(data$tef , data$DATE)
 
-pdf("Explanatory_variables.pdf")
+pdf("./visual_output/Explanatory_variables.pdf")
 
 # plotting every year seperately
 plot_period(total_dem_ts , start = '2012-01-01' ,
@@ -40,8 +62,8 @@ years[11] <- '2021-12-30'
 
 
 plot_year(total_dem_ts , years_seq = years , 
-          'Daily Electricity Demand', main ="North ,North Central and
-          East Daily's Electricity demand for the year")
+     'Daily Electricity Demand', main ="North ,North Central and
+     East Daily's Electricity demand for the year")
 
 plot_year(north_ts , years_seq = years , 
           'Daily Electricity Demand' ,
@@ -365,11 +387,12 @@ mtext("Demande d'electricite en fonction du vent" , outer= TRUE,
 
 # special days plot
 par(mfrow = c(1,1))
-boxplot_group_time('SOMME' , 'type_of_day' , start = '2012-01-01' ,
+boxplot_group_time('SOMME' , 'type_of_day' , start = '2012-01-01',
 end = '2021-12-31',
 ylab ='Somme de la demande horaire',
 xlab = 'Type de la journee' ,
-main = 'Distribution de la demande en fonction du type de la journee',
+main = 'Distribution de la demande 
+en fonction du type de la journee',
 data = data)
 legend('topright' , legend = c('1 = Jour de semaine' ,
                           '2 = Weekend',
