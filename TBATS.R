@@ -305,7 +305,7 @@ dev.off(dev.cur())
 # are different
 
 print((dm.test(c(fc.exp[1:365],fcasts.r)-c(out.sample), 
-              c(ets.valnew)-c(out.sample)))
+              c(ets.valnew)-c(out.sample))))
 
 # data:  
 # c(fc.exp[1:365], fcasts.r) - c(out.sample)
@@ -320,16 +320,8 @@ print((dm.test(c(fc.exp[1:365],fcasts.r)-c(out.sample),
 
 ## CONCLUSION SMOOTHING METHODS VS ETS VS TBATS
 
-# The TBATS model with retraining can be selected
-# with forecast interval as follows:
-#                         Observed Total Percentage
-# Prediction.interval.80.      606   730       83.0
-# Prediction.interval.95.      687   730       94.1
-
-
-
-
-
-
-
-
+# # The TBATS model with retraining can be selected
+# # with forecast interval as follows:
+# #                         Observed Total Percentage
+# # Prediction.interval.80.      606   730       83.0
+# # Prediction.interval.95.      687   730       94.1
