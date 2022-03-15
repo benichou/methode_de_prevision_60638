@@ -41,6 +41,8 @@ model_1_mov_1 <- lm( SOMME ~ CDD + HDD + factor(weekday) ,
 par(mfrow=c(2,2))
 plot(model_1)
 
+summary(model_1)
+
 #Fitted vs observed
 par(mfrow=c(1,1))
 plot(x = seq(1 , length(model_1$model$SOMME)) ,
@@ -90,9 +92,28 @@ accuracy(pred_1_exp_1 , final_data[(end_train+1):end_valid,2])
 accuracy(pred_1_mov_1 , final_data[(end_train+1):end_valid,2])
 
 #--------------------------------------------------------------------
+#We should add holidays, before and after
+model_2 <- lm( SOMME ~ CDD + HDD + factor(weekday) + Holiday +
+                 before_holi + after_holiday, 
+               data = final_data , 
+               subset =  seq(beg_train , end_train))
+
+summary(model_2)
 
 
+#--------------------------------------------------------------------
+#Looking at the relation between cp and HDD
+plot(x = final_data$CP , y = final_data$HDD ,
+     xlab = 'Effet de refroidissement' ,
+     ylab = 'Heating degree days')
 
+#Looking at the relation between humidex and CDD
+plot(x = final_data$hum_final , y = final_data$CDD ,
+     xlab = 'Effet de refroidissement' ,
+     ylab = 'Cooling degree days')
+
+#Because they are very similar, how important is it to have both CDD,
+#HDD and all the other variables
 
 #Turning off dev
 dev.off(dev.cur())
