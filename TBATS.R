@@ -225,7 +225,6 @@ all.eval <- rbind(accuracy(fc.exp, out.sample),
                    accuracy(c(fc.exp[1:365], fcasts.r[1:365]),
                             out.sample))
 rownames(all.eval) <- make.names(c("No_retrain", "Retrain"))
-colnames(all.eval) <- make.names("Overall_MAPE")
 print(all.eval)
 
 ## By quarters 
