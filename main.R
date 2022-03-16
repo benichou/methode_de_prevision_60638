@@ -37,4 +37,5 @@ source("./state_space_models.R")
 # running TBATS
 print("RUNNING TBATS")
 source("./TBATS.R")
+# running regressions
 print("Double Check successful completion of part 2")
