@@ -150,6 +150,11 @@ in.sample.r  <- msts(window(SOMME.ts, begTrain, endTrain+365),
 out.sample.r <- msts(window(SOMME.ts, endTrain+366, endValid),
                      seasonal.periods=c(7,365.25), start=c(2019,1))
 
+CI.r <- matrix(nrow=n, ncol=8)
+colnames(CI.r) <- c("observed","lo80","hi80","in CI80",
+                  "lo95","hi95","in CI95","forecast")
+
+
 tfit.r <- tbats(in.sample.r)
 n <- length(out.sample)-365
 fcasts.r <- msts(numeric(n), seasonal.periods=c(7,365.25), 
@@ -161,6 +166,15 @@ for (i in 1:n) {
                    seasonal.periods=c(7, 365.25))
   f.r.tbat <- forecast(tmp.msts, model=tfit.r, h=1)
   fcasts.r[i] <- f.r.tbat$mean[1]
+
+  # confidence interval
+  in80.r <- (out.sample.r[i] >= f.r.tbat$lower[1] &&
+             out.sample.r[i] <= f.r.tbat$upper[1])
+  in95.r <- (out.sample.r[i] >= f.r.tbat$lower[2] &&
+             out.sample.r[i] <= f.r.tbat$upper[2])
+  CI.r[i,] <- c(out.sample.r[i], f.r.tbat$lower[1], 
+              f.r.tbat$upper[1], in80.r, f.r.tbat$lower[2], 
+              f.r.tbat$upper[2], in95.r, fcasts.r[i])
 }
 
 cat("Performance of TBATS if re-train after one year:","\n")
@@ -207,9 +221,9 @@ print(R.eval)
 # Overall evaluation (with/without annual re-training)
 # ==================================================================
 cat("Overall Performance of TBATS:","\n")
-all.eval <- rbind(accuracy(fc.exp, out.sample)[,5],
+all.eval <- rbind(accuracy(fc.exp, out.sample),
                    accuracy(c(fc.exp[1:365], fcasts.r[1:365]),
-                            out.sample)[,5])
+                            out.sample))
 rownames(all.eval) <- make.names(c("No_retrain", "Retrain"))
 colnames(all.eval) <- make.names("Overall_MAPE")
 print(all.eval)
@@ -241,7 +255,7 @@ rownames(qall.eval) <- make.names(c("No_retrain","Retrain"))
 colnames(qall.eval) <- make.names(c("Q1","Q2","Q3","Q4"))
 print(qall.eval)
 
-# Confidence interval
+# Confidence interval Analysis for Expanding
 df <- data.frame(CI)
 df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
@@ -257,7 +271,7 @@ legend("topright", legend=c("95% CI", "80% CI", "Observed"), lty=1,
        col=c("lightblue"," cyan", "purple"), lwd=c(5, 5, 1)
 )
 
-cat("Report on the prediction interval:")
+cat("Report on the prediction interval for Expanding:")
 # Calculate the % of the observed values fall into the CI
 rep <- rbind(cbind(sum(df$in.CI80), nrow(df), 
                    sum(df$in.CI80)/nrow(df)*100),
@@ -267,6 +281,36 @@ rownames(rep) <- make.names(c("Prediction interval 80%",
                               "Prediction interval 95%"))
 colnames(rep) <- make.names(c("Observed","Total","Percentage"))
 print(rep)
+
+# Confidence interval Analysis for Expanding with Retrain
+df.r <- data.frame(rbind(CI[1:365,], CI.r))
+df.r$date <-as.Date(data$DATE[(endTrain+1):endValid])
+
+## replace the second year of CI by the full single year of CI.r
+
+matplot(df.r$date, cbind(df.r$lo95,df.r$hi95), type="l", lty=c(1,1),
+        col=c("lightblue","lightblue"), ylim=c(200000, 650000),
+        ylab="Sum daily demand (in MWh)", xlab="Date")
+polygon(c(df.r$date, rev(df.r$date)), c(df.r$lo95, rev(df.r$hi95)),
+        col = "lightblue", border=F)
+polygon(c(df.r$date, rev(df.r$date)), c(df.r$lo80, rev(df.r$hi80)),
+        col = "cyan", border=F)
+lines(df.r$date, df.r$observed,col="purple")
+legend("topright", legend=c("95% CI", "80% CI", "Observed"), lty=1, 
+       col=c("lightblue"," cyan", "purple"), lwd=c(5, 5, 1)
+)
+
+cat("Report on the prediction interval for Expanding 
+    with retraining:")
+# Calculate the % of the observed values fall into the CI
+rep.r <- rbind(cbind(sum(df.r$in.CI80), nrow(df.r), 
+                   sum(df.r$in.CI80)/nrow(df.r)*100),
+             cbind(sum(df.r$in.CI95), nrow(df.r), 
+                   sum(df.r$in.CI95)/nrow(df.r)*100))
+rownames(rep.r) <- make.names(c("Prediction interval 80%",
+                              "Prediction interval 95%"))
+colnames(rep.r) <- make.names(c("Observed","Total","Percentage"))
+print(rep.r)
 
 
 dev.off(dev.cur())
@@ -322,6 +366,6 @@ print((dm.test(c(fc.exp[1:365],fcasts.r)-c(out.sample),
 
 # # The TBATS model with retraining can be selected
 # # with forecast interval as follows:
-# #                         Observed Total Percentage
-# # Prediction.interval.80.      606   730       83.0
-# # Prediction.interval.95.      687   730       94.1
+#                         Observed Total Percentage
+# Prediction.interval.80.      605   730       82.9
+# Prediction.interval.95.      686   730       94.0
