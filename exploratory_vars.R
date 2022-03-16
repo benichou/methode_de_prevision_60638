@@ -1,6 +1,26 @@
+#
+# Program: exploratory_vars.R
+#
+# Purpose: Exploratory analysis of the explanatory variables
+# searching for variables that have the most linear relationship
+# with target 
+# 
+# 
+# Written by: Team G, January 30 2022
+#
+# Updated: Feb 10th 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
+
+
+
 source('./data_transformation.R')
 
-library('timeSeries')
+# library('timeSeries')
 
 
 #function to find the best tref
@@ -19,7 +39,8 @@ find_tref <- function(demand , temp , tref , type) {
   }
   
   plot(dd , demand , main = paste( paste('Demand against', 'HDD'),
-                                   paste('tref =', as.character(tref))),
+                                   paste('tref =',
+                                    as.character(tref))),
        xlab = type ,
        ylab = "Daily electicity demand" ,
        pch = 19,
@@ -161,7 +182,7 @@ for (i in seq(2 , length(med_t))) {
 data['tef'] <- tef
 
 #holidays
-holidays <- read.csv('holidays.csv' )
+holidays <- read.csv('./data/holidays.csv' )
 holidays_character <- c()
 
 for (i in seq(1 , 180)) {
@@ -203,10 +224,34 @@ for (i in seq(1 , length(data$DATE))) {
 
 data['type_of_day'] <- type_of_day
 
+
+#Season variable for ploting
+winter <- c('January' , 'February' , 'March')
+spring <- c('April' , 'May' , 'June')
+summer <- c('July' , 'August' , 'September')
+fall <- c('October', 'November' , 'December')
+
+
+season <- c()
+for (i in seq(1 , length(data$DATE))) {
+  if (data[i , 'month'] %in% winter) {
+    season[i] = 'winter'
+  } else if (data[i ,'month'] %in% spring) {
+    season[i] = 'spring'
+  } else if (data[i , 'month'] %in% summer) {
+    season[i] = 'summer'
+  } else {
+    season[i] = 'fall'
+  }
+}
+
+data['season'] <- season
+
 #saving master data_frame
 save(data , file='master_df.Rdata')
 
 #clearing useless variables 
-rm(CDD , cp , HDD , holidays_character , i , is_holiday , j , 
-   med_t_range , tavg_range , tef , tmin_range ,tmax_range , tobs_range ,
+rm(CDD , cp , HDD , holidays_character , i , is_holiday , 
+   med_t_range , tavg_range , tef , tmin_range ,tmax_range , 
+   tobs_range ,
    weekend , tavg , tmax , tmin , tobs , med_t)
