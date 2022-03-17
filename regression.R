@@ -711,88 +711,91 @@ lower_1.4 <- pred_1.4[2:730] - 1.95 * sqrt(model_1.4$sigma2)
 out_1.4 <- (yt_valid[2:730] < lower_1.4 |yt_valid[2:730]> upper_1.4 )
 print(1 - mean(out_1.4))
 #-------------------------------------------------------------------
-#The arima models seem to all over estimate the demand and byt 
-#quit an important marging 
-#out startegy to correct this is to make a model that retrains
-#at each iteration for the whole validation period
-#it will only take a portion of the training
-
-#new split
-nt = 1096
-end_t = 2191
-
-
-pred_p <- c()
-pred_upr <- c()
-pred_lwr <- c()
-
-for (i in 1:nrow(yt_valid)){
-  #fit a model using ARIMA(1,1,2)
-  s = nt + i
-  e = end_t + i
-  model_t <- arima( yt[s:e], xreg = cbind(
-    cddt[s:e] , hddt[s:e],
-    cpt[s:e] , befholyt[s:e] , aftholyt[s:e] , holyt[s:e] , 
-    q1t[s:e] , q2t[s:e] , q3t[s:e],
-    DMont[s:e] , DTuet[s:e] , DWedt[s:e] , DThut[s:e] , DSatt[s:e],
-    DSunt[s:e]
-  ), order = c(1,1,2))
-  
-  j = e + 1
-  pred <- predict(model_t , n.ahead = 1 , newxreg = cbind(
-    cddt[j] , hddt[j] ,cpt[j] , befholyt[j] , aftholyt[j] , holyt[j], 
-    q1t[j] , q2t[j] , q3t[j],
-    DMont[j] , DTuet[j] , DWedt[j] , DThut[j] , DSatt[j],
-    DSunt[j]
-  ))
-  
-  pred_p[i] <- pred[[1]][1]
-  pred_upr[i] <- pred_p[i] + 1.96 * sqrt(model_t$sigma2)
-  pred_lwr[i] <- pred_p[i] - 1.96 * sqrt(model_t$sigma2)
-  print(i)
-}
-
-#analyse des residus
-accuracy(model_t)
-
-#acf
-acf(residuals(model_t) , 
-    main ='Regression with ARIMA(5,1,0) errors')
-
-#Variance constante et esperance de 0 ?
-plot(x = fitted(model_t) , y = model_t$residuals ,
-     xlab = 'Fitted values' , ylab = 'Residuals' ,
-     main = 'Diagnostic plot (model t)')
-
-
-plot(x = seq(1,length(model_t$residuals)),
-     y = (model_t$residuals 
-          - mean(model_t$residuals))/
-       sd(model_t$residuals),
-     xlab = 'Période' ,
-     ylab = 'Résidu normalisé',
-     main = 'Résidu normalisé en fonction du temps du model_t')
-
-#Normal ?
-qqnorm(model_t$residuals , main = 'Normal Q-Q')
-qqline(model_t$residuals )
-
-#residuals by qaurter
-boxplot( (model_t$residuals - 
-            mean(model_t$residuals)) / 
-           sd(model_t$residuals)  
-         ~ final_data$quarter[s: e] ,
-         main = 'Boxplot des résidus normalisé du modèle t par semestre' ,
-         xlab = 'Semestre' ,
-         ylab = 'Résidus par semestre')
-
-
-#performance on the validation set using moving windown
-accuracy(pred_p , yt_valid)
-
-#couvreture
-out_t <- (yt_valid < pred_lwr | yt_valid> pred_upr )
-print(1 - mean(out_t))
+# #The arima models seem to all over estimate the demand and byt 
+# #quit an important marging 
+# #out startegy to correct this is to make a model that retrains
+# #at each iteration for the whole validation period
+# #it will only take a portion of the training
+# 
+# #new split
+# nt = 1096
+# end_t = 2191
+# 
+# 
+# pred_p <- c()
+# pred_upr <- c()
+# pred_lwr <- c()
+# 
+# for (i in 1:nrow(yt_valid)){
+#   #fit a model using ARIMA(1,1,2)
+#   s = nt + i
+#   e = end_t + i
+#   model_t <- arima( yt[s:e], xreg = cbind(
+#     cddt[s:e] , hddt[s:e],
+#     cpt[s:e] , befholyt[s:e] , aftholyt[s:e] , holyt[s:e] , 
+#     q1t[s:e] , q2t[s:e] , q3t[s:e],
+#     DMont[s:e] , DTuet[s:e] , DWedt[s:e] , DThut[s:e] , DSatt[s:e],
+#     DSunt[s:e]
+#   ), order = c(1,1,2))
+#   
+#   j = e + 1
+#   pred <- predict(model_t , n.ahead = 1 , newxreg = cbind(
+#     cddt[j] , hddt[j] ,cpt[j] , befholyt[j] , aftholyt[j] , holyt[j], 
+#     q1t[j] , q2t[j] , q3t[j],
+#     DMont[j] , DTuet[j] , DWedt[j] , DThut[j] , DSatt[j],
+#     DSunt[j]
+#   ))
+#   
+#   pred_p[i] <- pred[[1]][1]
+#   pred_upr[i] <- pred_p[i] + 1.96 * sqrt(model_t$sigma2)
+#   pred_lwr[i] <- pred_p[i] - 1.96 * sqrt(model_t$sigma2)
+#   print(i)
+# }
+# 
+# #analyse des residus
+# accuracy(model_t)
+# 
+# #acf
+# acf(residuals(model_t) , 
+#     main ='Regression with ARIMA(5,1,0) errors')
+# 
+# #Variance constante et esperance de 0 ?
+# plot(x = fitted(model_t) , y = model_t$residuals ,
+#      xlab = 'Fitted values' , ylab = 'Residuals' ,
+#      main = 'Diagnostic plot (model t)')
+# 
+# 
+# plot(x = seq(1,length(model_t$residuals)),
+#      y = (model_t$residuals 
+#           - mean(model_t$residuals))/
+#        sd(model_t$residuals),
+#      xlab = 'Période' ,
+#      ylab = 'Résidu normalisé',
+#      main = 'Résidu normalisé en fonction du temps du model_t')
+# 
+# #Normal ?
+# qqnorm(model_t$residuals , main = 'Normal Q-Q')
+# qqline(model_t$residuals )
+# 
+# #residuals by qaurter
+# boxplot( (model_t$residuals - 
+#             mean(model_t$residuals)) / 
+#            sd(model_t$residuals)  
+#          ~ final_data$quarter[s: e] ,
+#          main = 'Boxplot des résidus normalisé du modèle t par semestre' ,
+#          xlab = 'Semestre' ,
+#          ylab = 'Résidus par semestre')
+# 
+# plot(yt ,
+#      ylab = 'Somme de la Demande journalière (MW))',
+#      main = 'Évolution de la demande journalière à travers le temps')
+# 
+# #performance on the validation set using moving windown
+# accuracy(pred_p , yt_valid)
+# 
+# #couvreture
+# out_t <- (yt_valid < pred_lwr | yt_valid> pred_upr )
+# print(1 - mean(out_t))
 
 
 
