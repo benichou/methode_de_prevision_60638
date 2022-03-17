@@ -176,6 +176,9 @@ for (i in 1:n) {
               f.r.tbat$upper[1], in80.r, f.r.tbat$lower[2], 
               f.r.tbat$upper[2], in95.r, fcasts.r[i])
 }
+# print("11")
+# print(CI.r)
+CI.r = CI.r[1:365,] # quick fix
 
 cat("Performance of TBATS if re-train after one year:","\n")
 r.tbat.eval <- rbind(accuracy(tfit.r$fitted, in.sample.r)[,1:5],
@@ -282,6 +285,8 @@ colnames(rep) <- make.names(c("Observed","Total","Percentage"))
 print(rep)
 
 # Confidence interval Analysis for Expanding with Retrain
+# print("12")
+# print(CI.r)
 df.r <- data.frame(rbind(CI[1:365,], CI.r))
 df.r$date <-as.Date(data$DATE[(endTrain+1):endValid])
 

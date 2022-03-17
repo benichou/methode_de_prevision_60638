@@ -1,5 +1,18 @@
-#etape 1, corriger les problemes de la phase 1.
-
+#
+#
+# Program: correction_phase.R 
+#
+# Purpose: correct issues in part 1
+#
+# Written by: Team G, March 10 2022
+#
+# Updated: March 17th 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
 
 # Importer le master df b??ti dans la premi??re phase
 load('master_df.Rdata')
@@ -249,7 +262,7 @@ boxplot( data$SOMME
 
 #Express the time with t starting at 1 to length of data to
 #make coding easier
-final_data['t'] <- seq(1 , length(final_data$DATE) , 1)
+# final_data['t'] <- seq(1 , length(final_data$DATE) , 1)
 
 #errors by quarter
 quarter <- c()
