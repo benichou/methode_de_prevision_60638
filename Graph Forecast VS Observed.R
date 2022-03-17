@@ -1,5 +1,7 @@
 #Visualisation des forecast VS observed pour TBATS et Auto.arima
 
+load("plot_final.Rdata")
+
 f.r.tbats_valid = msts(tail(f.r.tbat$fitted, length(out.sample)),
                        seasonal.periods=c(7,365.25), start=c(2018,1))
 f.auto.arima_valid = msts(joe_df$fit, seasonal.periods=c(7,365.25),
