@@ -80,7 +80,8 @@ for (temp in temp_range) {
   cp_test <- c()
   for (i in seq(1 , length(data$DATE))) {
     if (data$med_t[i] < temp){
-      cp_test[i] = round(((data$AWND[i]**(1/2)) * (temp - data$med_t[i])),
+      cp_test[i] = round(((data$AWND[i]**(1/2)) * 
+      (temp - data$med_t[i])),
                     digits = 4)
     } else {
       cp_test[i] = 0
@@ -100,7 +101,8 @@ for (temp in temp_range) {
 cp_final <- c()
 for (i in seq(1 , length(data$DATE))) {
   if (data$med_t[i] < 16.0) {
-    cp_final[i] = round(((data$AWND[i]**(1/2)) * (16.00 - data$med_t[i])),
+    cp_final[i] = round(((data$AWND[i]**(1/2)) * 
+    (16.00 - data$med_t[i])),
                         digits = 4)
   } else {
     cp_final[i] = 0
@@ -181,7 +183,7 @@ for (temp in temp_range) {
 humidex_final <- c()
 for (i in seq(1 , length(data$DATE))) {
   if (data$med_t[i] > 22){
-    humidex_final[i] = round(( (data$RELATIVE_HUM_PERCENT[i]**(1/2)) * 
+    humidex_final[i] = round(((data$RELATIVE_HUM_PERCENT[i]**(1/2)) * 
                            (data$med_t[i] - 22) ),
                         digits = 4)
   } else {
@@ -276,7 +278,8 @@ data['quarter'] <- quarter
 
 #Enregistrer le df avec les variables utiles seulement
 colonnes_utiles <- c("DATE" , "SOMME" , "CDD" , "HDD" , "weekday" ,
-                     "CP" , "Holiday" , "humidex_final" , "before_holi",
+                     "CP" , "Holiday" , "humidex_final" , 
+                     "before_holi",
                      "after_holiday" , "noisy_humidex" , "noisy_cp",
                      "noisy_HDD" , "noisy_CDD" , "quarter")
 

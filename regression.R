@@ -1,6 +1,6 @@
-#Exploration des modèles de regression linéaire
+#Exploration des modeles de regression lineaire
 
-#Chargement des données 
+#Chargement des donnees 
 load('regression_df.Rdata')
 load('master_df.Rdata')
 
@@ -31,18 +31,18 @@ model_1 <- lm( SOMME ~ noisy_CDD + noisy_HDD + factor(weekday) ,
                data = final_data , 
                subset =  seq(beg_train , end_train))
 
-model_1_exp_1 <- lm( SOMME ~ noisy_CDD + noisy_HDD + factor(weekday) , 
+model_1_exp_1 <- lm( SOMME ~ noisy_CDD + noisy_HDD + factor(weekday), 
                       data = final_data , 
                       subset =  seq(beg_train , end_train+rp))
 
-model_1_mov_1 <- lm( SOMME ~ noisy_CDD + noisy_HDD + factor(weekday) , 
+model_1_mov_1 <- lm( SOMME ~ noisy_CDD + noisy_HDD + factor(weekday), 
                      data = final_data , 
                      subset =  seq(beg_train +rp,end_train+rp))
 
 #analysing the residuals of the model on the training data
 par(mfrow=c(2,2))
 plot(model_1)
-mtext("Analyse des résidus du modèle 1" ,
+mtext("Analyse des residus du modele 1" ,
       cex=0.98 , outer=TRUE , line = -1.4)
 
 summary(model_1)
@@ -54,14 +54,14 @@ plot(x = seq(1 , length(model_1$model$SOMME)) ,
      type = 'l',
      lty = 3 ,
      xlab = 'Observation' ,
-     ylab = 'Résidus')
-mtext("Résidus du modèle 1 sur les données d'entrainement" ,
+     ylab = 'Residus')
+mtext("Residus du modele 1 sur les donnees d'entrainement" ,
       cex=1.03 , outer=TRUE , line = -1.4)
 
 #ACF of residuals
 acf(residuals(model_1) ,
     main = '')
-mtext("L'autocorélation du modèle 1 sur les données d'entrainement" ,
+mtext("L'autocorelation du modele 1 sur les donnees d'entrainement",
       cex=1.03 , outer=TRUE , line = -1.4)
 
 #looking at the performance measures on prediction made 
@@ -69,13 +69,13 @@ mtext("L'autocorélation du modèle 1 sur les données d'entrainement" ,
 
 #A : no retraining on all the validation
 pred_1_no <- predict(model_1 , 
-                    newdata = final_data[(end_train+1):end_valid,] ,
+                    newdata = final_data[(end_train+1):end_valid,],
                     interval = 'prediction',
                     level = c(0.95))
 
 #B : retraining with expending window
 pred_1_exp_1 <- predict(model_1_exp_1 , 
-                  newdata = final_data[(end_train+rp+1):end_valid,] ,
+                  newdata = final_data[(end_train+rp+1):end_valid,],
                   interval = 'prediction',
                   level = c(0.95))
 
@@ -137,9 +137,9 @@ print(mean(cv_mov_1))
 
 plot(final_data$SOMME[(end_train+1): end_valid] , type = 'n' ,
 ylim=range(pred_1_no[,2] , pred_1_no[,3]) ,
-xlab = 'Période t des données de validation',
-ylab = 'Demande en électricité',
-main = 'Couverture du modèle 1 avec fenêtre glissante : 95%')
+xlab = 'Periode t des donnees de validation',
+ylab = 'Demande en electricite',
+main = 'Couverture du modele 1 avec fenetre glissante : 95%')
 
 polygon( c(time(final_data$SOMME[(end_train+1): end_valid]), 
 rev(time(final_data$SOMME[(end_train+1): end_valid]))),
@@ -149,7 +149,8 @@ lines(final_data$SOMME[(end_train+1): end_valid] , lty = 1)
 
 lines(c(pred_1_no[,1]) , col = 'red', lty = 1 )
 
-out_p_1 <- (final_data$SOMME[(end_train+1): end_valid] < pred_1_no[,2]|
+out_p_1 <- (final_data$SOMME[(end_train+1): end_valid] 
+                            < pred_1_no[,2]|
 final_data$SOMME[(end_train+1): end_valid] > pred_1_no[,3] )
 
 points(time(final_data$SOMME[(end_train+1): end_valid])[out_p_1],
@@ -179,7 +180,7 @@ model_1.1_mov_1 <- lm( SOMME ~ noisy_CDD + noisy_HDD + noisy_cp +
 #analysing the residuals of the model on the training data
 par(mfrow=c(2,2))
 plot(model_1.1)
-mtext("Analyse des résidus du modèle 1.1" ,
+mtext("Analyse des residus du modele 1.1" ,
       cex=0.98 , outer=TRUE , line = -1.4)
 
 summary(model_1)
@@ -191,14 +192,15 @@ plot(x = seq(1 , length(model_1.1$model$SOMME)) ,
      type = 'l',
      lty = 3 ,
      xlab = 'Observation' ,
-     ylab = 'Résidus')
-mtext("Résidus du modèle 1.1 sur les données d'entrainement" ,
+     ylab = 'Residus')
+mtext("Residus du modele 1.1 sur les donnees d'entrainement" ,
       cex=1.03 , outer=TRUE , line = -1.4)
 
 #ACF of residuals
 acf(residuals(model_1.1) ,
     main = '')
-mtext("L'autocorélation du modèle 1.1 sur les données d'entrainement" ,
+mtext("L'autocorelation du modele 1.1 
+       sur les donnees d'entrainement" ,
       cex=1.03 , outer=TRUE , line = -1.4)
 
 #looking at the performance measures on prediction made 
@@ -206,13 +208,14 @@ mtext("L'autocorélation du modèle 1.1 sur les données d'entrainement" ,
 
 #A : no retraining on all the validation
 pred_1.1_no <- predict(model_1.1 , 
-                     newdata = final_data[(end_train+1):end_valid,] ,
+                     newdata = final_data[(end_train+1):end_valid,],
                      interval = 'prediction',
                      level = c(0.95))
 
 #B : retraining with expending window
 pred_1.1_exp_1 <- predict(model_1.1_exp_1 , 
-                        newdata = final_data[(end_train+rp+1):end_valid,] ,
+                        newdata = final_data[
+                          (end_train+rp+1):end_valid,] ,
                         interval = 'prediction',
                         level = c(0.95))
 
@@ -220,7 +223,8 @@ pred_1.1_exp_1 <- rbind(pred_1.1_no[1:rp,] , pred_1.1_exp_1)
 
 #C : moving window
 pred_1.1_mov_1 <- predict(model_1.1_mov_1 ,
-                        newdata = final_data[(end_train+rp+1):end_valid,],
+                        newdata = final_data[
+                          (end_train+rp+1):end_valid,],
                         interval = 'prediction',
                         level = c(0.95))
 
@@ -274,9 +278,9 @@ print(mean(cv_mov_1.1))
 
 plot(final_data$SOMME[(end_train+1): end_valid] , type = 'n' ,
      ylim=range(pred_1_no[,2] , pred_1_no[,3]) ,
-     xlab = 'Période t des données de validation',
-     ylab = 'Demande en électricité',
-     main = 'Couverture du modèle 1 avec fenêtre glissante : 95%')
+     xlab = 'Periode t des donnees de validation',
+     ylab = 'Demande en electricite',
+     main = 'Couverture du modele 1 avec fenetre glissante : 95%')
 
 polygon( c(time(final_data$SOMME[(end_train+1): end_valid]), 
            rev(time(final_data$SOMME[(end_train+1): end_valid]))),
@@ -292,23 +296,23 @@ out_p_1 <- (final_data$SOMME[(end_train+1):end_valid]<pred_1_no[,2] |
 points(time(final_data$SOMME[(end_train+1): end_valid])[out_p_1],
        final_data$SOMME[(end_train+1): end_valid][out_p_1] , pch = 19)
 
-#La couvertue est supposée être de 95%. 
-#Visiblement, le fait que l'erreur est autocorrélée cause 
-#un problème même avec des variables explicatives sans bruits
-#Ajouter du bruit ne ferait qu'empirer les résultats.
-#On élimine donc ces modèles et on passe directement au erreur arma
+#La couvertue est supposee etre de 95%. 
+#Visiblement, le fait que l'erreur est autocorrelee cause 
+#un probleme meme avec des variables explicatives sans bruits
+#Ajouter du bruit ne ferait qu'empirer les resultats.
+#On elimine donc ces modeles et on passe directement au erreur arma
 
 dev.off(dev.cur())
 #-----------------------------------------------------------------
-#Le modèle 1.2 portera sur les mêmes variables explicatives
-#que le modèle 1.1, toutefois, les erreurs seront, cette fois 
-#autocorrélées dans le but d'améliorer la couverture
+#Le modele 1.2 portera sur les memes variables explicatives
+#que le modele 1.1, toutefois, les erreurs seront, cette fois 
+#autocorrelees dans le but d'ameliorer la couverture
 
 #ce sera un arma, pas de integrated yt 
 #on va tenter d l'ordre (1,0,0)
 #(2,0,0) jusqu'a max (3,0,0)
 
-#Les variables doivent être exprimées en time series on va toutes les
+#Les variables doivent etre exprimees en time series on va toutes les
 #transformer ici pour un usage future
 
 #1 - demande
@@ -350,8 +354,8 @@ holyt <- timeSeries(final_data$Holiday, final_data$DATE)
 holy_train <- wind_t(final_data$Holiday , set= 't')
 holy_valid <- wind_t(final_data$Holiday , set= 'v')
 
-#Dummy pour la journée de la semaine vendredi est dans 
-#la référence
+#Dummy pour la journee de la semaine vendredi est dans 
+#la reference
 DMon <- ifelse(factor(final_data$weekday)=="Monday", 1, 0)
 DTue <- ifelse(factor(final_data$weekday)=="Tuesday", 1, 0)
 DWed <- ifelse(factor(final_data$weekday)=="Wednesday", 1, 0)
@@ -396,7 +400,7 @@ wind_t <- function(ts , set) {
 
 
 
-#Dummy pour le mois, décembre est en référence
+#Dummy pour le mois, decembre est en reference
 Djan <- ifelse(factor(data$month)=="January", 1, 0)
 Djant_train <- wind_t(Djan , set ='t')
 Djant_valid <- wind_t(Djan , set ='v')
@@ -457,8 +461,8 @@ quartt <- timeSeries(final_data$quarter , final_data$DATE)
 quartt_train <- wind_t(quartt , set='t')
 quartt_valid <- wind_t(quartt , set='v')
 
-#modèle 1.2 arma(3,0,0) avec les mêmes variables que 
-#modèle 1.1
+#modele 1.2 arma(3,0,0) avec les memes variables que 
+#modele 1.1
 model_1.2 <- arima(yt_train, 
                    xreg = cbind(cddt_train , hddt_train , cpt_train,
                                 humt_train , befholy_train , 
@@ -487,21 +491,21 @@ par(mfrow=c(1,1))
 
 #Autoccorelation des residus ?
 acf(residuals(model_1.2) , 
-    main ='Régression avec erreurs ARMA(3,0,0)')
+    main ='Regression avec erreurs ARMA(3,0,0)')
 
 
 #Variance constante et esperance de 0 ?
 plot(x = fitted(model_1.2) , y = model_1.2$residuals ,
-     xlab = 'Valeurs ajustées' , ylab = 'Résidus' ,
+     xlab = 'Valeurs ajustees' , ylab = 'Residus' ,
      main = 'Diagnostic plot (model 2)')
 
 
 plot(x = seq(1,length(model_1.2$residuals)),
      y = (model_1.2$residuals 
           - mean(model_1.2$residuals))/sd(model_1.2$residuals),
-     xlab = 'Période' ,
-     ylab = 'Résidu normalisé',
-     main = 'Résidu normalisé en fonction du temps du model_1.2')
+     xlab = 'Periode' ,
+     ylab = 'Residu normalise',
+     main = 'Residu normalise en fonction du temps du model_1.2')
 
 #Normal ?
 qqnorm(model_1.2$residuals , main = 'Normal Q-Q')
@@ -519,7 +523,7 @@ boxplot( (model_1.2$residuals -
 #Performance in the training
 accuracy(model_1.2)
 
-#Performance sur la validation sans réentrainement
+#Performance sur la validation sans reentrainement
 pred_1.2 <- c()
 
 for (i in 1:nrow(yt_valid)){
@@ -579,9 +583,9 @@ plot(x = fitted(model_1.3) , y = model_1.3$residuals ,
 plot(x = seq(1,length(model_1.3$residuals)),
      y = (model_1.3$residuals 
           - mean(model_1.3$residuals))/sd(model_1.3$residuals),
-     xlab = 'Période' ,
-     ylab = 'Résidu normalisé',
-     main = 'Résidu normalisé en fonction du temps du model_1.2')
+     xlab = 'Periode' ,
+     ylab = 'Residu normalise',
+     main = 'Residu normalise en fonction du temps du model_1.2')
 
 #Normal ?
 qqnorm(model_1.3$residuals , main = 'Normal Q-Q')
@@ -591,14 +595,15 @@ qqline(model_1.3$residuals )
 boxplot( (model_1.3$residuals - 
             mean(model_1.3$residuals)) / sd(model_1.3$residuals)  
          ~ final_data$quarter[beg_train: end_train] ,
-         main = 'Boxplot des résidus normalisé du modèle 1.3 par semestre' ,
+         main = 'Boxplot des residus normalise du modele 
+         1.3 par semestre' ,
          xlab = 'Semestre' ,
-         ylab = 'Résidus par semestre')
+         ylab = 'Residus par semestre')
 
 #Performance in the training
 accuracy(model_1.3)
 
-#Performance sur la validation sans réentrainement
+#Performance sur la validation sans reentrainement
 pred_1.3 <- c()
 
 for (i in 1:nrow(yt_valid)){
@@ -625,10 +630,10 @@ print(1 - mean(out_1.3))
 
 #-----------------------------------------------------------------
 #model 1.4
-#On va essayer d'introduire les mois et les lag dans ce modèles
-#On a vu que la distributions des erreurs par semestres n'était
-#tout à fait équivalente
-#L'humidité est enlevée, elle n'a pas d'effet fort
+#On va essayer d'introduire les mois et les lag dans ce modeles
+#On a vu que la distributions des erreurs par semestres n'etait
+#tout e fait equivalente
+#L'humidite est enlevee, elle n'a pas d'effet fort
 # day , month , cdd , hdd , cp ,
 
 model_1.4 <- auto.arima(yt_train, 
@@ -665,9 +670,9 @@ plot(x = seq(1,length(model_1.4$residuals[2:end_train])),
      y = (model_1.4$residuals[2:end_train] 
           - mean(model_1.4$residuals[2:end_train]))/
        sd(model_1.4$residuals[2:end_train]),
-     xlab = 'Période' ,
-     ylab = 'Résidu normalisé',
-     main = 'Résidu normalisé en fonction du temps du model_1.4')
+     xlab = 'Periode' ,
+     ylab = 'Residu normalise',
+     main = 'Residu normalise en fonction du temps du model_1.4')
 
 #Normal ?
 qqnorm(model_1.3$residuals[2:end_train] , main = 'Normal Q-Q')
@@ -678,25 +683,31 @@ boxplot( (model_1.4$residuals[2:end_train] -
             mean(model_1.4$residuals[2:end_train])) / 
            sd(model_1.4$residuals[2:end_train])  
          ~ final_data$quarter[2: end_train] ,
-         main = 'Boxplot des résidus normalisé du modèle 1.4 par semestre' ,
+         main = 'Boxplot des residus normalise 
+         du modele 1.4 par semestre' ,
          xlab = 'Semestre' ,
-         ylab = 'Résidus par semestre')
+         ylab = 'Residus par semestre')
 
 #Performance in the training
 accuracy(model_1.4)
 
-#Performance sur la validation sans réentrainement
+#Performance sur la validation sans reentrainement
 pred_1.4 <- c()
 
 for (i in 2:nrow(yt_valid)){
   pred <- predict(model_1.4 , n.ahead = 1 , newxreg = cbind(
     cddt_valid[i] , cddt_valid[i-1], hddt_valid[i] , 
-    hddt_valid[i-1], cpt_valid[i], befholy_valid[i] , aftholy_valid[i]
-    ,holy_valid[i] , DMont_valid[i] , DTuet_valid[i] , DWedt_valid[i] , 
+    hddt_valid[i-1], cpt_valid[i], befholy_valid[i] , 
+    aftholy_valid[i]
+    ,holy_valid[i] , DMont_valid[i] , DTuet_valid[i] , 
+    DWedt_valid[i] , 
     DThut_valid[i]
-    , DSatt_valid[i] , DSunt_valid[i] ,Djant_valid[i] , Dfebt_valid[i],
-    Dmart_valid[i] , Daprt_valid[i] , Dmayt_valid[i] , Djunt_valid[i],
-    Djult_valid[i] , Daugt_valid[i] , Dsept_valid[i] , Doctt_valid[i],
+    , DSatt_valid[i] , DSunt_valid[i] ,Djant_valid[i] , 
+    Dfebt_valid[i],
+    Dmart_valid[i] , Daprt_valid[i] , Dmayt_valid[i] ,
+     Djunt_valid[i],
+    Djult_valid[i] , Daugt_valid[i] , Dsept_valid[i] , 
+    Doctt_valid[i],
     Dnovt_train[i] 
   ))
   pred_1.4[i] = pred[[1]][1]
@@ -769,9 +780,9 @@ print(1 - mean(out_1.4))
 #      y = (model_t$residuals 
 #           - mean(model_t$residuals))/
 #        sd(model_t$residuals),
-#      xlab = 'Période' ,
-#      ylab = 'Résidu normalisé',
-#      main = 'Résidu normalisé en fonction du temps du model_t')
+#      xlab = 'Pï¿½riode' ,
+#      ylab = 'Rï¿½sidu normalisï¿½',
+#      main = 'Rï¿½sidu normalisï¿½ en fonction du temps du model_t')
 # 
 # #Normal ?
 # qqnorm(model_t$residuals , main = 'Normal Q-Q')
@@ -782,13 +793,13 @@ print(1 - mean(out_1.4))
 #             mean(model_t$residuals)) / 
 #            sd(model_t$residuals)  
 #          ~ final_data$quarter[s: e] ,
-#          main = 'Boxplot des résidus normalisé du modèle t par semestre' ,
+#          main = 'Boxplot des rï¿½sidus normalisï¿½ du modï¿½le t par semestre' ,
 #          xlab = 'Semestre' ,
-#          ylab = 'Résidus par semestre')
+#          ylab = 'Rï¿½sidus par semestre')
 # 
 # plot(yt ,
-#      ylab = 'Somme de la Demande journalière (MW))',
-#      main = 'Évolution de la demande journalière à travers le temps')
+#      ylab = 'Somme de la Demande journaliï¿½re (MW))',
+#      main = 'ï¿½volution de la demande journaliï¿½re ï¿½ travers le temps')
 # 
 # #performance on the validation set using moving windown
 # accuracy(pred_p , yt_valid)
@@ -1217,7 +1228,7 @@ polygon( c(time(final_data$SOMME[(end_train+1): end_valid]),
 lines(final_data$SOMME[(end_train+1): end_valid] , lty = 1)
 lines(c(pred_3_no[,1]) , col = 'red', lty = 1 )
 out <- (final_data$SOMME[(end_train+1): end_valid] < pred_3_no[,2] |
-          final_data$SOMME[(end_train+1): end_valid] > pred_3_no[,3] )
+          final_data$SOMME[(end_train+1): end_valid] > pred_3_no[,3])
 points(time(final_data$SOMME[(end_train+1): end_valid])[out],
        final_data$SOMME[(end_train+1): end_valid][out] , pch = 19)
 
@@ -1533,7 +1544,7 @@ polygon( c(time(final_data$SOMME[(end_train+1): end_valid]),
 lines(final_data$SOMME[(end_train+1): end_valid] , lty = 1)
 lines(c(pred_4_mov_1[,1]) , col = 'red', lty = 1 )
 out <- (final_data$SOMME[(end_train+1): end_valid] < pred_4_mov_1[,2]|
-          final_data$SOMME[(end_train+1): end_valid] > pred_4_mov_1[,3])
+        final_data$SOMME[(end_train+1): end_valid] > pred_4_mov_1[,3])
 points(time(final_data$SOMME[(end_train+1): end_valid])[out],
        final_data$SOMME[(end_train+1): end_valid][out] , pch = 19)
 
