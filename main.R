@@ -27,4 +27,15 @@ source("./report_explanatory_vars.R") # report into pdf the
 # exploratory_vars.R output
 source("./naive_methods.R") # naive method evaluation for
 # baseline performance + pdf reporting
-print("Double Check successful completion")
+print("Double Check successful completion of part 1")
+# running the smoothing methods
+print("RUNNING SMOOTHING METHODS")
+source("./smoothing_methods.R")
+# running the ets models
+print("RUNNING ETS")
+source("./state_space_models.R")
+# running TBATS
+print("RUNNING TBATS")
+source("./TBATS.R")
+# running regressions
+print("Double Check successful completion of part 2")
