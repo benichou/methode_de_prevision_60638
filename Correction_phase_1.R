@@ -1,4 +1,4 @@
-#??tape 1, corriger les probl??mes de la phase 1.
+#etape 1, corriger les problemes de la phase 1.
 
 
 # Importer le master df b??ti dans la premi??re phase
@@ -12,6 +12,8 @@ load('master_df.Rdata')
 #end_train <- 2192 #2017/12/31
 #end_valid <- 2922 #2019/12/31
 
+
+pdf("visual_output/correction_phase1.pdf")
 
 #https://www.nrel.gov/docs/fy12osti/56130.pdf
 set.seed(123)
@@ -31,7 +33,7 @@ for (i in seq(1 , length(data$AWND))) {
   if (i < 2192) {
     noise_temp[i] = 0
   } else {
-    noise_temp[i] = rnorm(1 , mean = 0 , sd = 3)
+    noise_temp[i] = rnorm(1 , mean = 0 , sd = 1.5)
   }
 }
 
@@ -43,7 +45,7 @@ for (i in seq(1 , length(data$AWND))) {
   if (i < 2192) {
     noise_hum[i] = 0
   } else {
-    noise_hum[i] = rnorm(1 , mean = 0 , sd = 5)
+    noise_hum[i] = rnorm(1 , mean = 0 , sd = 2)
   }
 }
 
@@ -84,9 +86,10 @@ for (temp in temp_range) {
       cp_test[i] = 0
     }
   }
-  plot( x = cp_test , y = data$SOMME , main = temp , 
-        xlab = 'Refroidissement' , 
-        ylab = 'Demande' ,
+  plot( x = cp_test , y = data$SOMME , 
+        main = paste('Tref: ' ,temp) , 
+        xlab = 'Effet de refroidissement' , 
+        ylab = "Somme de la demande d'??lectricit??" ,
         frame = FALSE)
 }
 
@@ -103,6 +106,14 @@ for (i in seq(1 , length(data$DATE))) {
     cp_final[i] = 0
   }
 }
+
+#Plot final cp against temps
+plot(x = cp_final , y = data$SOMME ,
+main = 
+paste("La demande contre l'effet de refroissiement Tref: ",16), 
+     xlab = 'Effet de refroidissement' , 
+     ylab = "Somme de la demande d'??lectricit??" ,
+     frame = FALSE)
 
 data['CP'] <- cp_final 
 
@@ -178,6 +189,14 @@ for (i in seq(1 , length(data$DATE))) {
   }
 }
 
+#Plot final Humidit??
+plot(x = humidex_final , y = data$SOMME ,
+main = 
+paste("La demande contre l'effet de refroissiement Tref: ",22), 
+     xlab = 'Humidit?? transform??e' , 
+     ylab = "Somme de la demande d'??lectricit??" ,
+     frame = FALSE)
+
 data['humidex_final'] <- humidex_final
 
 
@@ -210,6 +229,20 @@ after_holiday[2] = 1
 
 data['before_holi'] <- before_holiday
 data['after_holiday'] <- after_holiday
+
+#Before and after holiday
+boxplot( data$SOMME 
+         ~ data$before_holi ,
+         main = 'Effet des journ??es avant un cong??' ,
+         xlab = 'Avant une journ??e f??ri??e' ,
+         ylab = "Demande d'??lectricit??")
+
+#Before and after holiday
+boxplot( data$SOMME 
+         ~ data$after_holiday ,
+         main = 'Effet des journ??es apr??s un cong??' ,
+         xlab = 'Apr??s une Journ??e f??ri??e' ,
+         ylab = "Demande d'??lectricit??")
 
 
 #Express the time with t starting at 1 to length of data to
@@ -251,3 +284,4 @@ colonnes_utiles <- c("DATE" , "SOMME" , "CDD" , "HDD" , "weekday" ,
 final_data <- data[colonnes_utiles]
 
 save(final_data , file='regression_df.Rdata')
+dev.off(dev.cur())
