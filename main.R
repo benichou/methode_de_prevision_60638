@@ -6,7 +6,7 @@
 #
 # Written by: Team G, January 30 2022
 #
-# Updated: Feb 10th 2022
+# Updated: March 17th 2022
 #          
 #         
 #          
@@ -37,5 +37,6 @@ source("./state_space_models.R")
 # running TBATS
 print("RUNNING TBATS")
 source("./TBATS.R")
-# running regressions
+# running corrections
+source("./")
 print("Double Check successful completion of part 2")

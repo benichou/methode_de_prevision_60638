@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-source('exploratory_vars.R')
-source('functions.R')
-
-library('timeSeries')
-=======
 #
 # Program: report_explanatory_vars.R
 #
@@ -23,7 +17,6 @@ library('timeSeries')
 source('functions.R')
 
 # library('timeSeries')
->>>>>>> dev
 
 #Timeseries objects needed
 #la temperature : med_t = (tmin + tmax)/2
