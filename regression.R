@@ -1,4 +1,19 @@
-#Exploration des modeles de regression lineaire
+#
+#
+#
+# Program: regression.R 
+#
+# Purpose: Exploring the linear models
+#
+# Written by: Team G, March 10 2022
+#
+# Updated: March 17th 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
 
 #Chargement des donnees 
 load('regression_df.Rdata')
@@ -9,6 +24,16 @@ library(timeSeries)
 library(forecast)
 library(car)
 
+wind_t <- function(ts , set) {
+  
+  ts <- timeSeries(ts , final_data$DATE)
+  
+  if (set == 't') {
+    return(window(ts , start = '2012-01-01' , end ='2017-12-31'))
+  } else {
+    return(window(ts , start = '2018-01-01' , end = '2019-12-31'))
+  }
+}
 
 pdf("visual_output/regression.pdf")
 
@@ -396,6 +421,12 @@ DSunt <- timeSeries(DSun , final_data$DATE)
 DSunt_train<-window(DSunt , start = '2012-01-01' , end = '2017-12-31')
 DSunt_valid<-window(DSunt , start = '2018-01-01' , end = '2019-12-31')
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> dev_new
 
 #Dummy pour le mois, decembre est en reference
 Djan <- ifelse(factor(data$month)=="January", 1, 0)
@@ -556,7 +587,7 @@ model_1.3 <- auto.arima(yt_train,
                                 aftholy_train , holy_train ,
                                 DMont_train , DTuet_train , 
                                 DWedt_train , DThut_train ,
-                                DSatt_train , DSunt_trai))
+                                DSatt_train , DSunt_train))
 #Residus
 summary(model_1.3)
 checkresiduals(model_1.3)

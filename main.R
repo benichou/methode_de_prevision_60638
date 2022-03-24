@@ -34,9 +34,12 @@ source("./smoothing_methods.R")
 # running the ets models
 print("RUNNING ETS")
 source("./state_space_models.R")
-# running TBATS
+# # running TBATS
 print("RUNNING TBATS")
 source("./TBATS.R")
 # running corrections
-source("./")
+print("Run corrections of phase 1")
+source("./correction_phase_1.R")
+print("Run regressions section")
+source("./regression.R")
 print("Double Check successful completion of part 2")
