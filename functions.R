@@ -1,4 +1,3 @@
-#
 # Program: functions.R
 #
 # Purpose: script that contain all utility functions used 

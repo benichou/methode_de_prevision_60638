@@ -6,7 +6,7 @@
 #
 # Written by: Team G, January 30 2022
 #
-# Updated: Feb 10th 2022
+# Updated: March 17th 2022
 #          
 #         
 #          
@@ -34,8 +34,12 @@ source("./smoothing_methods.R")
 # running the ets models
 print("RUNNING ETS")
 source("./state_space_models.R")
-# running TBATS
+# # running TBATS
 print("RUNNING TBATS")
 source("./TBATS.R")
-# running regressions
+# running corrections
+print("Run corrections of phase 1")
+source("./correction_phase_1.R")
+print("Run regressions section")
+source("./regression.R")
 print("Double Check successful completion of part 2")
