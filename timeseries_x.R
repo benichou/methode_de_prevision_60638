@@ -152,3 +152,4 @@ q4t <- timeSeries(q4 , final_data$DATE)
 quartt <- timeSeries(final_data$quarter , final_data$DATE)
 quartt_train <- wind_t(quartt , set='t')
 quartt_valid <- wind_t(quartt , set='v')
+

@@ -16,10 +16,10 @@
 # et d'une end date
 scatter_period <- function(tsx , tsy, start, end ,
                              xlab , ylab , main) {
-
-#tsx : time series en x doit etre un objet timeSeries
-#tsy : time series en y doit etre aussi un objet timeSeries
-    
+  
+  #tsx : time series en x doit etre un objet timeSeries
+  #tsy : time series en y doit etre aussi un objet timeSeries
+  
   #les deux series chronos doivent etre des timeSeries object pour
   #que ca fonctionne. Utilise med_t et total dem
   ts1_wind = window(tsx , start = start , end = end)
