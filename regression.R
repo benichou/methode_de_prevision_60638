@@ -44,7 +44,16 @@ end_valid <- 2922 #2019/12/31
 
 rp <- 365
 
-
+wind_t <- function(ts , set) {
+  
+  ts <- timeSeries(ts , final_data$DATE)
+  
+  if (set == 't') {
+    return(window(ts , start = '2012-01-01' , end ='2017-12-31'))
+  } else {
+    return(window(ts , start = '2018-01-01' , end = '2019-12-31'))
+  }
+}
 
 #-----------------------------------------------------------------
 # We can start with the basic three variables of interest
@@ -411,9 +420,6 @@ DSatt_valid<-window(DSatt , start = '2018-01-01' , end = '2019-12-31')
 DSunt <- timeSeries(DSun , final_data$DATE)
 DSunt_train<-window(DSunt , start = '2012-01-01' , end = '2017-12-31')
 DSunt_valid<-window(DSunt , start = '2018-01-01' , end = '2019-12-31')
-
-
-
 
 
 #Dummy pour le mois, decembre est en reference
@@ -1664,6 +1670,10 @@ for (i in seq(1, length(pred_6_no[,1]))){
 }
 
 print(mean(cv_no_6))
+
+#---------------------------------------------------------------
+
+
 
 #Turning off dev
 dev.off(dev.cur())
