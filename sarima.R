@@ -359,3 +359,6 @@ print(rep)
 
 ## WITH DAILY RETRAIN
 
+# at every time step make sure to include one data from val
+# refit with the new data too to see the improvement at
+# every step
