@@ -200,10 +200,105 @@ cat("SARIMA(1,1,2,1,0,1)[7] No Box Cox - AIC:",s2_nobc$AIC,
 #            - AIC:",s9$AIC," BIC:",s9$BIC,"\n")
 
 
-# Our model of choice will be SARIMA(1,1,2,1,0,1)[7] with box cox
+# Our model of choice will be SARIMA(1,1,2,0,1,1)[7] with box cox
 # (lambda computed = -0.649)
 # because it has the lowest AIC/BIC and the diagnostic plots
 # show that all conditions for SARIMA to work are fulfilled
 
 #graphics.off()
 dev.off(dev.cur())
+
+
+n <- length(yt_valid)
+fc1_no_retrain_exp <- ts(numeric(n))
+fc2_no_retrain_mov <- ts(numeric(n))
+
+CI.exp_no_ret <- matrix(nrow=n, ncol=5)
+colnames(CI.exp_no_ret) <- c("lo95","hi95",
+                              "forecast","observed","in CI95")
+
+CI.mov_no_ret <- matrix(nrow=n, ncol=5)
+colnames(CI.mov_no_ret) <- c("lo95","hi95",
+                              "forecast","observed","in CI95")
+
+### NO RETRAIN ###
+for(i in 1:n) {
+  s1.for <- sarima.for(window(SOMME.ts, begTrain, (endTrain+i-1)),
+                       n.ahead=1,
+                       p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
+                       fixed=c(s1$fit$coef[1],
+                               s1$fit$coef[2],
+                               s1$fit$coef[3],
+                               s1$fit$coef[4]
+                               ))
+  fc1_no_retrain_exp[i] <- ts(s1.for$pred)
+  # prediction interval expanding window
+  lo.s <- s1.for$pred-1.96*s1.for$se
+  hi.s <- s1.for$pred+1.96*s1.for$se
+  in95.s <- (yt_valid[i] >= lo.s && yt_valid[i] <= hi.s)
+  CI.exp_no_ret[i,] <- c(lo.s, hi.s, 
+                         s1.for$pred, yt_valid[i], in95.s)
+  ### moving window ####
+  s2.for <- sarima.for(window(SOMME.ts, begTrain+i-1, 
+                                             (endTrain+i-1)),
+                       n.ahead=1,
+                       p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
+                       fixed=c(s1$fit$coef[1],
+                               s1$fit$coef[2],
+                               s1$fit$coef[3],
+                               s1$fit$coef[4]
+                               ))
+  fc2_no_retrain_mov[i] <- ts(s2.for$pred)
+  # prediction interval expanding window
+  lo.s2 <- s2.for$pred-1.96*s2.for$se
+  hi.s2 <- s2.for$pred+1.96*s2.for$se
+  in95.s2 <- (yt_valid[i] >= lo.s2 && yt_valid[i] <= hi.s2)
+  CI.mov_no_ret[i,] <- c(lo.s2, hi.s2, 
+                         s2.for$pred, yt_valid[i], in95.s2)
+
+}
+
+# Performance evaluation
+cat("Performance of SARIMA models expanding and moving windows:
+     ","\n")
+
+sarima.eval <- rbind(accuracy(fc1_no_retrain_exp, 
+                              yt_valid)[,1:5],
+                     accuracy(fc2_no_retrain_mov, 
+                              yt_valid)[,1:5])
+
+# sarima.eval <- rbind(
+# accuracy(InvBoxCox(fc1,lambda),out.sample)[,1:5],
+# accuracy(InvBoxCox(fc2,lambda),out.sample)[,1:5])
+
+rownames(sarima.eval) <- make.names(c("ARMA(1,1,2)",
+                                      "SARIMA(1,1,2,0,1,1)[7]"))
+print(sarima.eval)
+
+
+cat("Quarterly Performance:","\n")
+q.eval <- rbind(
+  #ARMA(1,1,2)
+  cbind(
+    accuracy(fc1[c(1:90,366:455)], 
+             out.sample[c(1:90,366:455)])[,5],
+    accuracy(fc1[c(91:181,456:546)], 
+             out.sample[c(91:181,456:546)])[,5],
+    accuracy(fc1[c(182:273,547:638)], 
+             out.sample[c(182:273,547:638)])[,5],
+    accuracy(fc1[c(274:365,639:730)], 
+             out.sample[c(274:365,639:730)])[,5]),
+  # SARIMA(1,1,2)(2,0,0)[7]
+  cbind(
+    accuracy(fc2[c(1:90,366:455)], 
+             out.sample[c(1:90,366:455)])[,5],
+    accuracy(fc2[c(91:181,456:546)], 
+             out.sample[c(91:181,456:546)])[,5],
+    accuracy(fc2[c(182:273,547:638)], 
+             out.sample[c(182:273,547:638)])[,5],
+    accuracy(fc2[c(274:365,639:730)], 
+             out.sample[c(274:365,639:730)])[,5]))
+rownames(q.eval) <- make.names(c("ARMA(1,1,2)",
+                                    "SARIMA(1,1,2,2,0,0)[7]"))
+colnames(q.eval) <- make.names(c("Q1","Q2","Q3","Q4"))
+print(q.eval)
