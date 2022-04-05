@@ -208,7 +208,7 @@ cat("SARIMA(1,1,2,1,0,1)[7] No Box Cox - AIC:",s2_nobc$AIC,
 #graphics.off()
 dev.off(dev.cur())
 
-
+### NO RETRAIN ###
 n <- length(yt_valid)
 fc1_no_retrain_exp <- ts(numeric(n))
 fc2_no_retrain_mov <- ts(numeric(n))
@@ -267,38 +267,95 @@ sarima.eval <- rbind(accuracy(fc1_no_retrain_exp,
                      accuracy(fc2_no_retrain_mov, 
                               yt_valid)[,1:5])
 
-# sarima.eval <- rbind(
-# accuracy(InvBoxCox(fc1,lambda),out.sample)[,1:5],
-# accuracy(InvBoxCox(fc2,lambda),out.sample)[,1:5])
-
-rownames(sarima.eval) <- make.names(c("ARMA(1,1,2)",
-                                      "SARIMA(1,1,2,0,1,1)[7]"))
+rownames(sarima.eval) <- make.names(
+     c("SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain",
+       "SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain"))
 print(sarima.eval)
 
 
 cat("Quarterly Performance:","\n")
 q.eval <- rbind(
-  #ARMA(1,1,2)
+  #SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain
   cbind(
-    accuracy(fc1[c(1:90,366:455)], 
-             out.sample[c(1:90,366:455)])[,5],
-    accuracy(fc1[c(91:181,456:546)], 
-             out.sample[c(91:181,456:546)])[,5],
-    accuracy(fc1[c(182:273,547:638)], 
-             out.sample[c(182:273,547:638)])[,5],
-    accuracy(fc1[c(274:365,639:730)], 
-             out.sample[c(274:365,639:730)])[,5]),
-  # SARIMA(1,1,2)(2,0,0)[7]
+    accuracy(fc1_no_retrain_exp[c(1:90,366:455)], 
+             yt_valid[c(1:90,366:455)])[,5],
+    accuracy(fc1_no_retrain_exp[c(91:181,456:546)], 
+             yt_valid[c(91:181,456:546)])[,5],
+    accuracy(fc1_no_retrain_exp[c(182:273,547:638)], 
+             yt_valid[c(182:273,547:638)])[,5],
+    accuracy(fc1_no_retrain_exp[c(274:365,639:730)], 
+             yt_valid[c(274:365,639:730)])[,5]),
+  #SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain
   cbind(
-    accuracy(fc2[c(1:90,366:455)], 
-             out.sample[c(1:90,366:455)])[,5],
-    accuracy(fc2[c(91:181,456:546)], 
-             out.sample[c(91:181,456:546)])[,5],
-    accuracy(fc2[c(182:273,547:638)], 
-             out.sample[c(182:273,547:638)])[,5],
-    accuracy(fc2[c(274:365,639:730)], 
-             out.sample[c(274:365,639:730)])[,5]))
+    accuracy(fc2_no_retrain_mov[c(1:90,366:455)], 
+             yt_valid[c(1:90,366:455)])[,5],
+    accuracy(fc2_no_retrain_mov[c(91:181,456:546)], 
+             yt_valid[c(91:181,456:546)])[,5],
+    accuracy(fc2_no_retrain_mov[c(182:273,547:638)], 
+             yt_valid[c(182:273,547:638)])[,5],
+    accuracy(fc2_no_retrain_mov[c(274:365,639:730)], 
+             yt_valid[c(274:365,639:730)])[,5]))
 rownames(q.eval) <- make.names(c("ARMA(1,1,2)",
                                     "SARIMA(1,1,2,2,0,0)[7]"))
+rownames(q.eval) <- make.names(
+     c("SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain",
+       "SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain"))
+
 colnames(q.eval) <- make.names(c("Q1","Q2","Q3","Q4"))
 print(q.eval)
+
+## The quarterly performance is exactly the same across quarters
+
+
+# Prediction interval for SARIMA(1,1,2)(2,0,0) [7] Expanding
+#
+CI <- CI.exp_no_ret
+df <- data.frame(CI)
+df$date <-as.Date(data$DATE[(endTrain+1):endValid])
+
+matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
+        col=c("lightblue","lightblue"), ylim=c(200000, 600000),
+        ylab="WFEC daily peak demand (in MWh)", xlab="Date")
+polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
+        col = "lightblue", border=F)
+lines(df$date, df$observed,col="purple")
+legend("topright", legend=c("95% Pred. Interval", "Observed"), lty=1, 
+       col=c("lightblue","purple"), lwd=c(5, 5, 1))
+
+cat("Report on the prediction interval:")
+# Calculate the % of the observed values fall into the CI
+rep <- rbind(cbind(sum(df$in.CI95), nrow(df), 
+                   sum(df$in.CI95)/nrow(df)*100))
+rownames(rep) <- make.names(c("Prediction interval 95% 
+                              Expanding Window No retrain"))
+colnames(rep) <- make.names(c("Observed","Total","Percentage"))
+print(rep)
+
+
+# Prediction interval for SARIMA(1,1,2)(2,0,0) [7] Moving
+#
+CI <- CI.mov_no_ret
+df <- data.frame(CI)
+df$date <-as.Date(data$DATE[(endTrain+1):endValid])
+
+matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
+        col=c("lightblue","lightblue"), ylim=c(200000, 600000),
+        ylab="WFEC daily peak demand (in MWh)", xlab="Date")
+polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
+        col = "lightblue", border=F)
+lines(df$date, df$observed,col="purple")
+legend("topright", legend=c("95% Pred. Interval", "Observed"), lty=1, 
+       col=c("lightblue","purple"), lwd=c(5, 5, 1))
+
+cat("Report on the prediction interval:")
+# Calculate the % of the observed values fall into the CI
+rep <- rbind(cbind(sum(df$in.CI95), nrow(df), 
+                   sum(df$in.CI95)/nrow(df)*100))
+rownames(rep) <- make.names(c("Prediction interval 95% Moving 
+                               Window No retrain"))
+colnames(rep) <- make.names(c("Observed","Total","Percentage"))
+print(rep)
+
+
+## WITH DAILY RETRAIN
+
