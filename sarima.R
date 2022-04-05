@@ -14,7 +14,7 @@
 
 library(astsa)
 
-pdf("visual_output/sarima_exploration_1.pdf")
+pdf("visual_output/sarima_exploration.pdf")
 
 # our target variable, yt, is a time series built in the 
 # timeseries_x.R script
@@ -314,7 +314,7 @@ colnames(q.eval) <- make.names(c("Q1","Q2","Q3","Q4"))
 print(q.eval)
 
 ## The quarterly performance is exactly the same across quarters
-
+pdf("visual_output/sarima_exploration.pdf")
 
 # Prediction interval for SARIMA(1,1,2)(2,0,0) [7] Expanding
 #
@@ -580,3 +580,6 @@ rownames(rep) <- make.names(c("Prediction interval 80%
                               Moving Window Daily retrain"))
 colnames(rep) <- make.names(c("Observed","Total","Percentage"))
 print(rep)
+
+#graphics.off()
+dev.off(dev.cur())
