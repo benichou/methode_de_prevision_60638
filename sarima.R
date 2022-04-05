@@ -255,7 +255,7 @@ for(i in 1:n) {
                                s1$fit$coef[4]
                                ))
   fc2_no_retrain_mov[i] <- ts(s2.for$pred)
-  # prediction interval expanding window
+  # prediction interval moving window
   lo.s2 <- s2.for$pred-1.96*s2.for$se
   hi.s2 <- s2.for$pred+1.96*s2.for$se
   in95.s2 <- (yt_valid[i] >= lo.s2 && yt_valid[i] <= hi.s2)
@@ -324,7 +324,8 @@ df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
 matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
         col=c("lightblue","lightblue"), ylim=c(200000, 600000),
-        ylab="Texas Daily Demand in Region North-Central(in MW)",
+        ylab="Texas Daily Demand in Region North-Central(in MW)
+             Expanding Window No Retrain",
         xlab="Date")
 polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
         col = "lightblue", border=F)
@@ -356,7 +357,8 @@ df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
 matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
         col=c("lightblue","lightblue"), ylim=c(200000, 600000),
-        ylab="Texas Daily Demand in Region North-Central(in MW)",
+        ylab="Texas Daily Demand in Region North-Central(in MW)
+             Moving Window No Retrain",
         xlab="Date")
 polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
         col = "lightblue", border=F)
@@ -435,26 +437,34 @@ for(i in 1:n) {
                          s3.for$pred, yt_valid[i], in95.s,
                          lo80.s,hi80.s,in80.s)
   ### moving window ####
-#   s2.for <- sarima.for(window(SOMME.ts, begTrain+i-1, 
-#                                              (endTrain+i-1)),
-#                        n.ahead=1,
-#                        p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
-#                        fixed=c(s1$fit$coef[1],
-#                                s1$fit$coef[2],
-#                                s1$fit$coef[3],
-#                                s1$fit$coef[4]
-#                                ))
-#   fc2_no_retrain_mov[i] <- ts(s2.for$pred)
-#   # prediction interval expanding window
-#   lo.s2 <- s2.for$pred-1.96*s2.for$se
-#   hi.s2 <- s2.for$pred+1.96*s2.for$se
-#   in95.s2 <- (yt_valid[i] >= lo.s2 && yt_valid[i] <= hi.s2)
-#   lo80.s2 <- s2.for$pred-1.28*s2.for$se
-#   hi80.s2 <- s2.for$pred+1.28*s2.for$se
-#   in80.s2 <- (yt_valid[i] >= lo80.s2 && yt_valid[i] <= hi80.s2)
-#   CI.mov_no_ret[i,] <- c(lo.s2, hi.s2, 
-#                          s2.for$pred, yt_valid[i], in95.s2,
-#                          lo80.s2,hi80.s2,in80.s2)
+  y_train_new_2 <- window(yt, 
+                       start = as.Date(initial_date) + i -1 , 
+                       end = as.Date(end_date) + i -1)
+  
+  lambda_2 <- BoxCox.lambda(y_train_new_2)
+  Yt_new_2.bc <- BoxCox(y_train_new_2,lambda_2)
+
+  s4 <- sarima(diff(Yt_new_2.bc, 7),1,1,2,0,0,1,7)
+
+  s4.for <- sarima.for(window(SOMME.ts, begTrain, (endTrain+i-1)) ,
+                       n.ahead=1,
+                       p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
+                       fixed=c(s4$fit$coef[1],
+                               s4$fit$coef[2],
+                               s4$fit$coef[3],
+                               s4$fit$coef[4]
+                               ))
+  fc2_daily_retrain_mov[i] <- ts(s4.for$pred)
+  # prediction interval moving window
+  lo.s2 <- s4.for$pred-1.96*s4.for$se
+  hi.s2 <- s4.for$pred+1.96*s4.for$se
+  in95.s2 <- (yt_valid[i] >= lo.s2 && yt_valid[i] <= hi.s2)
+  lo80.s2 <- s4.for$pred-1.28*s4.for$se
+  hi80.s2 <- s4.for$pred+1.28*s4.for$se
+  in80.s2 <- (yt_valid[i] >= lo80.s2 && yt_valid[i] <= hi80.s2)
+  CI.mov_ret[i,] <- c(lo.s2, hi.s2, 
+                         s4.for$pred, yt_valid[i], in95.s2,
+                         lo80.s2,hi80.s2,in80.s2)
 
 }
 
@@ -462,7 +472,111 @@ cat("Performance of SARIMA models expanding and moving windows
      daily retrained:
      ","\n")
 
-sarima.eval.daily_retrain <- rbind(accuracy(fc1_daily_retrain_exp, 
+sarima.eval_daily_retrain <- rbind(accuracy(fc1_daily_retrain_exp, 
                               yt_valid)[,1:5],
-                     accuracy(fc2_no_retrain_mov, 
+                     accuracy(fc2_daily_retrain_mov, 
                               yt_valid)[,1:5])
+
+rownames(sarima.eval_daily_retrain) <- make.names(
+     c("SARIMA(1,1,2,0,1,1)[7] Expanding Window Daily retrain",
+       "SARIMA(1,1,2,0,1,1)[7] Moving Window Daily Retrain"))
+print(sarima.eval_daily_retrain)
+
+
+cat("Quarterly Performance:","\n")
+q.eval_daily_retrain <- rbind(
+  #SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain
+  cbind(
+    accuracy(fc1_daily_retrain_exp[c(1:90,366:455)], 
+             yt_valid[c(1:90,366:455)])[,5],
+    accuracy(fc1_daily_retrain_exp[c(91:181,456:546)], 
+             yt_valid[c(91:181,456:546)])[,5],
+    accuracy(fc1_daily_retrain_exp[c(182:273,547:638)], 
+             yt_valid[c(182:273,547:638)])[,5],
+    accuracy(fc1_daily_retrain_exp[c(274:365,639:730)], 
+             yt_valid[c(274:365,639:730)])[,5]),
+  #SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain
+  cbind(
+    accuracy(fc2_daily_retrain_mov[c(1:90,366:455)], 
+             yt_valid[c(1:90,366:455)])[,5],
+    accuracy(fc2_daily_retrain_mov[c(91:181,456:546)], 
+             yt_valid[c(91:181,456:546)])[,5],
+    accuracy(fc2_daily_retrain_mov[c(182:273,547:638)], 
+             yt_valid[c(182:273,547:638)])[,5],
+    accuracy(fc2_daily_retrain_mov[c(274:365,639:730)], 
+             yt_valid[c(274:365,639:730)])[,5]))
+
+rownames(q.eval_daily_retrain) <- make.names(
+     c("SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain",
+       "SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain"))
+
+colnames(q.eval_daily_retrain) <- make.names(c("Q1","Q2","Q3","Q4"))
+print(q.eval_daily_retrain)
+
+## The quarterly performance is exactly the same across quarters
+
+
+# Prediction interval for SARIMA(1,1,2)(2,0,0) [7] Expanding
+#
+CI <- CI.exp_ret
+df <- data.frame(CI)
+df$date <-as.Date(data$DATE[(endTrain+1):endValid])
+
+matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
+        col=c("lightblue","lightblue"), ylim=c(200000, 600000),
+        ylab="Texas Daily Demand in Region North-Central(in MW)
+             Expanding Window Daily Retrain",
+        xlab="Date")
+polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
+        col = "lightblue", border=F)
+lines(df$date, df$observed,col="purple")
+legend("topright", legend=c("95% Pred. Interval", "Observed"), 
+       lty=1, 
+       col=c("lightblue","purple"), lwd=c(5, 5, 1))
+
+cat("Report on the prediction interval:")
+# Calculate the % of the observed values fall into the CI
+rep <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+                   sum(df$in.CI80)/nrow(df)*100),
+                   cbind(sum(df$in.CI95), nrow(df), 
+                   sum(df$in.CI95)/nrow(df)*100))
+
+rownames(rep) <- make.names(c("Prediction interval 80% 
+                              Expanding Window Daily retrain",
+                              "Prediction interval 95% 
+                              Expanding Window Daily retrain"))
+colnames(rep) <- make.names(c("Observed","Total","Percentage"))
+print(rep)
+
+
+# Prediction interval for SARIMA(1,1,2)(2,0,0) [7] Moving
+#
+CI <- CI.mov_ret
+df <- data.frame(CI)
+df$date <-as.Date(data$DATE[(endTrain+1):endValid])
+
+matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
+        col=c("lightblue","lightblue"), ylim=c(200000, 600000),
+        ylab="Texas Daily Demand in Region North-Central(in MW)
+              Moving Window Daily Retrain",
+        xlab="Date")
+polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
+        col = "lightblue", border=F)
+lines(df$date, df$observed,col="purple")
+legend("topright", legend=c("95% Pred. Interval", "Observed"), 
+       lty=1, 
+       col=c("lightblue","purple"), lwd=c(5, 5, 1))
+
+cat("Report on the prediction interval:")
+# Calculate the % of the observed values fall into the CI
+rep <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+                   sum(df$in.CI80)/nrow(df)*100),
+                   cbind(sum(df$in.CI95), nrow(df), 
+                   sum(df$in.CI95)/nrow(df)*100))
+
+rownames(rep) <- make.names(c("Prediction interval 80% 
+                              Moving Window Daily retrain",
+                              "Prediction interval 95% 
+                              Moving Window Daily retrain"))
+colnames(rep) <- make.names(c("Observed","Total","Percentage"))
+print(rep)
