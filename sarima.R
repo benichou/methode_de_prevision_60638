@@ -213,13 +213,15 @@ n <- length(yt_valid)
 fc1_no_retrain_exp <- ts(numeric(n))
 fc2_no_retrain_mov <- ts(numeric(n))
 
-CI.exp_no_ret <- matrix(nrow=n, ncol=5)
+CI.exp_no_ret <- matrix(nrow=n, ncol=8)
 colnames(CI.exp_no_ret) <- c("lo95","hi95",
-                              "forecast","observed","in CI95")
+                              "forecast","observed","in CI95", 
+                              "lo80","hi80","in CI80")
 
-CI.mov_no_ret <- matrix(nrow=n, ncol=5)
+CI.mov_no_ret <- matrix(nrow=n, ncol=8)
 colnames(CI.mov_no_ret) <- c("lo95","hi95",
-                              "forecast","observed","in CI95")
+                              "forecast","observed","in CI95",
+                              "lo80","hi80","in CI80")
 
 ### NO RETRAIN ###
 for(i in 1:n) {
@@ -236,8 +238,12 @@ for(i in 1:n) {
   lo.s <- s1.for$pred-1.96*s1.for$se
   hi.s <- s1.for$pred+1.96*s1.for$se
   in95.s <- (yt_valid[i] >= lo.s && yt_valid[i] <= hi.s)
+  lo80.s <- s1.for$pred-1.28*s1.for$se
+  hi80.s <- s1.for$pred+1.28*s1.for$se
+  in80.s <- (yt_valid[i] >= lo80.s && yt_valid[i] <= hi80.s)
   CI.exp_no_ret[i,] <- c(lo.s, hi.s, 
-                         s1.for$pred, yt_valid[i], in95.s)
+                         s1.for$pred, yt_valid[i], in95.s,
+                         lo80.s,hi80.s,in80.s)
   ### moving window ####
   s2.for <- sarima.for(window(SOMME.ts, begTrain+i-1, 
                                              (endTrain+i-1)),
@@ -253,8 +259,12 @@ for(i in 1:n) {
   lo.s2 <- s2.for$pred-1.96*s2.for$se
   hi.s2 <- s2.for$pred+1.96*s2.for$se
   in95.s2 <- (yt_valid[i] >= lo.s2 && yt_valid[i] <= hi.s2)
+  lo80.s2 <- s2.for$pred-1.28*s2.for$se
+  hi80.s2 <- s2.for$pred+1.28*s2.for$se
+  in80.s2 <- (yt_valid[i] >= lo80.s2 && yt_valid[i] <= hi80.s2)
   CI.mov_no_ret[i,] <- c(lo.s2, hi.s2, 
-                         s2.for$pred, yt_valid[i], in95.s2)
+                         s2.for$pred, yt_valid[i], in95.s2,
+                         lo80.s2,hi80.s2,in80.s2)
 
 }
 
@@ -295,8 +305,7 @@ q.eval <- rbind(
              yt_valid[c(182:273,547:638)])[,5],
     accuracy(fc2_no_retrain_mov[c(274:365,639:730)], 
              yt_valid[c(274:365,639:730)])[,5]))
-rownames(q.eval) <- make.names(c("ARMA(1,1,2)",
-                                    "SARIMA(1,1,2,2,0,0)[7]"))
+
 rownames(q.eval) <- make.names(
      c("SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain",
        "SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain"))
@@ -315,18 +324,25 @@ df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
 matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
         col=c("lightblue","lightblue"), ylim=c(200000, 600000),
-        ylab="WFEC daily peak demand (in MWh)", xlab="Date")
+        ylab="Texas Daily Demand in Region North-Central(in MW)",
+        xlab="Date")
 polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
         col = "lightblue", border=F)
 lines(df$date, df$observed,col="purple")
-legend("topright", legend=c("95% Pred. Interval", "Observed"), lty=1, 
+legend("topright", legend=c("95% Pred. Interval", "Observed"), 
+       lty=1, 
        col=c("lightblue","purple"), lwd=c(5, 5, 1))
 
 cat("Report on the prediction interval:")
 # Calculate the % of the observed values fall into the CI
-rep <- rbind(cbind(sum(df$in.CI95), nrow(df), 
+rep <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+                   sum(df$in.CI80)/nrow(df)*100),
+                   cbind(sum(df$in.CI95), nrow(df), 
                    sum(df$in.CI95)/nrow(df)*100))
-rownames(rep) <- make.names(c("Prediction interval 95% 
+
+rownames(rep) <- make.names(c("Prediction interval 80% 
+                              Expanding Window No retrain",
+                              "Prediction interval 95% 
                               Expanding Window No retrain"))
 colnames(rep) <- make.names(c("Observed","Total","Percentage"))
 print(rep)
@@ -340,19 +356,26 @@ df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
 matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
         col=c("lightblue","lightblue"), ylim=c(200000, 600000),
-        ylab="WFEC daily peak demand (in MWh)", xlab="Date")
+        ylab="Texas Daily Demand in Region North-Central(in MW)",
+        xlab="Date")
 polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
         col = "lightblue", border=F)
 lines(df$date, df$observed,col="purple")
-legend("topright", legend=c("95% Pred. Interval", "Observed"), lty=1, 
+legend("topright", legend=c("95% Pred. Interval", "Observed"), 
+       lty=1, 
        col=c("lightblue","purple"), lwd=c(5, 5, 1))
 
 cat("Report on the prediction interval:")
 # Calculate the % of the observed values fall into the CI
-rep <- rbind(cbind(sum(df$in.CI95), nrow(df), 
+rep <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+                   sum(df$in.CI80)/nrow(df)*100),
+                   cbind(sum(df$in.CI95), nrow(df), 
                    sum(df$in.CI95)/nrow(df)*100))
-rownames(rep) <- make.names(c("Prediction interval 95% Moving 
-                               Window No retrain"))
+
+rownames(rep) <- make.names(c("Prediction interval 80% 
+                              Moving Window No retrain",
+                              "Prediction interval 95% 
+                              Moving Window No retrain"))
 colnames(rep) <- make.names(c("Observed","Total","Percentage"))
 print(rep)
 
@@ -362,3 +385,84 @@ print(rep)
 # at every time step make sure to include one data from val
 # refit with the new data too to see the improvement at
 # every step
+
+n <- length(yt_valid)
+fc1_daily_retrain_exp <- ts(numeric(n))
+fc2_daily_retrain_mov <- ts(numeric(n))
+
+CI.exp_ret <- matrix(nrow=n, ncol=8)
+colnames(CI.exp_ret) <- c("lo95","hi95",
+                              "forecast","observed","in CI95", 
+                              "lo80","hi80","in CI80")
+
+CI.mov_ret <- matrix(nrow=n, ncol=8)
+colnames(CI.mov_ret) <- c("lo95","hi95",
+                              "forecast","observed","in CI95",
+                              "lo80","hi80","in CI80")
+
+initial_date <- '2012-01-01'
+end_date <- '2017-12-31'
+
+for(i in 1:n) {
+  
+  # add new data and box cox transform at every validation data
+  y_train_new <- window(yt, 
+                       start = as.Date(initial_date) , 
+                       end = as.Date(end_date) + i -1)
+  
+  lambda <- BoxCox.lambda(y_train_new)
+  Yt_new.bc <- BoxCox(y_train_new,lambda)
+
+  s3 <- sarima(diff(Yt_new.bc, 7),1,1,2,0,0,1,7)
+
+  s3.for <- sarima.for(window(SOMME.ts, begTrain, (endTrain+i-1)) ,
+                       n.ahead=1,
+                       p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
+                       fixed=c(s3$fit$coef[1],
+                               s3$fit$coef[2],
+                               s3$fit$coef[3],
+                               s3$fit$coef[4]
+                               ))
+  fc1_daily_retrain_exp[i] <- ts(s3.for$pred)
+  # prediction interval expanding window
+  lo.s <- s3.for$pred-1.96*s3.for$se
+  hi.s <- s3.for$pred+1.96*s3.for$se
+  in95.s <- (yt_valid[i] >= lo.s && yt_valid[i] <= hi.s)
+  lo80.s <- s3.for$pred-1.28*s3.for$se
+  hi80.s <- s3.for$pred+1.28*s3.for$se
+  in80.s <- (yt_valid[i] >= lo80.s && yt_valid[i] <= hi80.s)
+  CI.exp_ret[i,] <- c(lo.s, hi.s, 
+                         s3.for$pred, yt_valid[i], in95.s,
+                         lo80.s,hi80.s,in80.s)
+  ### moving window ####
+#   s2.for <- sarima.for(window(SOMME.ts, begTrain+i-1, 
+#                                              (endTrain+i-1)),
+#                        n.ahead=1,
+#                        p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
+#                        fixed=c(s1$fit$coef[1],
+#                                s1$fit$coef[2],
+#                                s1$fit$coef[3],
+#                                s1$fit$coef[4]
+#                                ))
+#   fc2_no_retrain_mov[i] <- ts(s2.for$pred)
+#   # prediction interval expanding window
+#   lo.s2 <- s2.for$pred-1.96*s2.for$se
+#   hi.s2 <- s2.for$pred+1.96*s2.for$se
+#   in95.s2 <- (yt_valid[i] >= lo.s2 && yt_valid[i] <= hi.s2)
+#   lo80.s2 <- s2.for$pred-1.28*s2.for$se
+#   hi80.s2 <- s2.for$pred+1.28*s2.for$se
+#   in80.s2 <- (yt_valid[i] >= lo80.s2 && yt_valid[i] <= hi80.s2)
+#   CI.mov_no_ret[i,] <- c(lo.s2, hi.s2, 
+#                          s2.for$pred, yt_valid[i], in95.s2,
+#                          lo80.s2,hi80.s2,in80.s2)
+
+}
+
+cat("Performance of SARIMA models expanding and moving windows
+     daily retrained:
+     ","\n")
+
+sarima.eval.daily_retrain <- rbind(accuracy(fc1_daily_retrain_exp, 
+                              yt_valid)[,1:5],
+                     accuracy(fc2_no_retrain_mov, 
+                              yt_valid)[,1:5])
