@@ -4,7 +4,7 @@
 # Purpose: exploring SARIMA models for one day ahead forecasting
 # Written by: Team G, April 2nd 2022
 #
-# Updated: April 8th 2022
+# Updated: April 5th 2022
 #          
 #         
 #          
