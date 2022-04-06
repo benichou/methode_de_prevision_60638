@@ -431,7 +431,7 @@ colnames(q.eval) <- make.names(c("Q1","Q2","Q3","Q4"))
 print(q.eval)
 
 ## The quarterly performance is exactly the same across quarters
-pdf("visual_output/sarima_performance.pdf")
+pdf("visual_output/sarima_performance_1.pdf")
 
 # Prediction interval for SARIMA(1,1,2)(2,0,0) [7] Expanding
 #
@@ -498,7 +498,8 @@ rownames(rep_mov_no_ret) <- make.names(c("Prediction interval 80%
 colnames(rep_mov_no_ret) <- make.names(c("Observed",
                                          "Total","Percentage"))
 print(rep_mov_no_ret)
-
+#graphics.off()
+dev.off(dev.cur())
 
 ## WITH DAILY RETRAIN
 
@@ -585,6 +586,7 @@ for(i in 1:n) {
                          lo80.s2,hi80.s2,in80.s2)
 
 }
+pdf("visual_output/sarima_performance_2.pdf")
 
 cat("Performance of SARIMA models expanding and moving windows
      daily retrained:
