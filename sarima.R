@@ -369,17 +369,18 @@ legend("topright", legend=c("95% Pred. Interval", "Observed"),
 
 cat("Report on the prediction interval:")
 # Calculate the % of the observed values fall into the CI
-rep <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+rep_mov_no_ret <- rbind(cbind(sum(df$in.CI80), nrow(df), 
                    sum(df$in.CI80)/nrow(df)*100),
                    cbind(sum(df$in.CI95), nrow(df), 
                    sum(df$in.CI95)/nrow(df)*100))
 
-rownames(rep) <- make.names(c("Prediction interval 80% 
+rownames(rep_mov_no_ret) <- make.names(c("Prediction interval 80% 
                               Moving Window No retrain",
                               "Prediction interval 95% 
                               Moving Window No retrain"))
-colnames(rep) <- make.names(c("Observed","Total","Percentage"))
-print(rep)
+colnames(rep_mov_no_ret) <- make.names(c("Observed",
+                                         "Total","Percentage"))
+print(rep_mov_no_ret)
 
 
 ## WITH DAILY RETRAIN
@@ -536,17 +537,18 @@ legend("topright", legend=c("95% Pred. Interval", "Observed"),
 
 cat("Report on the prediction interval:")
 # Calculate the % of the observed values fall into the CI
-rep <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+rep_daily_exp <- rbind(cbind(sum(df$in.CI80), nrow(df), 
                    sum(df$in.CI80)/nrow(df)*100),
                    cbind(sum(df$in.CI95), nrow(df), 
                    sum(df$in.CI95)/nrow(df)*100))
 
-rownames(rep) <- make.names(c("Prediction interval 80% 
+rownames(rep_daily_exp) <- make.names(c("Prediction interval 80% 
                               Expanding Window Daily retrain",
                               "Prediction interval 95% 
                               Expanding Window Daily retrain"))
-colnames(rep) <- make.names(c("Observed","Total","Percentage"))
-print(rep)
+colnames(rep_daily_exp) <- make.names(c("Observed",
+                                        "Total","Percentage"))
+print(rep_daily_exp)
 
 
 # Prediction interval for SARIMA(1,1,2)(2,0,0) [7] Moving
@@ -569,17 +571,18 @@ legend("topright", legend=c("95% Pred. Interval", "Observed"),
 
 cat("Report on the prediction interval:")
 # Calculate the % of the observed values fall into the CI
-rep <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+rep_daily_move <- rbind(cbind(sum(df$in.CI80), nrow(df), 
                    sum(df$in.CI80)/nrow(df)*100),
                    cbind(sum(df$in.CI95), nrow(df), 
                    sum(df$in.CI95)/nrow(df)*100))
 
-rownames(rep) <- make.names(c("Prediction interval 80% 
+rownames(rep_daily_move) <- make.names(c("Prediction interval 80% 
                               Moving Window Daily retrain",
                               "Prediction interval 95% 
                               Moving Window Daily retrain"))
-colnames(rep) <- make.names(c("Observed","Total","Percentage"))
-print(rep)
+colnames(rep_daily_move) <- make.names(c("Observed",
+                                    "Total","Percentage"))
+print(rep_daily_move)
 
 #graphics.off()
 dev.off(dev.cur())
