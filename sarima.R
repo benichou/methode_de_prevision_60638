@@ -63,7 +63,6 @@ print("a simple differencing of order 1 is not enough")
 acf2(diff(yt_train, 7))
 
 
-
 # Does the variance of series vary with the mean level?
 # I.e. are data more variable when they take on larger values?
 # For example, we can compute means and stdevs by month to check.
@@ -152,24 +151,140 @@ acf2(diff(diff7,1))
 # # Try 1# SARIMA with Box Cox transformed target
 # SARIMA(1, 1, 2, 0, 1, 1)[7]
 # # AIC: -18.9  BIC: -18.9
+# $fit
+
+# Call:
+
+
+# Coefficients:
+#         ar1     ma1     ma2    sma1  constant
+#       0.494  -0.491  -0.338  -0.989         0
+# s.e.  0.033   0.033   0.023   0.004       NaN
+
+# sigma^2 estimated as 0.000000000345:  log likelihood = 20679,  
+# aic = -41345
+
+# $degrees_of_freedom
+# [1] 2179
+
+# $ttable
+#          Estimate     SE t.value p.value
+# ar1         0.494 0.0334    14.8       0
+# ma1        -0.491 0.0329   -14.9       0
+# ma2        -0.338 0.0232   -14.6       0
+# sma1       -0.989 0.0041  -242.6       0
+# constant    0.000    NaN     NaN     NaN
+
+# $AIC
+# [1] -18.9
+
+# $AICc
+# [1] -18.9
+
+# $BIC
+# [1] -18.9
+
 s1 <- sarima(diff(Yt.bc, 7),1,1,2,0,0,1,7)
 cat("SARIMA(1,1,2,0,1,1)[7] Box Cox
            - AIC:",s1$AIC," BIC:",s1$BIC,"\n")
 
 # Try #2: SARIMA(1,1,2,1,0,1)[7]
 # AIC: -18.9  BIC: -18.9
+# Coefficients:
+#         ar1     ma1     ma2   sar1    sma1  constant
+#       0.494  -0.490  -0.339  0.999  -0.986         0
+# s.e.  0.035   0.036   0.023  0.001   0.007         0
+
+# sigma^2 estimated as 0.000000000345:  log likelihood = 20751,  
+# aic = -41489
+
+# $degrees_of_freedom
+# [1] 2185
+
+# $ttable
+#          Estimate     SE   t.value p.value
+# ar1         0.494 0.0354   13.9593   0.000
+# ma1        -0.490 0.0358  -13.6776   0.000
+# ma2        -0.340 0.0233  -14.5825   0.000
+# sar1        1.000 0.0007 1423.9999   0.000
+# sma1       -0.986 0.0072 -137.1779   0.000
+# constant    0.000 0.0000    0.0046   0.996
+
+# $AIC
+# [1] -18.9
+
+# $AICc
+# [1] -18.9
+
+# $BIC
+# [1] -18.9
 s2 <- sarima(Yt.bc,1,1,2,1,0,1,7)
 cat("SARIMA(1,1,2,1,0,1)[7] Box Cox
                           - AIC:",s2$AIC," BIC:",s2$BIC,"\n")
 
 # # Try #3 SARIMA with NON Box Cox transformed target
-# # AIC: -18.9  BIC: -18.9
+# $fit
+
+# Coefficients:
+#         ar1     ma1     ma2    sma1  constant
+#       0.497  -0.473  -0.348  -0.992     0.332
+# s.e.  0.036   0.036   0.023   0.007     2.897
+
+# sigma^2 estimated as 739707710:  log likelihood = -25415,  
+# aic = 50842
+
+# $degrees_of_freedom
+# [1] 2179
+
+# $ttable
+#          Estimate     SE  t.value p.value
+# ar1         0.497 0.0363   13.681   0.000
+# ma1        -0.473 0.0362  -13.052   0.000
+# ma2        -0.348 0.0233  -14.926   0.000
+# sma1       -0.992 0.0068 -146.336   0.000
+# constant    0.332 2.8971    0.114   0.909
+
+# $AIC
+# [1] 23.2
+
+# $AICc
+# [1] 23.2
+
+# $BIC
+# [1] 23.2
 s1_nobc <- sarima(diff(yt_train, 7),1,1,2,0,0,1,7)
 cat("SARIMA(1,1,2,0,1,1)[7] No Box Cox - AIC:",s1_nobc$AIC,
           " BIC:",s1_nobc$BIC,"\n")
 
 # Try # 4: SARMA(1,1,2,1,0,7)[7]
-# AIC: -18.9  BIC: -18.9
+# Coefficients:
+#         ar1     ma1     ma2   sar1    sma1  constant
+#       0.498  -0.473  -0.349  0.999  -0.988     -31.3
+# s.e.  0.036   0.036   0.023  0.001   0.006    1365.7
+
+# sigma^2 estimated as 740841753:  log likelihood = -25489,  
+# aic = 50993
+
+# $degrees_of_freedom
+# [1] 2185
+
+# $ttable
+#          Estimate        SE   t.value p.value
+# ar1         0.498    0.0361   13.7752   0.000
+# ma1        -0.473    0.0360  -13.1490   0.000
+# ma2        -0.349    0.0233  -15.0057   0.000
+# sar1        1.000    0.0006 1622.2783   0.000
+# sma1       -0.988    0.0064 -153.8152   0.000
+# constant  -31.256 1365.6527   -0.0229   0.982
+
+# $AIC
+# [1] 23.3
+
+# $AICc
+# [1] 23.3
+
+# $BIC
+# [1] 23.3
 s2_nobc  <- sarima(yt_train,1,1,2,1,0,1,7)
 cat("SARIMA(1,1,2,1,0,1)[7] No Box Cox - AIC:",s2_nobc$AIC,
                               " BIC:",s2_nobc$BIC,"\n")
@@ -281,7 +396,9 @@ rownames(sarima.eval) <- make.names(
      c("SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain",
        "SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain"))
 print(sarima.eval)
-
+#                                           ME  RMSE   MAE  MPE  MAPE
+# SARIMA.1.1.2.0.1.1..7.Ex.Window.No.ret -434 29227 21040 -0.567 5.49
+# SARIMA.1.1.2.0.1.1..7.Mov.Window.No.Ret -429 29228 21041-0.566 5.49
 
 cat("Quarterly Performance:","\n")
 q.eval <- rbind(
