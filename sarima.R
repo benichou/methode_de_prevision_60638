@@ -314,7 +314,7 @@ colnames(q.eval) <- make.names(c("Q1","Q2","Q3","Q4"))
 print(q.eval)
 
 ## The quarterly performance is exactly the same across quarters
-pdf("visual_output/sarima_exploration.pdf")
+pdf("visual_output/sarima_performance.pdf")
 
 # Prediction interval for SARIMA(1,1,2)(2,0,0) [7] Expanding
 #
