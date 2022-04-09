@@ -373,3 +373,147 @@ print((dm.test(c(fc.exp[1:365],fcasts.r)-c(out.sample),
 #                         Observed Total Percentage
 # Prediction.interval.80.      605   730       82.9
 # Prediction.interval.95.      686   730       94.0
+
+### TBATS (RETRAINED TBATS WITH MAPE at 5.34) ANALYSIS TEST ###
+
+startTest <- endValid + 1
+endTest <- 3652
+
+testSample <- msts(window(SOMME.ts, startTest, endTest),
+                   seasonal.periods=c(7,365.25), start=c(2020,1))
+
+n_last <- length(out.sample)
+fcasts.r_test <- msts(numeric(n_last), seasonal.periods=c(7,365.25), 
+                 start=c(2020,1))
+CI.r_test <- matrix(nrow=n, ncol=8)
+colnames(CI.r_test) <- c("observed","lo80","hi80","in CI80",
+                  "lo95","hi95","in CI95","forecast")
+
+for (i in 1:n_last) {
+
+  tmp.msts_test <- msts(window(SOMME.ts, begTrain, (endValid+i-1)), 
+                   seasonal.periods=c(7, 365.25))
+  f.r.tbat_test <- forecast(tmp.msts_test, model=tfit.r, h=1)
+  fcasts.r_test[i] <- f.r.tbat_test$mean[1]
+
+  # confidence interval
+  in80.r_test <- (testSample[i] >= f.r.tbat_test$lower[1] &&
+             testSample[i] <= f.r.tbat_test$upper[1])
+  in95.r_test <- (testSample[i] >= f.r.tbat_test$lower[2] &&
+             testSample[i] <= f.r.tbat_test$upper[2])
+  CI.r_test[i,] <- c(testSample[i], f.r.tbat_test$lower[1], 
+              f.r.tbat_test$upper[1], in80.r_test, 
+              f.r.tbat_test$lower[2], 
+              f.r.tbat_test$upper[2], in95.r_test, fcasts.r_test[i])
+}
+
+cat("Overall Test Performance of TBATS:","\n")
+test.eval_tbats <- rbind(accuracy(fcasts.r_test, testSample))
+rownames(test.eval_tbats) <- make.names(c("Test Set"))
+print(test.eval_tbats)
+
+
+## By quarters 
+cat("Overall Quarterly Test Performance:","\n")
+qall.eval_test <- rbind(
+  cbind(
+    accuracy(fcasts.r_test[c(1:90,366:455)], 
+             testSample[c(1:90,366:455)])[,5],
+    accuracy(fcasts.r_test[c(91:181,456:546)], 
+             testSample[c(91:181,456:546)])[,5],
+    accuracy(fcasts.r_test[c(182:273,547:638)], 
+             testSample[c(182:273,547:638)])[,5],
+    accuracy(fcasts.r_test[c(274:365,639:730)], 
+             testSample[c(274:365,639:730)])[,5]))
+rownames(qall.eval_test) <- make.names(c("Test Performance"))
+colnames(qall.eval_test) <- make.names(c("Q1","Q2","Q3","Q4"))
+print(qall.eval_test)
+
+## 2019 vs 2020
+
+cat("Overall Separate Yearly Test Performance:","\n")
+all.eval_test_sep_year <- rbind(
+  cbind(
+    accuracy(fcasts.r_test[c(1:365)], 
+             testSample[c(1:365)])[,5],
+    accuracy(fcasts.r_test[c(366:730)], 
+             testSample[c(366:730)])[,5]))
+rownames(all.eval_test_sep_year) <- make.names(c("Test Performance"))
+colnames(all.eval_test_sep_year) <- make.names(c("2020","2021"))
+print(all.eval_test_sep_year)
+
+# each quarter separate
+cat("Overall Separate Quarters Test Performance:","\n")
+qall.eval_test_sep <- rbind(
+  cbind(
+    accuracy(fcasts.r_test[c(1:90)], 
+             testSample[c(1:90)])[,5],
+    accuracy(fcasts.r_test[c(91:181)], 
+             testSample[c(91:181)])[,5],
+    accuracy(fcasts.r_test[c(182:273)], 
+             testSample[c(182:273)])[,5],
+    accuracy(fcasts.r_test[c(274:365)], 
+             testSample[c(274:365)])[,5],
+    accuracy(fcasts.r_test[c(366:455)], 
+             testSample[c(366:455)])[,5],
+    accuracy(fcasts.r_test[c(456:546)], 
+             testSample[c(456:546)])[,5],
+    accuracy(fcasts.r_test[c(547:638)], 
+             testSample[c(547:638)])[,5],
+    accuracy(fcasts.r_test[c(639:730)], 
+             testSample[c(639:730)])[,5]))       
+rownames(qall.eval_test_sep) <- make.names(c("Test Performance"))
+colnames(qall.eval_test_sep) <- make.names(c("Q1 2020","Q2 2020",
+                                        "Q3 2020","Q4 2020",
+                                        "Q1 2021","Q2 2021",
+                                        "Q3 2021","Q4 2021"))
+print(qall.eval_test_sep)
+
+
+## Confidence interval analysis ##
+
+# Confidence interval Analysis for Expanding
+df <- data.frame(CI.r_test)
+df$date <-as.Date(data$DATE[(startTest):endTest])
+
+matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
+        col=c("lightblue","lightblue"), ylim=c(200000, 650000),
+        ylab="Sum daily demand (in MWh)", xlab="Date")
+polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
+        col = "lightblue", border=F)
+polygon(c(df$date, rev(df$date)), c(df$lo80, rev(df$hi80)),
+        col = "cyan", border=F)
+lines(df$date, df$observed,col="purple")
+legend("topright", legend=c("95% CI", "80% CI", "Observed"), lty=1, 
+       col=c("lightblue"," cyan", "purple"), lwd=c(5, 5, 1)
+)
+
+cat("Report on the prediction interval for Expanding:")
+# Calculate the % of the observed values fall into the CI
+rep.tbats_test <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+                   sum(df$in.CI80)/nrow(df)*100),
+             cbind(sum(df$in.CI95), nrow(df), 
+                   sum(df$in.CI95)/nrow(df)*100))
+rownames(rep.tbats_test) <- make.names(c("Prediction interval 80%",
+                              "Prediction interval 95%"))
+colnames(rep.tbats_test) <- make.names(c("Observed",
+                                          "Total","Percentage"))
+print(rep.tbats_test)
+
+# exposure by quarters
+
+df$in.CI80[c(1:90,366:455)]
+
+
+
+
+
+
+accuracy(fcasts.r_test[c(1:90,366:455)], 
+             testSample[c(1:90,366:455)])[,5],
+    accuracy(fcasts.r_test[c(91:181,456:546)], 
+             testSample[c(91:181,456:546)])[,5],
+    accuracy(fcasts.r_test[c(182:273,547:638)], 
+             testSample[c(182:273,547:638)])[,5],
+    accuracy(fcasts.r_test[c(274:365,639:730)], 
+             testSample[c(274:365,639:730)])[,5]))
