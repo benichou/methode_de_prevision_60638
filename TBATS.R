@@ -502,18 +502,18 @@ print(rep.tbats_test)
 
 # exposure by quarters
 
-df$in.CI80[c(1:90,366:455)]
+# df$in.CI80[c(1:90,366:455)]
 
 
 
 
 
 
-accuracy(fcasts.r_test[c(1:90,366:455)], 
-             testSample[c(1:90,366:455)])[,5],
-    accuracy(fcasts.r_test[c(91:181,456:546)], 
-             testSample[c(91:181,456:546)])[,5],
-    accuracy(fcasts.r_test[c(182:273,547:638)], 
-             testSample[c(182:273,547:638)])[,5],
-    accuracy(fcasts.r_test[c(274:365,639:730)], 
-             testSample[c(274:365,639:730)])[,5]))
+# accuracy(fcasts.r_test[c(1:90,366:455)], 
+#              testSample[c(1:90,366:455)])[,5],
+#     accuracy(fcasts.r_test[c(91:181,456:546)], 
+#              testSample[c(91:181,456:546)])[,5],
+#     accuracy(fcasts.r_test[c(182:273,547:638)], 
+#              testSample[c(182:273,547:638)])[,5],
+#     accuracy(fcasts.r_test[c(274:365,639:730)], 
+#              testSample[c(274:365,639:730)])[,5]))
