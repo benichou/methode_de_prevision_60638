@@ -74,7 +74,7 @@ acf(arx_7$residuals)
 pred_arx_7 <- predict(arx , 
                     newdata = covariates_df[(end_train+1):end_valid,],
                     interval = 'prediction',
-                    level = c(0.95, 0.80))
+                    level = c(0.95))
 
 #Moving window model
 arx_7_mov = lm(SOMME ~ ., data=covariates_df, na.action = na.omit, 
@@ -85,7 +85,7 @@ pred_arx_7_mov <- predict(arx_7_mov ,
                       newdata = covariates_df
                       [(end_train+1+rp):end_valid,],
                       interval = 'prediction',
-                      level = c(0.95, 0.80))
+                      level = c(0.95))
 
 #Expanding window model
 arx_7_exp = lm(SOMME ~ ., data=covariates_df, na.action = na.omit, 
@@ -96,7 +96,7 @@ pred_arx_7_exp <- predict(arx_7_exp ,
                       newdata = covariates_df
                       [(end_train+1+rp):end_valid,],
                       interval = 'prediction',
-                      level = c(0.95, 0.80))
+                      level = c(0.95))
 
 #Generating predictions vectors for exp.and moving windows
 pred_arx_7_mov = rbind(pred_arx_7[1:rp,], pred_arx_7_mov)
@@ -109,3 +109,54 @@ accuracy(pred_arx_7_mov[,1], covariates_df$SOMME[2193:2922])
 accuracy(pred_arx_7_exp[,1], covariates_df$SOMME[2193:2922])
 
 #Coverage rates for all 3 models
+#No retrain
+cv_noretrain <- c()
+for (i in seq(1, length(pred_arx_7[,1]))){
+  if ((final_data$SOMME[(end_train+i)] >= pred_arx_7[i , 2]) & 
+      (final_data$SOMME[(end_train+i)] <= pred_arx_7[i , 3])){
+    cv_noretrain[i] = 1
+  } else {
+    cv_noretrain[i] = 0
+  }
+}
+
+#Moving window
+cv_mov_retrain <- c()
+for (i in seq(1, length(pred_arx_7_mov[,1]))){
+  if ((final_data$SOMME[(end_train+i)] >= pred_arx_7_mov[i , 2]) & 
+      (final_data$SOMME[(end_train+i)] <= pred_arx_7_mov[i , 3])){
+    cv_mov_retrain[i] = 1
+  } else {
+    cv_mov_retrain[i] = 0
+  }
+}
+
+#Expanding window
+cv_exp_retrain <- c()
+for (i in seq(1, length(pred_arx_7_exp[,1]))){
+  if ((final_data$SOMME[(end_train+i)] >= pred_arx_7_exp[i , 2]) & 
+      (final_data$SOMME[(end_train+i)] <= pred_arx_7_exp[i , 3])){
+    cv_exp_retrain[i] = 1
+  } else {
+    cv_exp_retrain[i] = 0
+  }
+}
+
+print(mean(cv_noretrain))
+print(mean(cv_mov_retrain))
+print(mean(cv_exp_retrain))
+
+
+#Coverage graph on moving window ARX model
+par(mfrow=c(1,1))
+plot(covariates_df$SOMME[2193:2293], type = "l", ylab="Previsions",
+     main = "Taux de couverture du modele ARX avec moving window of
+     first 100 days of validation")
+lines(pred_arx_7_mov[,1][0:100], col="red")
+lines(pred_arx_7_mov[,2][0:100], col="blue", lty = 2)
+lines(pred_arx_7_mov[,3][0:100], col="blue", lty=2)
+legend(x="topright", legend=c("Observations",
+                            "Previsions","Borne inf. et borne sup."), 
+       col=c("black", "red", "blue"), 
+       lty=1, bg="light blue", cex=0.8)
+
