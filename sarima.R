@@ -888,7 +888,7 @@ colnames(rep_daily_move) <- make.names(c("Observed",
 print(rep_daily_move)
 
 #                                                         Observed
-# Prediction.interval.80.....Moving.Window.Daily.retrain      610
+# Prediction.interval.80.....Moving.Window.Daily.retrain    610
 # Prediction.interval.95...Moving.Window.Daily.retrain      684
 #                                                        Total
 # Prediction.interval.80....Moving.Window.Daily.retrain   730
@@ -1020,18 +1020,16 @@ print((dm.test(c(fc1_no_retrain_exp)-c(out.sample),
 # CI.95..Q4      175   180       97.2
 
 
-
-
 ## SARIMA DAILY RETRAIN TEST ANALYSIS ##
 
 
 yt_test <- window(yt , start = '2020-01-01' , end = '2021-12-31')
 
 n <- length(yt_test)
-fc1_daily_retrain_exp_test <- ts(numeric(n))
+fc1_no_retrain_exp_test <- ts(numeric(n))
 
-CI.exp_ret_test_sarima <- matrix(nrow=n, ncol=8)
-colnames(CI.exp_ret_test_sarima) <- c("lo95","hi95",
+CI.exp_noret_test_sarima <- matrix(nrow=n, ncol=8)
+colnames(CI.exp_noret_test_sarima) <- c("lo95","hi95",
                               "forecast","observed","in CI95", 
                               "lo80","hi80","in CI80")
 
@@ -1047,7 +1045,7 @@ for(i in 1:n) {
                                s3$fit$coef[3],
                                s3$fit$coef[4]
                                ))
-  fc1_daily_retrain_exp_test[i] <- ts(s3.for_test$pred)
+  fc1_no_retrain_exp_test[i] <- ts(s3.for_test$pred)
   # prediction interval expanding window
   lo.s_test <- s3.for_test$pred-1.96*s3.for_test$se
   hi.s_test <- s3.for_test$pred+1.96*s3.for_test$se
@@ -1056,14 +1054,14 @@ for(i in 1:n) {
   hi80.s_test <- s3.for_test$pred+1.28*s3.for_test$se
   in80.s_test <- (yt_test[i] >= lo80.s_test && yt_test[i] <= 
                  hi80.s_test)
-  CI.exp_ret_test_sarima[i,] <- c(lo.s_test, hi.s_test, 
+  CI.exp_noret_test_sarima[i,] <- c(lo.s_test, hi.s_test, 
                          s3.for_test$pred, yt_test[i], in95.s_test,
                          lo80.s_test,hi80.s_test,in80.s_test)
   
 }
 
 cat("Overall Test Performance of SARIMA(1,1,2)(0,1,1)[7] :","\n")
-test.eval_sarima <- rbind(accuracy(fc1_daily_retrain_exp_test, 
+test.eval_sarima <- rbind(accuracy(fc1_no_retrain_exp_test, 
                                    yt_test))
 rownames(test.eval_sarima) <- make.names(c("Test Set"))
 print(test.eval_sarima)
@@ -1072,13 +1070,13 @@ print(test.eval_sarima)
 cat("Overall Quarterly SARIMA Test Performance:","\n")
 qall.eval_test_sarima <- rbind(
   cbind(
-    accuracy(fc1_daily_retrain_exp_test[c(1:90,366:455)], 
+    accuracy(fc1_no_retrain_exp_test[c(1:90,366:455)], 
              yt_test[c(1:90,366:455)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(91:181,456:546)], 
+    accuracy(fc1_no_retrain_exp_test[c(91:181,456:546)], 
              yt_test[c(91:181,456:546)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(182:273,547:638)], 
+    accuracy(fc1_no_retrain_exp_test[c(182:273,547:638)], 
              yt_test[c(182:273,547:638)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(274:365,639:730)], 
+    accuracy(fc1_no_retrain_exp_test[c(274:365,639:730)], 
              yt_test[c(274:365,639:730)])[,5]))
 rownames(qall.eval_test_sarima) <- make.names(c("Test Performance"))
 colnames(qall.eval_test_sarima) <- make.names(c("Q1","Q2","Q3","Q4"))
@@ -1089,9 +1087,9 @@ print(qall.eval_test_sarima)
 cat("Overall Separate Yearly SARIMA Test Performance:","\n")
 all.eval_test_sep_year_sarima <- rbind(
   cbind(
-    accuracy(fc1_daily_retrain_exp_test[c(1:365)], 
+    accuracy(fc1_no_retrain_exp_test[c(1:365)], 
              yt_test[c(1:365)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(366:730)], 
+    accuracy(fc1_no_retrain_exp_test[c(366:730)], 
              yt_test[c(366:730)])[,5]))
 rownames(all.eval_test_sep_year_sarima) <- make.names(
                                              c("Test Performance"))
@@ -1103,21 +1101,21 @@ print(all.eval_test_sep_year_sarima)
 cat("Overall Separate SARIMA Quarters Test Performance:","\n")
 qall.eval_test_sep_sarima <- rbind(
   cbind(
-    accuracy(fc1_daily_retrain_exp_test[c(1:90)], 
+    accuracy(fc1_no_retrain_exp_test[c(1:90)], 
              yt_test[c(1:90)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(91:181)], 
+    accuracy(fc1_no_retrain_exp_test[c(91:181)], 
              yt_test[c(91:181)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(182:273)], 
+    accuracy(fc1_no_retrain_exp_test[c(182:273)], 
              yt_test[c(182:273)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(274:365)], 
+    accuracy(fc1_no_retrain_exp_test[c(274:365)], 
              yt_test[c(274:365)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(366:455)], 
+    accuracy(fc1_no_retrain_exp_test[c(366:455)], 
              yt_test[c(366:455)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(456:546)], 
+    accuracy(fc1_no_retrain_exp_test[c(456:546)], 
              yt_test[c(456:546)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(547:638)], 
+    accuracy(fc1_no_retrain_exp_test[c(547:638)], 
              yt_test[c(547:638)])[,5],
-    accuracy(fc1_daily_retrain_exp_test[c(639:730)], 
+    accuracy(fc1_no_retrain_exp_test[c(639:730)], 
              yt_test[c(639:730)])[,5]))       
 rownames(qall.eval_test_sep_sarima) <- make.names(
                                         c("Test Performance"))
@@ -1131,7 +1129,7 @@ print(qall.eval_test_sep_sarima)
 ## Confidence interval analysis ##
 
 # Confidence interval Analysis for Expanding
-df <- data.frame(CI.exp_ret_test_sarima)
+df <- data.frame(CI.exp_noret_test_sarima)
 df$date <-as.Date(data$DATE[(startTest):endTest])
 
 matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
@@ -1148,15 +1146,15 @@ legend("topright", legend=c("95% CI", "80% CI", "Observed"), lty=1,
 
 cat("Report on the prediction interval for Expanding:")
 # Calculate the % of the observed values fall into the CI
-rep.tbats_test <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+rep.sarima_test <- rbind(cbind(sum(df$in.CI80), nrow(df), 
                    sum(df$in.CI80)/nrow(df)*100),
              cbind(sum(df$in.CI95), nrow(df), 
                    sum(df$in.CI95)/nrow(df)*100))
-rownames(rep.tbats_test) <- make.names(c("Prediction interval 80%",
+rownames(rep.sarima_test) <- make.names(c("Prediction interval 80%",
                               "Prediction interval 95%"))
-colnames(rep.tbats_test) <- make.names(c("Observed",
+colnames(rep.sarima_test) <- make.names(c("Observed",
                                           "Total","Percentage"))
-print(rep.tbats_test)
+print(rep.sarima_test)
 
 # exposure by quarters
 rep.sarima_test_quarter <- rbind(
@@ -1191,11 +1189,31 @@ colnames(rep.sarima_test_quarter) <- make.names(c("Observed",
 print(rep.sarima_test_quarter)
 
 
+## SUMMARY SARIMA SARIMA(1,1,2)(0,1,1) [7] Expanding window
+##            ME  RMSE   MAE    MPE MAPE
+# Test.Set -118 27442 19944 -0.443 5.28
 
+#                    Q1  Q2  Q3   Q4
+# Test.Performance 5.95 5.9 4.5 4.78
 
+#                  X2020 X2021
+# Test.Performance  5.56  4.99
 
+#             Q1.2020 Q2.2020 Q3.2020 Q4.2020 Q1.2021 Q2.2021 Q3.2021
+# Test.Perfor   5.63    6.41    4.66    5.56    6.28    5.39    4.34
+#                Q4.2021
+# Test.Performance   4
 
+#                         Observed Total Percentage
+# Prediction.interval.80.      609   730       83.4
+# Prediction.interval.95.      347   730       93.7
 
-
-
-
+#           Observed Total Percentage
+# CI.80..Q1      151   180       83.9
+# CI.80..Q2      146   180       81.1
+# CI.80..Q3      150   180       83.3
+# CI.80..Q4      162   180       90.0
+# CI.95..Q1      106   180       94.5
+# CI.95..Q2       76   180       93.4
+# CI.95..Q3       46   180       95.7
+# CI.95..Q4      119   180       92.7
