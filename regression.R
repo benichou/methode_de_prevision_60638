@@ -580,9 +580,9 @@ lower_1.4 <- pred_1.4[2:730] - 1.95 * sqrt(model_1.4$sigma2)
 out_1.4 <- (yt_valid[2:730] < lower_1.4 |yt_valid[2:730]> upper_1.4 )
 print(1 - mean(out_1.4))
 #-------------------------------------------------------------------
-# #The arima models seem to all over estimate the demand and byt 
+# #The arima models seem over estimate the demand and with 
 # #quit an important marging 
-# #out startegy to correct this is to make a model that retrains
+# #our startegy to correct this is to make a model that retrains
 # #at each iteration for the whole validation period
 # #it will only take a portion of the training
 # 
@@ -594,6 +594,8 @@ print(1 - mean(out_1.4))
 # pred_p <- c()
 # pred_upr <- c()
 # pred_lwr <- c()
+# pred_upr_0.8 <- c()
+# pred_lwr_0.8 <- c()
 # 
 # for (i in 1:nrow(yt_valid)){
 #   #fit a model using ARIMA(1,1,2)
@@ -618,6 +620,9 @@ print(1 - mean(out_1.4))
 #   pred_p[i] <- pred[[1]][1]
 #   pred_upr[i] <- pred_p[i] + 1.96 * sqrt(model_t$sigma2)
 #   pred_lwr[i] <- pred_p[i] - 1.96 * sqrt(model_t$sigma2)
+#   pred_upr_0.8[i] <- pred_p[i] + 1.28 * sqrt(model_t$sigma2)
+#   pred_lwr_0.8[i] <- pred_p[i] - 1.28 * sqrt(model_t$sigma2)
+#   
 #   print(i)
 # }
 # 
