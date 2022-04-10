@@ -204,8 +204,10 @@ for (i in 1:nrow(yt_valid)){
   pred_r_1_nn[i] <- pred_nn[[1]][1]
   pred_r_1_upr_nn[i] <- pred_r_1_nn[i] + 1.96 * sqrt(model_r$sigma2)
   pred_r_1_lwr_nn[i] <- pred_r_1_nn[i] - 1.96 * sqrt(model_r$sigma2)
-  pred_r_1_upr_0.8_nn[i] <- pred_r_1_nn[i] + 1.28 * sqrt(model_r$sigma2)
-  pred_r_1_lwr_0.8_nn[i] <- pred_r_1_nn[i] - 1.28 * sqrt(model_r$sigma2)
+  pred_r_1_upr_0.8_nn[i] <- pred_r_1_nn[i] + 
+    1.28 * sqrt(model_r$sigma2)
+  pred_r_1_lwr_0.8_nn[i] <- pred_r_1_nn[i] - 
+    1.28 * sqrt(model_r$sigma2)
 
   print(i)
   print(j)
@@ -243,6 +245,8 @@ out_r_1_0.8_nn <- (yt_valid < pred_r_1_lwr_0.8_nn |
                      yt_valid> pred_r_1_upr_0.8_nn)
 print(1 - mean(out_r_1_0.8_nn))
 
+#-----------------------------------------------------------------
+#The code below is for the best model
 #daily retrain
 
 #with noise
@@ -287,13 +291,20 @@ for (i in 1:nrow(yt_valid)){
   pred_r_2_nn[i] <- pred_nn[[1]][1]
   pred_r_2_upr_nn[i] <- pred_r_2_nn[i] + 1.96 * sqrt(model_r_2$sigma2)
   pred_r_2_lwr_nn[i] <- pred_r_2_nn[i] - 1.96 * sqrt(model_r_2$sigma2)
-  pred_r_2_upr_0.8_nn[i] <- pred_r_2_nn[i] + 1.28 * sqrt(model_r_2$sigma2)
-  pred_r_2_lwr_0.8_nn[i] <- pred_r_2_nn[i] - 1.28 * sqrt(model_r_2$sigma2)
+  pred_r_2_upr_0.8_nn[i] <- pred_r_2_nn[i] + 
+    1.28 * sqrt(model_r_2$sigma2)
+  pred_r_2_lwr_0.8_nn[i] <- pred_r_2_nn[i] - 
+    1.28 * sqrt(model_r_2$sigma2)
   
   print(i)
   print(j)
 }
 
+
+
+# Les vecteurs qui t'interesse pour le rapport sont :
+# pred_r_2 , pred_r_2_lwr , pred_r_2_upr ,pred_r_2_lwr_0.8 ,
+# pred_r_2_upr_0.8
 
 #performance with noise
 print("Performance WITH et 1 RETRAIN")
@@ -414,5 +425,146 @@ print(table_1)
 # Q4 3.829962 0.9184783 0.7880435
 
 
+#-------------------------------------------------------------------
+#Sur le test set
+
+pred_test <- c()
+pred_test_upr <- c()
+pred_test_lwr <- c()
+pred_test_upr_0.8 <- c()
+pred_test_lwr_0.8 <- c()
 
 
+
+for (i in 1:730){
+  #we have lag 2 data so we cant start at 1
+  s =  731 + i
+  e = 2921 + i
+  
+  model_r_2 <- arima(
+    yt[s:e] , xreg = xreg[s:e , ] ,
+    order = c(5 , 0 , 2))
+  
+  j = e + 1
+  pred <- predict(model_r_2 , n.ahead = 1 , 
+                  newxreg = xreg[j ,  ]
+  )
+  
+  pred_test[i] <- pred[[1]][1]
+  pred_test_upr[i] <- pred_test[i] + 1.96 * sqrt(model_r_2$sigma2)
+  pred_test_lwr[i] <- pred_test[i] - 1.96 * sqrt(model_r_2$sigma2)
+  pred_test_upr_0.8[i] <- pred_test[i] + 1.28 * sqrt(model_r_2$sigma2)
+  pred_test_lwr_0.8[i] <- pred_test[i] - 1.28 * sqrt(model_r_2$sigma2)
+  
+  print(i)
+  print(j)
+}
+
+
+
+# Les vecteurs qui t'interesse pour le rapport sont :
+# pred_r_2 , pred_r_2_lwr , pred_r_2_upr ,pred_r_2_lwr_0.8 ,
+# pred_r_2_upr_0.8
+
+yt_test <- final_data$SOMME[2923:3652]
+#performance with noise
+print("Performance WITH et 1 RETRAIN")
+accuracy(pred_test , yt_test )
+
+# Results for Franck
+# ME     RMSE      MAE        MPE     MAPE
+# Test set 1229.67 20296.71 15039.73 0.09132924 3.946035
+
+
+#coverage with noise
+print("coverage 0.95")
+out_test <- (yt_test < pred_test_lwr |yt_test> pred_test_upr)
+print(1 - mean(out_test))
+
+# Result 0.95
+# 0.9068493
+
+print("coverage 0.8")
+out_test_0.8 <- (yt_test < pred_test_lwr_0.8 |
+                  yt_test> pred_test_upr_0.8)
+print(1 - mean(out_test_0.8))
+
+# Result 0.8 
+# 0.7534247
+
+#??valuation par trimestre sur la validation
+df_2 <- data.frame(yt_test , 
+                   pred_test , 
+                   pred_test_lwr ,
+                   pred_test_upr ,
+                   pred_test_lwr_0.8 ,
+                   pred_test_upr_0.8 ,
+                   final_data$quarter[(e-729) : e]
+)
+
+colnames(df_2) <- c("obs",
+                    "pred" , 
+                    "lwr_0.95",
+                    "upr_0.95",
+                    "lwr_0.8" ,
+                    "upr_0.8" ,
+                    "quart")
+
+print("Performance for quarter 1")
+q1_filter <- which(df_2$quart == "Q1")
+q2_filter <- which(df_2$quart == "Q2")
+q3_filter <- which(df_2$quart == "Q3")
+q4_filter <- which(df_2$quart == "Q4")
+
+#MAPE
+mapes <- c(accuracy(df_2[q1_filter , 1] , 
+                    df_2[q1_filter , 2])[5] ,
+           accuracy(df_2[q2_filter , 1] , 
+                    df_2[q2_filter , 2])[5] ,
+           accuracy(df_2[q3_filter , 1] , 
+                    df_2[q3_filter , 2])[5] ,
+           accuracy(df_2[q4_filter , 1] , 
+                    df_2[q4_filter , 2])[5])
+print(mapes)
+cv_0.95 <-c(
+  ( 1 - mean(df_2[q1_filter , 1]  < df_2[q1_filter, 3] |
+               df_2[q1_filter , 1]  > df_2[q1_filter, 4])) ,
+
+  1 - mean(df_2[q2_filter , 1]  < df_2[q2_filter, 3] |
+             df_2[q2_filter , 1]  > df_2[q2_filter, 4]) ,
+  
+  1 - mean(df_2[q3_filter , 1]  < df_2[q3_filter, 3] |
+             df_2[q3_filter , 1]  > df_2[q3_filter, 4]) ,
+  
+  1 - mean(df_2[q4_filter , 1]  < df_2[q4_filter, 3] |
+             df_2[q4_filter , 1]  > df_2[q4_filter, 4])
+)
+
+cv_0.80 <-c(
+  ( 1 - mean(df_2[q1_filter , 1]  < df_2[q1_filter, 5] |
+               df_2[q1_filter , 1]  > df_2[q1_filter, 6])) ,
+  
+  1 - mean(df_2[q2_filter , 1]  < df_2[q2_filter, 5] |
+             df_2[q2_filter , 1]  > df_2[q2_filter, 6]) ,
+  
+  1 - mean(df_2[q3_filter , 1]  < df_2[q3_filter, 5] |
+             df_2[q3_filter , 1]  > df_2[q3_filter, 6]) ,
+  
+  1 - mean(df_2[q4_filter , 1]  < df_2[q4_filter, 5] |
+             df_2[q4_filter , 1]  > df_2[q4_filter, 6])
+)
+
+print(cv_0.80)
+
+#Table performance 
+table_2 <- data.frame(mapes , cv_0.95 , cv_0.80 )
+rownames(table_2) <- c('Q1' , 'Q2' , 'Q3' , 'Q4')
+
+print(table_2)
+
+#results
+# mapes   cv_0.95   cv_0.80
+# Q1 3.740571 0.9116022 0.7845304
+# Q2 4.292909 0.8791209 0.7142857
+# Q3 3.824086 0.9076087 0.6956522
+# Q4 3.911163 0.9289617 0.8196721
