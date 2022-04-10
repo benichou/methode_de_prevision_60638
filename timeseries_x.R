@@ -25,19 +25,49 @@ yt <- timeSeries(final_data$SOMME , final_data$DATE)
 yt_train <- window(yt , start = '2012-01-01' , end = '2017-12-31')
 yt_valid <- window(yt , start = '2018-01-01' , end = '2019-12-31')
 
+#temps
+t <- seq(1 , length(yt) , 1)
+t_train <- wind_t(t , set = 't')
+t_valid <- wind_t(t , set = 'v')
+
 # - CDD et HDD avec leur bruit
 cddt <- timeSeries(final_data$noisy_CDD , final_data$DATE)
 cddt_train <- window(cddt , start = '2012-01-01' , end = '2017-12-31')
 cddt_valid <- window(cddt , start = '2018-01-01' , end = '2019-12-31')
 
+#no noise for comparison
+cddt_nn <- timeSeries(final_data$CDD , final_data$DATE)
+cddt_nn_train <- window(cddt_nn , 
+                        start = '2012-01-01' , end = '2017-12-31')
+cddt_nn_valid <- window(cddt_nn , 
+                        start = '2018-01-01' , end = '2019-12-31')
+
+
 hddt <- timeSeries(final_data$noisy_HDD , final_data$DATE)
 hddt_train <- window(hddt , start = '2012-01-01' , end = '2017-12-31')
 hddt_valid <- window(hddt , start = '2018-01-01' , end = '2019-12-31')
+
+#no noise for comparison
+hddt_nn <- timeSeries(final_data$HDD , final_data$DATE)
+hddt_nn_train <- window(hddt_nn , 
+                        start = '2012-01-01' , end = '2017-12-31')
+hddt_nn_valid <- window(hddt_nn , 
+                        start = '2018-01-01' , end = '2019-12-31')
+
+
 
 # Refroidissement avec son bruit
 cpt <- timeSeries(final_data$noisy_cp, final_data$DATE)
 cpt_train <- window(cpt , start = '2012-01-01' , end = '2017-12-31')
 cpt_valid <- window(cpt , start = '2018-01-01' , end = '2019-12-31')
+
+#no noise
+cpt_nn <- timeSeries(final_data$CP, final_data$DATE)
+cpt_nn_train <- window(cpt_nn , 
+                       start = '2012-01-01' , end = '2017-12-31')
+cpt_nn_valid <- window(cpt_nn , 
+                       start = '2018-01-01' , end = '2019-12-31')
+
 
 #humidex avec son bruit egalement
 humt <- timeSeries(final_data$noisy_humidex, final_data$DATE)
