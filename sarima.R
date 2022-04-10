@@ -468,7 +468,42 @@ rownames(rep) <- make.names(c("Prediction interval 80%
 colnames(rep) <- make.names(c("Observed","Total","Percentage"))
 print(rep)
 
-#                                                         Observed
+
+# exposure per quarter daily
+
+# exposure by quarters EXPANDING WINDOW
+rep.sarima_val_quarters <- rbind(
+cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
+sum(df$in.CI80[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
+sum(df$in.CI80[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
+sum(df$in.CI80[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
+sum(df$in.CI80[c(274:365,639:730)])/180*100),
+cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
+sum(df$in.CI95[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
+sum(df$in.CI95[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
+sum(df$in.CI95[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
+sum(df$in.CI95[c(274:365,639:730)])/180*100))
+
+
+rownames(rep.sarima_val_quarters) <- make.names(c("CI 80% Q1",
+                                         "CI 80% Q2",
+                                         "CI 80% Q3", 
+                                         "CI 80% Q4", 
+                                         "CI 95% Q1",
+                                         "CI 95% Q2",
+                                         "CI 95% Q3", 
+                                         "CI 95% Q4"))
+colnames(rep.sarima_val_quarters) <- make.names(c("Observed",
+                                          "Total","Percentage"))
+print(rep.sarima_val_quarters)
+
+#                                                        Observed
 # Prediction.interval.80......Expanding.Window.No.retrain   609
 # Prediction.interval.95......Expanding.Window.No.retrain   683
 #                                                          Total
@@ -477,6 +512,16 @@ print(rep)
 #                                                        Percentage
 # Prediction.interval.80.......Expanding.Window.No.retrain   83.4
 # Prediction.interval.95.......Expanding.Window.No.retrain   93.6
+
+#           Observed Total Percentage
+# CI.80..Q1      140   180       77.8
+# CI.80..Q2      157   180       87.2
+# CI.80..Q3      159   180       88.3
+# CI.80..Q4      153   180       85.0
+# CI.95..Q1      160   180       88.9
+# CI.95..Q2      176   180       97.8
+# CI.95..Q3      172   180       95.6
+# CI.95..Q4      175   180       97.2
 
 # Prediction interval for SARIMA(1,1,2)(0,1,1) [7] Moving
 
@@ -511,19 +556,67 @@ colnames(rep_mov_no_ret) <- make.names(c("Observed",
                                          "Total","Percentage"))
 print(rep_mov_no_ret)
 
+# exposure per quarter daily Moving Window
+
+# exposure by quarters
+rep.sarima_val_quarters <- rbind(
+cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
+sum(df$in.CI80[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
+sum(df$in.CI80[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
+sum(df$in.CI80[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
+sum(df$in.CI80[c(274:365,639:730)])/180*100),
+cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
+sum(df$in.CI95[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
+sum(df$in.CI95[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
+sum(df$in.CI95[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
+sum(df$in.CI95[c(274:365,639:730)])/180*100))
+
+
+rownames(rep.sarima_val_quarters) <- make.names(c("CI 80% Q1",
+                                         "CI 80% Q2",
+                                         "CI 80% Q3", 
+                                         "CI 80% Q4", 
+                                         "CI 95% Q1",
+                                         "CI 95% Q2",
+                                         "CI 95% Q3", 
+                                         "CI 95% Q4"))
+colnames(rep.sarima_val_quarters) <- make.names(c("Observed",
+                                          "Total","Percentage"))
+print(rep.sarima_val_quarters)
+
 #                                                         Observed
 # Prediction.interval.80.......Moving.Window.No.retrain      612
 # Prediction.interval.95.......Moving.Window.No.retrain      685
-#                                                        Total
-# Prediction.interval.80.......Moving.Window.No.retrain   730
-# Prediction.interval.95.......Moving.Window.No.retrain   730
+#                                                          Total
+# Prediction.interval.80.......Moving.Window.No.retrain     730
+# Prediction.interval.95.......Moving.Window.No.retrain     730
 #                                                          Percentage
 # Prediction.interval.80.......Moving.Window.No.retrain       83.8
 # Prediction.interval.95.......Moving.Window.No.retrain       93.8
+
+#          Observed Total Percentage
+# CI.80..Q1      140   180       77.8
+# CI.80..Q2      157   180       87.2
+# CI.80..Q3      159   180       88.3
+# CI.80..Q4      156   180       86.7
+# CI.95..Q1      160   180       88.9
+# CI.95..Q2      177   180       98.3
+# CI.95..Q3      172   180       95.6
+# CI.95..Q4      176   180       97.8
+
+
+
 #graphics.off()
 dev.off(dev.cur())
 
-## WITH DAILY RETRAIN
+## WITH DAILY RETRAIN --> DISCARDED BECAUSE IT IS SAME THE SAME 
+## AS WHEN TRAINED ONLY ONCE
 
 # at every time step make sure to include one data from val
 # refit with the new data too to see the improvement at
@@ -624,10 +717,19 @@ rownames(sarima.eval_daily_retrain) <- make.names(
        "SARIMA(1,1,2,0,1,1)[7] Moving Window Daily Retrain"))
 print(sarima.eval_daily_retrain)
 
-# daily performance has the same performance
+# daily performance has the same performance as when the model
+# is trained once
 #                                                       MAPE
 # SARIMA.1.1.2.0.1.1..7..Expanding.Window.Daily.retrain 5.49
 # SARIMA.1.1.2.0.1.1..7..Moving.Window.Daily.Retrain    5.49
+                                                      ME  RMSE   MAE    
+# SARIMA.1.1.2.0.1.1.7..Expanding.Window.Daily.retra -421 29224 21038 
+# SARIMA.1.1.2.0.1.1.7..Moving.Window.Daily.Retrain  -441 29241 21030 
+# MPE
+# -0.561
+# -0.563
+
+
 cat("Quarterly Performance:","\n")
 q.eval_daily_retrain <- rbind(
   #SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain
@@ -694,6 +796,62 @@ rownames(rep_daily_exp) <- make.names(c("Prediction interval 80%
 colnames(rep_daily_exp) <- make.names(c("Observed",
                                         "Total","Percentage"))
 print(rep_daily_exp)
+
+#                                                           Observed
+# Prediction.interval.80......Expanding.Window.Daily.retrain   610
+# Prediction.interval.95......Expanding.Window.Daily.retrain   683
+#                                                             Total
+# Prediction.interval.80......Expanding.Window.Daily.retrain   730
+# Prediction.interval.95......Expanding.Window.Daily.retrain   730
+#                                                          Percentage
+# Prediction.interval.80......Expanding.Window.Daily.retrain   83.6
+# Prediction.interval.95......Expanding.Window.Daily.retrain   93.6
+
+# exposure per quarter daily
+
+# exposure by quarters
+rep.sarima_val_quarter <- rbind(
+cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
+sum(df$in.CI80[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
+sum(df$in.CI80[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
+sum(df$in.CI80[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
+sum(df$in.CI80[c(274:365,639:730)])/180*100),
+cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
+sum(df$in.CI95[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
+sum(df$in.CI95[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
+sum(df$in.CI95[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
+sum(df$in.CI95[c(274:365,639:730)])/180*100))
+
+
+rownames(rep.sarima_val_quarter) <- make.names(c("CI 80% Q1",
+                                         "CI 80% Q2",
+                                         "CI 80% Q3", 
+                                         "CI 80% Q4", 
+                                         "CI 95% Q1",
+                                         "CI 95% Q2",
+                                         "CI 95% Q3", 
+                                         "CI 95% Q4"))
+colnames(rep.sarima_val_quarter) <- make.names(c("Observed",
+                                          "Total","Percentage"))
+print(rep.sarima_val_quarter)
+
+
+## 
+#           Observed Total Percentage
+# CI.80..Q1      141   180       78.3
+# CI.80..Q2      156   180       86.7
+# CI.80..Q3      158   180       87.8
+# CI.80..Q4      155   180       86.1
+# CI.95..Q1      160   180       88.9
+# CI.95..Q2      176   180       97.8
+# CI.95..Q3      172   180       95.6
+# CI.95..Q4      175   180       97.2
 
 
 # Prediction interval for SARIMA(1,1,2)(0,1,1) [7] Moving
@@ -814,7 +972,52 @@ print((dm.test(c(fc1_daily_retrain_exp)-c(out.sample),
 # <0.0000000000000002
 # alternative hypothesis: two.sided
 
-## SUMMARY 
+## not retrained sarima expanding window vs naive no change
+
+print((dm.test(c(fc1_no_retrain_exp)-c(out.sample), 
+              c(c(forecast_next_day))-c(out.sample))))
+
+# data:  c(fc1_no_retrain_exp) - c(out.sample)c(c(forecast_next_day))
+# - c(out.sample)
+# DM = 10, Forecast horizon = 1, Loss function power = 2, p-value
+# <0.0000000000000002
+# alternative hypothesis: two.sided
+
+## SUMMARY VALIDATION SARIMA UNIQUE RETRAIN
+
+## We choose the SARIMA(1,1,2)(0,1,1) [7] Expanding model trained
+# once because the daily retrain does not lead to an improvement in
+# MAPE and with expanding window because expanding window vs moving 
+#window leads to similar MAPE at 5.49
+
+#                                           ME  RMSE   MAE  MPE  MAPE
+# SARIMA.1.1.2.0.1.1..7.Ex.Window.No.ret -434 29227 21040 -0.567 5.49
+# SARIMA.1.1.2.0.1.1..7.Mov.Window.No.Ret -429 29228 21041-0.566 5.49
+
+#                                                  Q1   Q2   Q3   Q4
+# SARIMA.1.1.2.0.1.1..7.Expanding.Win.No.retrain 6.95 5.15 4.35 5.54
+# SARIMA.1.1.2.0.1.1..7.Moving.Win.No.Retrain    6.95 5.15 4.35 5.54
+
+
+#                                                        Observed
+# Prediction.interval.80......Expanding.Window.No.retrain   609
+# Prediction.interval.95......Expanding.Window.No.retrain   683
+#                                                          Total
+# Prediction.interval.80......Expanding.Window.No.retrain   730
+# Prediction.interval.95.......Expanding.Window.No.retrain   730
+#                                                        Percentage
+# Prediction.interval.80.......Expanding.Window.No.retrain   83.4
+# Prediction.interval.95.......Expanding.Window.No.retrain   93.6
+
+#           Observed Total Percentage
+# CI.80..Q1      140   180       77.8
+# CI.80..Q2      157   180       87.2
+# CI.80..Q3      159   180       88.3
+# CI.80..Q4      153   180       85.0
+# CI.95..Q1      160   180       88.9
+# CI.95..Q2      176   180       97.8
+# CI.95..Q3      172   180       95.6
+# CI.95..Q4      175   180       97.2
 
 
 
