@@ -316,6 +316,39 @@ rownames(rep.r) <- make.names(c("Prediction interval 80%",
 colnames(rep.r) <- make.names(c("Observed","Total","Percentage"))
 print(rep.r)
 
+# analysis val per quarter
+
+rep.tbats_val_quarter <- rbind(
+cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
+sum(df$in.CI80[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
+sum(df$in.CI80[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
+sum(df$in.CI80[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
+sum(df$in.CI80[c(274:365,639:730)])/180*100),
+cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
+sum(df$in.CI95[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
+sum(df$in.CI95[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
+sum(df$in.CI95[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
+sum(df$in.CI95[c(274:365,639:730)])/180*100))
+
+
+rownames(rep.tbats_val_quarter) <- make.names(c("CI 80% Q1",
+                                         "CI 80% Q2",
+                                         "CI 80% Q3", 
+                                         "CI 80% Q4", 
+                                         "CI 95% Q1",
+                                         "CI 95% Q2",
+                                         "CI 95% Q3", 
+                                         "CI 95% Q4"))
+colnames(rep.tbats_val_quarter) <- make.names(c("Observed",
+                                          "Total","Percentage"))
+print(rep.tbats_val_quarter)
+
 
 dev.off(dev.cur())
 
@@ -385,7 +418,7 @@ testSample <- msts(window(SOMME.ts, startTest, endTest),
 n_last <- length(out.sample)
 fcasts.r_test <- msts(numeric(n_last), seasonal.periods=c(7,365.25), 
                  start=c(2020,1))
-CI.r_test <- matrix(nrow=n, ncol=8)
+CI.r_test <- matrix(nrow=n_last, ncol=8)
 colnames(CI.r_test) <- c("observed","lo80","hi80","in CI80",
                   "lo95","hi95","in CI95","forecast")
 
@@ -501,19 +534,33 @@ colnames(rep.tbats_test) <- make.names(c("Observed",
 print(rep.tbats_test)
 
 # exposure by quarters
+rep.tbats_test_quarter <- rbind(
+cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
+sum(df$in.CI80[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
+sum(df$in.CI80[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
+sum(df$in.CI80[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
+sum(df$in.CI80[c(274:365,639:730)])/180*100),
+cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
+sum(df$in.CI95[c(1:90,366:455)])/180*100),
+cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
+sum(df$in.CI95[c(91:181,456:546)])/180*100),
+cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
+sum(df$in.CI95[c(182:273,547:638)])/180*100),
+cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
+sum(df$in.CI95[c(274:365,639:730)])/180*100))
 
-# df$in.CI80[c(1:90,366:455)]
 
-
-
-
-
-
-# accuracy(fcasts.r_test[c(1:90,366:455)], 
-#              testSample[c(1:90,366:455)])[,5],
-#     accuracy(fcasts.r_test[c(91:181,456:546)], 
-#              testSample[c(91:181,456:546)])[,5],
-#     accuracy(fcasts.r_test[c(182:273,547:638)], 
-#              testSample[c(182:273,547:638)])[,5],
-#     accuracy(fcasts.r_test[c(274:365,639:730)], 
-#              testSample[c(274:365,639:730)])[,5]))
+rownames(rep.tbats_test_quarter) <- make.names(c("CI 80% Q1",
+                                         "CI 80% Q2",
+                                         "CI 80% Q3", 
+                                         "CI 80% Q4", 
+                                         "CI 95% Q1",
+                                         "CI 95% Q2",
+                                         "CI 95% Q3", 
+                                         "CI 95% Q4"))
+colnames(rep.tbats_test_quarter) <- make.names(c("Observed",
+                                          "Total","Percentage"))
+print(rep.tbats_test_quarter)
