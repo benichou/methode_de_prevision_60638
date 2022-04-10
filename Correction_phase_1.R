@@ -28,6 +28,9 @@ load('master_df.Rdata')
 
 pdf("visual_output/correction_phase1.pdf")
 
+#10 Avril 2021 - analyse de sensibilité du bruit /2 
+#  
+
 #https://www.nrel.gov/docs/fy12osti/56130.pdf
 set.seed(123)
 noise_wind <- c()
@@ -35,7 +38,7 @@ for (i in seq(1 , length(data$AWND))) {
   if (i < 2192) {
     noise_wind[i] = 0
   } else {
-    noise_wind[i] = rnorm(1 , mean = 0 , sd = 0.1187)
+    noise_wind[i] = rnorm(1 , mean = 0 , sd = (0.1187/2))
   }
 }
 
@@ -46,7 +49,7 @@ for (i in seq(1 , length(data$AWND))) {
   if (i < 2192) {
     noise_temp[i] = 0
   } else {
-    noise_temp[i] = rnorm(1 , mean = 0 , sd = 1.5)
+    noise_temp[i] = rnorm(1 , mean = 0 , sd = (1.5/2))
   }
 }
 
@@ -58,7 +61,7 @@ for (i in seq(1 , length(data$AWND))) {
   if (i < 2192) {
     noise_hum[i] = 0
   } else {
-    noise_hum[i] = rnorm(1 , mean = 0 , sd = 2)
+    noise_hum[i] = rnorm(1 , mean = 0 , sd = (2/2))
   }
 }
 
