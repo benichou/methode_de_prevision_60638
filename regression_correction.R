@@ -608,3 +608,12 @@ print(table_2)
 # Q2 4.292909 0.8791209 0.7142857
 # Q3 3.824086 0.9076087 0.6956522
 # Q4 3.911163 0.9289617 0.8196721
+
+#changing the name
+armamodel_valid <- c(pred_r_2)
+armamodel_test <- c(pred_test)
+
+
+save(armamodel_valid, file = "armamodel_valid.Rdata")
+save(armamodel_test, file = "armamodel_test.Rdata")
+
