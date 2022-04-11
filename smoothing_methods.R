@@ -21,7 +21,7 @@ options(digits=3)
 
 # Training set  : 2012/01/01-2017/12/31
 # Validation set: 2018/01/01-2019/12/31
-# Test set      : 2019/01/01-2021/12/31
+# Test set      : 2020/01/01-2021/12/31
 
 SOMME.ts <- ts(data$SOMME, start=1)
 
@@ -770,7 +770,7 @@ newEndTrainDshw = endTrain
 for (i in 1:n.out) {
 if (i%%365 == 0){
     newEndTrainDshw = newEndTrainDshw + 365
-    hw.a.opt = dshw(msts(window(SOMME.ts, begTrain, 
+    dshw.a.opt = dshw(msts(window(SOMME.ts, begTrain, 
                                 newEndTrainDshw),
                         seasonal.periods=c(7,364)
     ), h=1)
@@ -806,6 +806,9 @@ rownames(dshwQ.eval3) <- make.names(c("ValQ1    dshw",
                                     "ValQ4      dshw"))
 print(dshwQ.eval3)
 
+<<<<<<< HEAD
+## TODO: compare the best 2 with a diebold mariano
+=======
 
 ## SUMMARY # (4) 
 ## Taylor Method expanding window re-training every year
@@ -879,3 +882,4 @@ print(dm.test((hw.a.val2[c(1:729)]-out.sample[c(1:729)]),
 
 
 
+>>>>>>> dev

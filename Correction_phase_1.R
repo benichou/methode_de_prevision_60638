@@ -28,6 +28,9 @@ load('master_df.Rdata')
 
 pdf("visual_output/correction_phase1.pdf")
 
+#10 Avril 2021 - analyse de sensibilité du bruit /2 
+#  
+
 #https://www.nrel.gov/docs/fy12osti/56130.pdf
 set.seed(123)
 noise_wind <- c()
@@ -35,7 +38,7 @@ for (i in seq(1 , length(data$AWND))) {
   if (i < 2192) {
     noise_wind[i] = 0
   } else {
-    noise_wind[i] = rnorm(1 , mean = 0 , sd = 0.1187)
+    noise_wind[i] = rnorm(1 , mean = 0 , sd = (0.1187/2))
   }
 }
 
@@ -46,7 +49,7 @@ for (i in seq(1 , length(data$AWND))) {
   if (i < 2192) {
     noise_temp[i] = 0
   } else {
-    noise_temp[i] = rnorm(1 , mean = 0 , sd = 1.5)
+    noise_temp[i] = rnorm(1 , mean = 0 , sd = (1.5/2))
   }
 }
 
@@ -58,7 +61,7 @@ for (i in seq(1 , length(data$AWND))) {
   if (i < 2192) {
     noise_hum[i] = 0
   } else {
-    noise_hum[i] = rnorm(1 , mean = 0 , sd = 2)
+    noise_hum[i] = rnorm(1 , mean = 0 , sd = (2/2))
   }
 }
 
@@ -94,8 +97,8 @@ for (temp in temp_range) {
   for (i in seq(1 , length(data$DATE))) {
     if (data$med_t[i] < temp){
       cp_test[i] = round(((data$AWND[i]**(1/2)) * 
-      (temp - data$med_t[i])),
-                    digits = 4)
+                            (temp - data$med_t[i])),
+                         digits = 4)
     } else {
       cp_test[i] = 0
     }
@@ -115,7 +118,7 @@ cp_final <- c()
 for (i in seq(1 , length(data$DATE))) {
   if (data$med_t[i] < 16.0) {
     cp_final[i] = round(((data$AWND[i]**(1/2)) * 
-    (16.00 - data$med_t[i])),
+                           (16.00 - data$med_t[i])),
                         digits = 4)
   } else {
     cp_final[i] = 0
@@ -124,8 +127,8 @@ for (i in seq(1 , length(data$DATE))) {
 
 #Plot final cp against temps
 plot(x = cp_final , y = data$SOMME ,
-main = 
-paste("La demande contre l'effet de refroissiement Tref: ",16), 
+     main = 
+       paste("La demande contre l'effet de refroissiement Tref: ",16), 
      xlab = 'Effet de refroidissement' , 
      ylab = "Somme de la demande d'??lectricit??" ,
      frame = FALSE)
@@ -136,7 +139,7 @@ noisy_cp <- c()
 for (i in seq(1 , length(noisy_wind))) {
   if (noisy_temp[i] < 16.0) {
     noisy_cp[i]=round(((noisy_wind[i]**(1/2))*(16.00-noisy_temp[i])),
-                        digits = 4)
+                      digits = 4)
   } else {
     noisy_cp[i] = 0
   }
@@ -179,8 +182,8 @@ for (temp in temp_range) {
   for (i in seq(1 , length(data$DATE))) {
     if (data$med_t[i] > temp){
       hum_test[i] = round(( (data$RELATIVE_HUM_PERCENT[i]**(1/2)) * 
-                             (data$med_t[i] - temp)),
-                         digits = 4)
+                              (data$med_t[i] - temp)),
+                          digits = 4)
     } else {
       hum_test[i] = 0
     }
@@ -197,8 +200,8 @@ humidex_final <- c()
 for (i in seq(1 , length(data$DATE))) {
   if (data$med_t[i] > 22){
     humidex_final[i] = round(((data$RELATIVE_HUM_PERCENT[i]**(1/2)) * 
-                           (data$med_t[i] - 22) ),
-                        digits = 4)
+                                (data$med_t[i] - 22) ),
+                             digits = 4)
   } else {
     humidex_final[i] = 0
   }
@@ -206,8 +209,8 @@ for (i in seq(1 , length(data$DATE))) {
 
 #Plot final Humidit??
 plot(x = humidex_final , y = data$SOMME ,
-main = 
-paste("La demande contre l'effet de refroissiement Tref: ",22), 
+     main = 
+       paste("La demande contre l'effet de refroissiement Tref: ",22), 
      xlab = 'Humidit?? transform??e' , 
      ylab = "Somme de la demande d'??lectricit??" ,
      frame = FALSE)
