@@ -309,8 +309,8 @@ for (i in 1:nrow(yt_valid)){
   )
   
   pred_r_2_nn[i] <- pred_nn[[1]][1]
-  pred_r_2_upr_nn[i] <- pred_r_2_nn[i] + 1.96 * sqrt(model_r_2$sigma2)
-  pred_r_2_lwr_nn[i] <- pred_r_2_nn[i] - 1.96 * sqrt(model_r_2$sigma2)
+  pred_r_2_upr_nn[i] <- pred_r_2_nn[i] + 1.96 *sqrt(model_r_2$sigma2)
+  pred_r_2_lwr_nn[i] <- pred_r_2_nn[i] - 1.96 *sqrt(model_r_2$sigma2)
   pred_r_2_upr_0.8_nn[i] <- pred_r_2_nn[i] + 
     1.28 * sqrt(model_r_2$sigma2)
   pred_r_2_lwr_0.8_nn[i] <- pred_r_2_nn[i] - 
@@ -473,8 +473,8 @@ for (i in 1:730){
   pred_test[i] <- pred[[1]][1]
   pred_test_upr[i] <- pred_test[i] + 1.96 * sqrt(model_r_2$sigma2)
   pred_test_lwr[i] <- pred_test[i] - 1.96 * sqrt(model_r_2$sigma2)
-  pred_test_upr_0.8[i] <- pred_test[i] + 1.28 * sqrt(model_r_2$sigma2)
-  pred_test_lwr_0.8[i] <- pred_test[i] - 1.28 * sqrt(model_r_2$sigma2)
+  pred_test_upr_0.8[i] <- pred_test[i] + 1.28 *sqrt(model_r_2$sigma2)
+  pred_test_lwr_0.8[i] <- pred_test[i] - 1.28 *sqrt(model_r_2$sigma2)
   
   print(i)
   print(j)

@@ -51,4 +51,8 @@ print("Run regressions section - correction for phase 2")
 source("./regression_correction.R")
 print("Run ARX section")
 source("./arx_model.R")
+print("Run Diebold Mariano comparison on validation forecast 
+        vectors of the different methods and models in 
+        competition")
+source("./global_comparison_diebold.R")
 print("Double Check successful completion of part 3")
