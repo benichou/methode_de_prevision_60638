@@ -1,3 +1,24 @@
+# Program: arx_model.R
+#
+# Purpose: Adjusts the arx model
+## with moving and expanding window and with or without
+## retraining to minimize the forecast error
+# 
+#
+# Written by: Team G, April 7th 2022
+#
+# Updated: Team G, April 10th 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
+
+
+
+
+
 source("timeseries_x.R")
 
 library(dynlm)
@@ -73,8 +94,8 @@ qqline(arx_7$residuals)
 acf(arx_7$residuals)
 
 #Predictions on validation subset no retrain
-pred_arx_7 <- predict(arx , 
-                    newdata = covariates_df[(end_train+1):end_valid,],
+pred_arx_7 <- predict(arx_7 , 
+                  newdata = covariates_df[(end_train+1):end_valid,],
                     interval = 'prediction',
                     level = c(0.95))
 
@@ -158,7 +179,7 @@ lines(pred_arx_7_mov[,1][0:100], col="red")
 lines(pred_arx_7_mov[,2][0:100], col="blue", lty = 2)
 lines(pred_arx_7_mov[,3][0:100], col="blue", lty=2)
 legend(x="topright", legend=c("Observations",
-                            "Previsions","Borne inf. et borne sup."), 
+                            "Previsions","Borne inf. et borne sup."),
        col=c("black", "red", "blue"), 
        lty=1, bg="light blue", cex=0.8)
 
@@ -177,7 +198,8 @@ pred_mov_upr <- c()
               na.action = na.omit, x=T
    )
    j = e + 1
-   pred_mov_daily <-predict(arx_7_daily , newdata = covariates_df[j,],
+   pred_mov_daily <-predict(arx_7_daily , 
+                  newdata = covariates_df[j,],
                    interval = c("prediction"), level=0.95)
    
    pred_mov_p[i] <- pred_mov_daily[,1]
@@ -221,7 +243,8 @@ for (i in 1:nrow(yt_valid)){
                     na.action = na.omit, x=T
   )
   j = e + 1
-  pred_exp_daily <- predict(arx_7_daily , newdata = covariates_df[j,],
+  pred_exp_daily <- predict(arx_7_daily , 
+                            newdata = covariates_df[j,],
                             interval = c("prediction"), level=0.95)
   
   pred_exp_p[i] <- pred_exp_daily[,1]
@@ -288,7 +311,7 @@ arx_test <- lm(SOMME ~ ., data=covariates_df[beg_train:end_valid,],
                   na.action = na.omit, x=T)
 
 pred_test <- na.omit(predict(arx_test, 
-                     newdata = covariates_df[(end_valid+1:end_test),],
+                    newdata = covariates_df[(end_valid+1:end_test),],
                           interval = c("prediction"), level=0.95))
 
 pred_test_80 <- na.omit(predict(arx_test, 
@@ -333,10 +356,12 @@ Q.eval.2020 <- rbind(accuracy(pred_test[c(1:90),1],
                      accuracy(pred_test[c(182:273),1], 
                               yt_test[c(182:273)])[,1:5],
                      accuracy(pred_test[c(274:365),1], 
-                              yt_test[c(274:365)])[,1:5])
+                              yt_test[c(274:365)])[,1:5], 
+                    accuracy(pred_test[c(1:365),1], 
+                              yt_test[c(1:365)])[,1:5])
 
 rownames(Q.eval.2020) <- make.names(c("Q1 2020","Q2 2020","Q3 2020",
-                                      "Q4 2020"))
+                                      "Q4 2020", "Overall 2020"))
 
 Q.eval.2021 <- rbind(accuracy(pred_test[c(366:455),1], 
                               yt_test[c(366:455)])[,1:5], 
@@ -345,10 +370,12 @@ Q.eval.2021 <- rbind(accuracy(pred_test[c(366:455),1],
                      accuracy(pred_test[c(548:638),1], 
                               yt_test[c(548:638)])[,1:5],
                      accuracy(pred_test[c(639:730),1], 
-                              yt_test[c(639:730)])[,1:5])
+                              yt_test[c(639:730)])[,1:5], 
+                     accuracy(pred_test[c(366:730),1], 
+                              yt_test[c(366:730)])[,1:5])
 
 rownames(Q.eval.2021) <- make.names(c("Q1 2021","Q2 2021","Q3 2021",
-                                      "Q4 2021"))
+                                      "Q4 2021", "Overall 2021"))
 
 print(Q.eval.2020)
 print(Q.eval.2021)
@@ -358,12 +385,14 @@ print(Q.eval.2021)
 #Q2.2020 -11314.383 24797.47 19863.88 -3.701126 5.744332
 #Q3.2020   7867.630 22794.24 17785.39  1.569713 3.849847
 #Q4.2020  -5121.730 18576.20 13209.96 -1.596530 3.828000
+#Overall 2020 -2892.180 21049.82 16056.092 1.199916 4.318638
 
 #               ME     RMSE      MAE        MPE     MAPE
 #Q1.2021 -3442.068 30038.48 18300.83 -1.2491312 4.641438
 #Q2.2021 -4902.434 18109.82 14822.67 -1.6770924 4.242128
 #Q3.2021  6308.312 26814.58 22178.42  1.0732500 4.802211
 #Q4.2021 -1837.635 16216.14 13056.87 -0.6788342 3.871232
+#Overall 2021 -974.8385 23466.93 17069.12 -0.6342501 4.386739
 
 ### Overall coverage on TEST SET at 0.95 ###
 
@@ -457,3 +486,13 @@ print(cov_results)
 #Q3      0.8152174 0.7472527 0.6413043 0.5054945
 #Q4      0.8913043 0.9239130 0.7826087 0.8043478
 #Overall 0.8520548 0.8438356 0.6931507 0.7013699
+
+# save validation and test vectors for global comparison
+
+arxmodel_valid <- c(pred_exp_p)
+arxmodel_test <- c(pred_test)
+
+save(arxmodel_valid, file = "arxmodel_valid.Rdata")
+save(arxmodel_test, file = "arxmodel_test.Rdata")
+
+

@@ -1,3 +1,23 @@
+# Program: regression_correction.R
+#
+# Purpose: Adjusts the regression models both manually and 
+## automatically with moving and expanding window and with or without
+## retraining to minimize the forecast error
+# 
+#
+# Written by: Team G, April 7th 2022
+#
+# Updated: Team G, April 10th 2022
+#          
+#         
+#          
+#         
+#          
+# ------------------------------------------------------
+
+
+
+
 source('timeseries_x.R')
 
 #Ce script a pour but de corriger les erreurs en lien avec le
