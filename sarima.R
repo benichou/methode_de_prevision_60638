@@ -622,107 +622,107 @@ dev.off(dev.cur())
 # refit with the new data too to see the improvement at
 # every step
 
-n <- length(yt_valid)
-fc1_daily_retrain_exp <- ts(numeric(n))
-fc2_daily_retrain_mov <- ts(numeric(n))
+# n <- length(yt_valid)
+# fc1_daily_retrain_exp <- ts(numeric(n))
+# fc2_daily_retrain_mov <- ts(numeric(n))
 
-CI.exp_ret <- matrix(nrow=n, ncol=8)
-colnames(CI.exp_ret) <- c("lo95","hi95",
-                              "forecast","observed","in CI95", 
-                              "lo80","hi80","in CI80")
+# CI.exp_ret <- matrix(nrow=n, ncol=8)
+# colnames(CI.exp_ret) <- c("lo95","hi95",
+#                               "forecast","observed","in CI95", 
+#                               "lo80","hi80","in CI80")
 
-CI.mov_ret <- matrix(nrow=n, ncol=8)
-colnames(CI.mov_ret) <- c("lo95","hi95",
-                              "forecast","observed","in CI95",
-                              "lo80","hi80","in CI80")
+# CI.mov_ret <- matrix(nrow=n, ncol=8)
+# colnames(CI.mov_ret) <- c("lo95","hi95",
+#                               "forecast","observed","in CI95",
+#                               "lo80","hi80","in CI80")
 
-initial_date <- '2012-01-01'
-end_date <- '2017-12-31'
+# initial_date <- '2012-01-01'
+# end_date <- '2017-12-31'
 
-for(i in 1:n) {
+# for(i in 1:n) {
   
-  # add new data and box cox transform at every validation data
-  y_train_new <- window(yt, 
-                       start = as.Date(initial_date) , 
-                       end = as.Date(end_date) + i -1)
+#   # add new data and box cox transform at every validation data
+#   y_train_new <- window(yt, 
+#                        start = as.Date(initial_date) , 
+#                        end = as.Date(end_date) + i -1)
   
-  lambda <- BoxCox.lambda(y_train_new)
-  Yt_new.bc <- BoxCox(y_train_new,lambda)
+#   lambda <- BoxCox.lambda(y_train_new)
+#   Yt_new.bc <- BoxCox(y_train_new,lambda)
 
-  s3 <- sarima(diff(Yt_new.bc, 7),1,1,2,0,0,1,7)
+#   s3 <- sarima(diff(Yt_new.bc, 7),1,1,2,0,0,1,7)
 
-  s3.for <- sarima.for(window(SOMME.ts, begTrain, (endTrain+i-1)) ,
-                       n.ahead=1,
-                       p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
-                       fixed=c(s3$fit$coef[1],
-                               s3$fit$coef[2],
-                               s3$fit$coef[3],
-                               s3$fit$coef[4]
-                               ))
-  fc1_daily_retrain_exp[i] <- ts(s3.for$pred)
-  # prediction interval expanding window
-  lo.s <- s3.for$pred-1.96*s3.for$se
-  hi.s <- s3.for$pred+1.96*s3.for$se
-  in95.s <- (yt_valid[i] >= lo.s && yt_valid[i] <= hi.s)
-  lo80.s <- s3.for$pred-1.28*s3.for$se
-  hi80.s <- s3.for$pred+1.28*s3.for$se
-  in80.s <- (yt_valid[i] >= lo80.s && yt_valid[i] <= hi80.s)
-  CI.exp_ret[i,] <- c(lo.s, hi.s, 
-                         s3.for$pred, yt_valid[i], in95.s,
-                         lo80.s,hi80.s,in80.s)
-  ### moving window ####
-  y_train_new_2 <- window(yt, 
-                       start = as.Date(initial_date) + i -1 , 
-                       end = as.Date(end_date) + i -1)
+#   s3.for <- sarima.for(window(SOMME.ts, begTrain, (endTrain+i-1)) ,
+#                        n.ahead=1,
+#                        p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
+#                        fixed=c(s3$fit$coef[1],
+#                                s3$fit$coef[2],
+#                                s3$fit$coef[3],
+#                                s3$fit$coef[4]
+#                                ))
+#   fc1_daily_retrain_exp[i] <- ts(s3.for$pred)
+#   # prediction interval expanding window
+#   lo.s <- s3.for$pred-1.96*s3.for$se
+#   hi.s <- s3.for$pred+1.96*s3.for$se
+#   in95.s <- (yt_valid[i] >= lo.s && yt_valid[i] <= hi.s)
+#   lo80.s <- s3.for$pred-1.28*s3.for$se
+#   hi80.s <- s3.for$pred+1.28*s3.for$se
+#   in80.s <- (yt_valid[i] >= lo80.s && yt_valid[i] <= hi80.s)
+#   CI.exp_ret[i,] <- c(lo.s, hi.s, 
+#                          s3.for$pred, yt_valid[i], in95.s,
+#                          lo80.s,hi80.s,in80.s)
+#   ### moving window ####
+#   y_train_new_2 <- window(yt, 
+#                        start = as.Date(initial_date) + i -1 , 
+#                        end = as.Date(end_date) + i -1)
   
-  lambda_2 <- BoxCox.lambda(y_train_new_2)
-  Yt_new_2.bc <- BoxCox(y_train_new_2,lambda_2)
+#   lambda_2 <- BoxCox.lambda(y_train_new_2)
+#   Yt_new_2.bc <- BoxCox(y_train_new_2,lambda_2)
 
-  s4 <- sarima(diff(Yt_new_2.bc, 7),1,1,2,0,0,1,7)
+#   s4 <- sarima(diff(Yt_new_2.bc, 7),1,1,2,0,0,1,7)
 
-  s4.for <- sarima.for(window(SOMME.ts, begTrain, (endTrain+i-1)) ,
-                       n.ahead=1,
-                       p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
-                       fixed=c(s4$fit$coef[1],
-                               s4$fit$coef[2],
-                               s4$fit$coef[3],
-                               s4$fit$coef[4]
-                               ))
-  fc2_daily_retrain_mov[i] <- ts(s4.for$pred)
-  # prediction interval moving window
-  lo.s2 <- s4.for$pred-1.96*s4.for$se
-  hi.s2 <- s4.for$pred+1.96*s4.for$se
-  in95.s2 <- (yt_valid[i] >= lo.s2 && yt_valid[i] <= hi.s2)
-  lo80.s2 <- s4.for$pred-1.28*s4.for$se
-  hi80.s2 <- s4.for$pred+1.28*s4.for$se
-  in80.s2 <- (yt_valid[i] >= lo80.s2 && yt_valid[i] <= hi80.s2)
-  CI.mov_ret[i,] <- c(lo.s2, hi.s2, 
-                         s4.for$pred, yt_valid[i], in95.s2,
-                         lo80.s2,hi80.s2,in80.s2)
+#   s4.for <- sarima.for(window(SOMME.ts, begTrain, (endTrain+i-1)) ,
+#                        n.ahead=1,
+#                        p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
+#                        fixed=c(s4$fit$coef[1],
+#                                s4$fit$coef[2],
+#                                s4$fit$coef[3],
+#                                s4$fit$coef[4]
+#                                ))
+#   fc2_daily_retrain_mov[i] <- ts(s4.for$pred)
+#   # prediction interval moving window
+#   lo.s2 <- s4.for$pred-1.96*s4.for$se
+#   hi.s2 <- s4.for$pred+1.96*s4.for$se
+#   in95.s2 <- (yt_valid[i] >= lo.s2 && yt_valid[i] <= hi.s2)
+#   lo80.s2 <- s4.for$pred-1.28*s4.for$se
+#   hi80.s2 <- s4.for$pred+1.28*s4.for$se
+#   in80.s2 <- (yt_valid[i] >= lo80.s2 && yt_valid[i] <= hi80.s2)
+#   CI.mov_ret[i,] <- c(lo.s2, hi.s2, 
+#                          s4.for$pred, yt_valid[i], in95.s2,
+#                          lo80.s2,hi80.s2,in80.s2)
 
-}
-pdf("visual_output/sarima_performance_2.pdf")
+# }
+# pdf("visual_output/sarima_performance_2.pdf")
 
-cat("Performance of SARIMA models expanding and moving windows
-     daily retrained:
-     ","\n")
+# cat("Performance of SARIMA models expanding and moving windows
+#      daily retrained:
+#      ","\n")
 
-sarima.eval_daily_retrain <- rbind(accuracy(fc1_daily_retrain_exp, 
-                              yt_valid)[,1:5],
-                     accuracy(fc2_daily_retrain_mov, 
-                              yt_valid)[,1:5])
+# sarima.eval_daily_retrain <- rbind(accuracy(fc1_daily_retrain_exp, 
+#                               yt_valid)[,1:5],
+#                      accuracy(fc2_daily_retrain_mov, 
+#                               yt_valid)[,1:5])
 
-rownames(sarima.eval_daily_retrain) <- make.names(
-     c("SARIMA(1,1,2,0,1,1)[7] Expanding Window Daily retrain",
-       "SARIMA(1,1,2,0,1,1)[7] Moving Window Daily Retrain"))
-print(sarima.eval_daily_retrain)
+# rownames(sarima.eval_daily_retrain) <- make.names(
+#      c("SARIMA(1,1,2,0,1,1)[7] Expanding Window Daily retrain",
+#        "SARIMA(1,1,2,0,1,1)[7] Moving Window Daily Retrain"))
+# print(sarima.eval_daily_retrain)
 
 # daily performance has the same performance as when the model
 # is trained once
 #                                                       MAPE
 # SARIMA.1.1.2.0.1.1..7..Expanding.Window.Daily.retrain 5.49
 # SARIMA.1.1.2.0.1.1..7..Moving.Window.Daily.Retrain    5.49
-                                                      ME  RMSE   MAE    
+                                               #     ME  RMSE   MAE    
 # SARIMA.1.1.2.0.1.1.7..Expanding.Window.Daily.retra -421 29224 21038 
 # SARIMA.1.1.2.0.1.1.7..Moving.Window.Daily.Retrain  -441 29241 21030 
 # MPE
@@ -730,162 +730,162 @@ print(sarima.eval_daily_retrain)
 # -0.563
 
 
-cat("Quarterly Performance:","\n")
-q.eval_daily_retrain <- rbind(
-  #SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain
-  cbind(
-    accuracy(fc1_daily_retrain_exp[c(1:90,366:455)], 
-             yt_valid[c(1:90,366:455)])[,5],
-    accuracy(fc1_daily_retrain_exp[c(91:181,456:546)], 
-             yt_valid[c(91:181,456:546)])[,5],
-    accuracy(fc1_daily_retrain_exp[c(182:273,547:638)], 
-             yt_valid[c(182:273,547:638)])[,5],
-    accuracy(fc1_daily_retrain_exp[c(274:365,639:730)], 
-             yt_valid[c(274:365,639:730)])[,5]),
-  #SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain
-  cbind(
-    accuracy(fc2_daily_retrain_mov[c(1:90,366:455)], 
-             yt_valid[c(1:90,366:455)])[,5],
-    accuracy(fc2_daily_retrain_mov[c(91:181,456:546)], 
-             yt_valid[c(91:181,456:546)])[,5],
-    accuracy(fc2_daily_retrain_mov[c(182:273,547:638)], 
-             yt_valid[c(182:273,547:638)])[,5],
-    accuracy(fc2_daily_retrain_mov[c(274:365,639:730)], 
-             yt_valid[c(274:365,639:730)])[,5]))
+# cat("Quarterly Performance:","\n")
+# q.eval_daily_retrain <- rbind(
+#   #SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain
+#   cbind(
+#     accuracy(fc1_daily_retrain_exp[c(1:90,366:455)], 
+#              yt_valid[c(1:90,366:455)])[,5],
+#     accuracy(fc1_daily_retrain_exp[c(91:181,456:546)], 
+#              yt_valid[c(91:181,456:546)])[,5],
+#     accuracy(fc1_daily_retrain_exp[c(182:273,547:638)], 
+#              yt_valid[c(182:273,547:638)])[,5],
+#     accuracy(fc1_daily_retrain_exp[c(274:365,639:730)], 
+#              yt_valid[c(274:365,639:730)])[,5]),
+#   #SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain
+#   cbind(
+#     accuracy(fc2_daily_retrain_mov[c(1:90,366:455)], 
+#              yt_valid[c(1:90,366:455)])[,5],
+#     accuracy(fc2_daily_retrain_mov[c(91:181,456:546)], 
+#              yt_valid[c(91:181,456:546)])[,5],
+#     accuracy(fc2_daily_retrain_mov[c(182:273,547:638)], 
+#              yt_valid[c(182:273,547:638)])[,5],
+#     accuracy(fc2_daily_retrain_mov[c(274:365,639:730)], 
+#              yt_valid[c(274:365,639:730)])[,5]))
 
-rownames(q.eval_daily_retrain) <- make.names(
-     c("SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain",
-       "SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain"))
+# rownames(q.eval_daily_retrain) <- make.names(
+#      c("SARIMA(1,1,2,0,1,1)[7] Expanding Window No retrain",
+#        "SARIMA(1,1,2,0,1,1)[7] Moving Window No Retrain"))
 
-colnames(q.eval_daily_retrain) <- make.names(c("Q1","Q2","Q3","Q4"))
-print(q.eval_daily_retrain)
+# colnames(q.eval_daily_retrain) <- make.names(c("Q1","Q2","Q3","Q4"))
+# print(q.eval_daily_retrain)
 
-#                                                 Q1   Q2   Q3   Q4
-# SARIMA.1.1.2.0.1.1..7.Expanding.Window.No.reain6.94 5.16 4.36 5.52
-# SARIMA.1.1.2.0.1.1..7.Moving.Window.No.Retrain 6.94 5.16 4.35 5.53
+# #                                                 Q1   Q2   Q3   Q4
+#  SARIMA.1.1.2.0.1.1..7.Expanding.Window.No.reain6.94 5.16 4.36 5.52
+#  SARIMA.1.1.2.0.1.1..7.Moving.Window.No.Retrain 6.94 5.16 4.35 5.53
 
-# Prediction interval for SARIMA(1,1,2)(0,1,1) [7] Expanding
-#
-CI <- CI.exp_ret
-df <- data.frame(CI)
-df$date <-as.Date(data$DATE[(endTrain+1):endValid])
+# # Prediction interval for SARIMA(1,1,2)(0,1,1) [7] Expanding
+# #
+# CI <- CI.exp_ret
+# df <- data.frame(CI)
+# df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
-matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
-        col=c("lightblue","lightblue"), ylim=c(200000, 600000),
-        ylab="Texas Daily Demand in Region North-Central(in MW)
-             Expanding Window Daily Retrain",
-        xlab="Date")
-polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
-        col = "lightblue", border=F)
-lines(df$date, df$observed,col="purple")
-legend("topright", legend=c("95% Pred. Interval", "Observed"), 
-       lty=1, 
-       col=c("lightblue","purple"), lwd=c(5, 5, 1))
+# matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
+#         col=c("lightblue","lightblue"), ylim=c(200000, 600000),
+#         ylab="Texas Daily Demand in Region North-Central(in MW)
+#              Expanding Window Daily Retrain",
+#         xlab="Date")
+# polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
+#         col = "lightblue", border=F)
+# lines(df$date, df$observed,col="purple")
+# legend("topright", legend=c("95% Pred. Interval", "Observed"), 
+#        lty=1, 
+#        col=c("lightblue","purple"), lwd=c(5, 5, 1))
 
-cat("Report on the prediction interval:")
-# Calculate the % of the observed values fall into the CI
-rep_daily_exp <- rbind(cbind(sum(df$in.CI80), nrow(df), 
-                   sum(df$in.CI80)/nrow(df)*100),
-                   cbind(sum(df$in.CI95), nrow(df), 
-                   sum(df$in.CI95)/nrow(df)*100))
+# cat("Report on the prediction interval:")
+# # Calculate the % of the observed values fall into the CI
+# rep_daily_exp <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+#                    sum(df$in.CI80)/nrow(df)*100),
+#                    cbind(sum(df$in.CI95), nrow(df), 
+#                    sum(df$in.CI95)/nrow(df)*100))
 
-rownames(rep_daily_exp) <- make.names(c("Prediction interval 80% 
-                              Expanding Window Daily retrain",
-                              "Prediction interval 95% 
-                              Expanding Window Daily retrain"))
-colnames(rep_daily_exp) <- make.names(c("Observed",
-                                        "Total","Percentage"))
-print(rep_daily_exp)
+# rownames(rep_daily_exp) <- make.names(c("Prediction interval 80% 
+#                               Expanding Window Daily retrain",
+#                               "Prediction interval 95% 
+#                               Expanding Window Daily retrain"))
+# colnames(rep_daily_exp) <- make.names(c("Observed",
+#                                         "Total","Percentage"))
+# print(rep_daily_exp)
 
-#                                                           Observed
-# Prediction.interval.80......Expanding.Window.Daily.retrain   610
-# Prediction.interval.95......Expanding.Window.Daily.retrain   683
-#                                                             Total
-# Prediction.interval.80......Expanding.Window.Daily.retrain   730
-# Prediction.interval.95......Expanding.Window.Daily.retrain   730
-#                                                          Percentage
-# Prediction.interval.80......Expanding.Window.Daily.retrain   83.6
-# Prediction.interval.95......Expanding.Window.Daily.retrain   93.6
+# #                                                           Observed
+# # Prediction.interval.80......Expanding.Window.Daily.retrain   610
+# # Prediction.interval.95......Expanding.Window.Daily.retrain   683
+# #                                                             Total
+# # Prediction.interval.80......Expanding.Window.Daily.retrain   730
+# # Prediction.interval.95......Expanding.Window.Daily.retrain   730
+# #                                                          Percentage
+# # Prediction.interval.80......Expanding.Window.Daily.retrain   83.6
+# # Prediction.interval.95......Expanding.Window.Daily.retrain   93.6
 
-# exposure per quarter daily
+# # exposure per quarter daily
 
-# exposure by quarters
-rep.sarima_val_quarter <- rbind(
-cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
-sum(df$in.CI80[c(1:90,366:455)])/180*100),
-cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
-sum(df$in.CI80[c(91:181,456:546)])/180*100),
-cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
-sum(df$in.CI80[c(182:273,547:638)])/180*100),
-cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
-sum(df$in.CI80[c(274:365,639:730)])/180*100),
-cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
-sum(df$in.CI95[c(1:90,366:455)])/180*100),
-cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
-sum(df$in.CI95[c(91:181,456:546)])/180*100),
-cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
-sum(df$in.CI95[c(182:273,547:638)])/180*100),
-cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
-sum(df$in.CI95[c(274:365,639:730)])/180*100))
-
-
-rownames(rep.sarima_val_quarter) <- make.names(c("CI 80% Q1",
-                                         "CI 80% Q2",
-                                         "CI 80% Q3", 
-                                         "CI 80% Q4", 
-                                         "CI 95% Q1",
-                                         "CI 95% Q2",
-                                         "CI 95% Q3", 
-                                         "CI 95% Q4"))
-colnames(rep.sarima_val_quarter) <- make.names(c("Observed",
-                                          "Total","Percentage"))
-print(rep.sarima_val_quarter)
+# # exposure by quarters
+# rep.sarima_val_quarter <- rbind(
+# cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
+# sum(df$in.CI80[c(1:90,366:455)])/180*100),
+# cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
+# sum(df$in.CI80[c(91:181,456:546)])/180*100),
+# cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
+# sum(df$in.CI80[c(182:273,547:638)])/180*100),
+# cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
+# sum(df$in.CI80[c(274:365,639:730)])/180*100),
+# cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
+# sum(df$in.CI95[c(1:90,366:455)])/180*100),
+# cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
+# sum(df$in.CI95[c(91:181,456:546)])/180*100),
+# cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
+# sum(df$in.CI95[c(182:273,547:638)])/180*100),
+# cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
+# sum(df$in.CI95[c(274:365,639:730)])/180*100))
 
 
-## 
-#           Observed Total Percentage
-# CI.80..Q1      141   180       78.3
-# CI.80..Q2      156   180       86.7
-# CI.80..Q3      158   180       87.8
-# CI.80..Q4      155   180       86.1
-# CI.95..Q1      160   180       88.9
-# CI.95..Q2      176   180       97.8
-# CI.95..Q3      172   180       95.6
-# CI.95..Q4      175   180       97.2
+# rownames(rep.sarima_val_quarter) <- make.names(c("CI 80% Q1",
+#                                          "CI 80% Q2",
+#                                          "CI 80% Q3", 
+#                                          "CI 80% Q4", 
+#                                          "CI 95% Q1",
+#                                          "CI 95% Q2",
+#                                          "CI 95% Q3", 
+#                                          "CI 95% Q4"))
+# colnames(rep.sarima_val_quarter) <- make.names(c("Observed",
+#                                           "Total","Percentage"))
+# print(rep.sarima_val_quarter)
 
 
-# Prediction interval for SARIMA(1,1,2)(0,1,1) [7] Moving
-#
-CI <- CI.mov_ret
-df <- data.frame(CI)
-df$date <-as.Date(data$DATE[(endTrain+1):endValid])
+# ## 
+# #           Observed Total Percentage
+# # CI.80..Q1      141   180       78.3
+# # CI.80..Q2      156   180       86.7
+# # CI.80..Q3      158   180       87.8
+# # CI.80..Q4      155   180       86.1
+# # CI.95..Q1      160   180       88.9
+# # CI.95..Q2      176   180       97.8
+# # CI.95..Q3      172   180       95.6
+# # CI.95..Q4      175   180       97.2
 
-matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
-        col=c("lightblue","lightblue"), ylim=c(200000, 600000),
-        ylab="Texas Daily Demand in Region North-Central(in MW)
-              Moving Window Daily Retrain",
-        xlab="Date")
-polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
-        col = "lightblue", border=F)
-lines(df$date, df$observed,col="purple")
-legend("topright", legend=c("95% Pred. Interval", "Observed"), 
-       lty=1, 
-       col=c("lightblue","purple"), lwd=c(5, 5, 1))
 
-cat("Report on the prediction interval:")
-# Calculate the % of the observed values fall into the CI
-rep_daily_move <- rbind(cbind(sum(df$in.CI80), nrow(df), 
-                   sum(df$in.CI80)/nrow(df)*100),
-                   cbind(sum(df$in.CI95), nrow(df), 
-                   sum(df$in.CI95)/nrow(df)*100))
+# # Prediction interval for SARIMA(1,1,2)(0,1,1) [7] Moving
+# #
+# CI <- CI.mov_ret
+# df <- data.frame(CI)
+# df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
-rownames(rep_daily_move) <- make.names(c("Prediction interval 80% 
-                              Moving Window Daily retrain",
-                              "Prediction interval 95% 
-                              Moving Window Daily retrain"))
-colnames(rep_daily_move) <- make.names(c("Observed",
-                                    "Total","Percentage"))
-print(rep_daily_move)
+# matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
+#         col=c("lightblue","lightblue"), ylim=c(200000, 600000),
+#         ylab="Texas Daily Demand in Region North-Central(in MW)
+#               Moving Window Daily Retrain",
+#         xlab="Date")
+# polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
+#         col = "lightblue", border=F)
+# lines(df$date, df$observed,col="purple")
+# legend("topright", legend=c("95% Pred. Interval", "Observed"), 
+#        lty=1, 
+#        col=c("lightblue","purple"), lwd=c(5, 5, 1))
+
+# cat("Report on the prediction interval:")
+# # Calculate the % of the observed values fall into the CI
+# rep_daily_move <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+#                    sum(df$in.CI80)/nrow(df)*100),
+#                    cbind(sum(df$in.CI95), nrow(df), 
+#                    sum(df$in.CI95)/nrow(df)*100))
+
+# rownames(rep_daily_move) <- make.names(c("Prediction interval 80% 
+#                               Moving Window Daily retrain",
+#                               "Prediction interval 95% 
+#                               Moving Window Daily retrain"))
+# colnames(rep_daily_move) <- make.names(c("Observed",
+#                                     "Total","Percentage"))
+# print(rep_daily_move)
 
 #                                                         Observed
 # Prediction.interval.80.....Moving.Window.Daily.retrain    610
@@ -899,39 +899,39 @@ print(rep_daily_move)
 
 # exposure per quarter daily
 
-# exposure by quarters
-rep.sarima_val_quarter <- rbind(
-cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
-sum(df$in.CI80[c(1:90,366:455)])/180*100),
-cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
-sum(df$in.CI80[c(91:181,456:546)])/180*100),
-cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
-sum(df$in.CI80[c(182:273,547:638)])/180*100),
-cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
-sum(df$in.CI80[c(274:365,639:730)])/180*100),
-cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
-sum(df$in.CI95[c(1:90,366:455)])/180*100),
-cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
-sum(df$in.CI95[c(91:181,456:546)])/180*100),
-cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
-sum(df$in.CI95[c(182:273,547:638)])/180*100),
-cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
-sum(df$in.CI95[c(274:365,639:730)])/180*100))
+# # exposure by quarters
+# rep.sarima_val_quarter <- rbind(
+# cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
+# sum(df$in.CI80[c(1:90,366:455)])/180*100),
+# cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
+# sum(df$in.CI80[c(91:181,456:546)])/180*100),
+# cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
+# sum(df$in.CI80[c(182:273,547:638)])/180*100),
+# cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
+# sum(df$in.CI80[c(274:365,639:730)])/180*100),
+# cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
+# sum(df$in.CI95[c(1:90,366:455)])/180*100),
+# cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
+# sum(df$in.CI95[c(91:181,456:546)])/180*100),
+# cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
+# sum(df$in.CI95[c(182:273,547:638)])/180*100),
+# cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
+# sum(df$in.CI95[c(274:365,639:730)])/180*100))
 
 
-rownames(rep.sarima_val_quarter) <- make.names(c("CI 80% Q1",
-                                         "CI 80% Q2",
-                                         "CI 80% Q3", 
-                                         "CI 80% Q4", 
-                                         "CI 95% Q1",
-                                         "CI 95% Q2",
-                                         "CI 95% Q3", 
-                                         "CI 95% Q4"))
-colnames(rep.sarima_val_quarter) <- make.names(c("Observed",
-                                          "Total","Percentage"))
-print(rep.sarima_val_quarter)
+# rownames(rep.sarima_val_quarter) <- make.names(c("CI 80% Q1",
+#                                          "CI 80% Q2",
+#                                          "CI 80% Q3", 
+#                                          "CI 80% Q4", 
+#                                          "CI 95% Q1",
+#                                          "CI 95% Q2",
+#                                          "CI 95% Q3", 
+#                                          "CI 95% Q4"))
+# colnames(rep.sarima_val_quarter) <- make.names(c("Observed",
+#                                           "Total","Percentage"))
+# print(rep.sarima_val_quarter)
 
-# exposure on validation set
+# # exposure on validation set
 
 #           Observed Total Percentage
 # CI.80..Q1      141   180       78.3
@@ -1023,170 +1023,170 @@ print((dm.test(c(fc1_no_retrain_exp)-c(out.sample),
 ## SARIMA DAILY RETRAIN TEST ANALYSIS ##
 
 
-yt_test <- window(yt , start = '2020-01-01' , end = '2021-12-31')
+# yt_test <- window(yt , start = '2020-01-01' , end = '2021-12-31')
 
-n <- length(yt_test)
-fc1_no_retrain_exp_test <- ts(numeric(n))
+# n <- length(yt_test)
+# fc1_no_retrain_exp_test <- ts(numeric(n))
 
-CI.exp_noret_test_sarima <- matrix(nrow=n, ncol=8)
-colnames(CI.exp_noret_test_sarima) <- c("lo95","hi95",
-                              "forecast","observed","in CI95", 
-                              "lo80","hi80","in CI80")
+# CI.exp_noret_test_sarima <- matrix(nrow=n, ncol=8)
+# colnames(CI.exp_noret_test_sarima) <- c("lo95","hi95",
+#                               "forecast","observed","in CI95", 
+#                               "lo80","hi80","in CI80")
 
-for(i in 1:n) {
+# for(i in 1:n) {
   
 
-  s3.for_test <- sarima.for(window(SOMME.ts, begTrain, 
-                           (endValid+i-1)) ,
-                       n.ahead=1,
-                       p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
-                       fixed=c(s3$fit$coef[1],
-                               s3$fit$coef[2],
-                               s3$fit$coef[3],
-                               s3$fit$coef[4]
-                               ))
-  fc1_no_retrain_exp_test[i] <- ts(s3.for_test$pred)
-  # prediction interval expanding window
-  lo.s_test <- s3.for_test$pred-1.96*s3.for_test$se
-  hi.s_test <- s3.for_test$pred+1.96*s3.for_test$se
-  in95.s_test <- (yt_test[i] >= lo.s && yt_test[i] <= hi.s)
-  lo80.s_test <- s3.for_test$pred-1.28*s3.for_test$se
-  hi80.s_test <- s3.for_test$pred+1.28*s3.for_test$se
-  in80.s_test <- (yt_test[i] >= lo80.s_test && yt_test[i] <= 
-                 hi80.s_test)
-  CI.exp_noret_test_sarima[i,] <- c(lo.s_test, hi.s_test, 
-                         s3.for_test$pred, yt_test[i], in95.s_test,
-                         lo80.s_test,hi80.s_test,in80.s_test)
+#   s3.for_test <- sarima.for(window(SOMME.ts, begTrain, 
+#                            (endValid+i-1)) ,
+#                        n.ahead=1,
+#                        p=1,d=1,q=2,P=0,D=1,Q=1,S=7,
+#                        fixed=c(s3$fit$coef[1],
+#                                s3$fit$coef[2],
+#                                s3$fit$coef[3],
+#                                s3$fit$coef[4]
+#                                ))
+#   fc1_no_retrain_exp_test[i] <- ts(s3.for_test$pred)
+#   # prediction interval expanding window
+#   lo.s_test <- s3.for_test$pred-1.96*s3.for_test$se
+#   hi.s_test <- s3.for_test$pred+1.96*s3.for_test$se
+#   in95.s_test <- (yt_test[i] >= lo.s && yt_test[i] <= hi.s)
+#   lo80.s_test <- s3.for_test$pred-1.28*s3.for_test$se
+#   hi80.s_test <- s3.for_test$pred+1.28*s3.for_test$se
+#   in80.s_test <- (yt_test[i] >= lo80.s_test && yt_test[i] <= 
+#                  hi80.s_test)
+#   CI.exp_noret_test_sarima[i,] <- c(lo.s_test, hi.s_test, 
+#                          s3.for_test$pred, yt_test[i], in95.s_test,
+#                          lo80.s_test,hi80.s_test,in80.s_test)
   
-}
+# }
 
-cat("Overall Test Performance of SARIMA(1,1,2)(0,1,1)[7] :","\n")
-test.eval_sarima <- rbind(accuracy(fc1_no_retrain_exp_test, 
-                                   yt_test))
-rownames(test.eval_sarima) <- make.names(c("Test Set"))
-print(test.eval_sarima)
+# cat("Overall Test Performance of SARIMA(1,1,2)(0,1,1)[7] :","\n")
+# test.eval_sarima <- rbind(accuracy(fc1_no_retrain_exp_test, 
+#                                    yt_test))
+# rownames(test.eval_sarima) <- make.names(c("Test Set"))
+# print(test.eval_sarima)
 
-## By quarters 
-cat("Overall Quarterly SARIMA Test Performance:","\n")
-qall.eval_test_sarima <- rbind(
-  cbind(
-    accuracy(fc1_no_retrain_exp_test[c(1:90,366:455)], 
-             yt_test[c(1:90,366:455)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(91:181,456:546)], 
-             yt_test[c(91:181,456:546)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(182:273,547:638)], 
-             yt_test[c(182:273,547:638)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(274:365,639:730)], 
-             yt_test[c(274:365,639:730)])[,5]))
-rownames(qall.eval_test_sarima) <- make.names(c("Test Performance"))
-colnames(qall.eval_test_sarima) <- make.names(c("Q1","Q2","Q3","Q4"))
-print(qall.eval_test_sarima)
+# ## By quarters 
+# cat("Overall Quarterly SARIMA Test Performance:","\n")
+# qall.eval_test_sarima <- rbind(
+#   cbind(
+#     accuracy(fc1_no_retrain_exp_test[c(1:90,366:455)], 
+#              yt_test[c(1:90,366:455)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(91:181,456:546)], 
+#              yt_test[c(91:181,456:546)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(182:273,547:638)], 
+#              yt_test[c(182:273,547:638)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(274:365,639:730)], 
+#              yt_test[c(274:365,639:730)])[,5]))
+# rownames(qall.eval_test_sarima) <- make.names(c("Test Performance"))
+# colnames(qall.eval_test_sarima) <- make.names(c("Q1","Q2","Q3","Q4"))
+# print(qall.eval_test_sarima)
 
-## 2020 vs 2021
+# ## 2020 vs 2021
 
-cat("Overall Separate Yearly SARIMA Test Performance:","\n")
-all.eval_test_sep_year_sarima <- rbind(
-  cbind(
-    accuracy(fc1_no_retrain_exp_test[c(1:365)], 
-             yt_test[c(1:365)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(366:730)], 
-             yt_test[c(366:730)])[,5]))
-rownames(all.eval_test_sep_year_sarima) <- make.names(
-                                             c("Test Performance"))
-colnames(all.eval_test_sep_year_sarima) <- make.names(
-                                             c("2020","2021"))
-print(all.eval_test_sep_year_sarima)
+# cat("Overall Separate Yearly SARIMA Test Performance:","\n")
+# all.eval_test_sep_year_sarima <- rbind(
+#   cbind(
+#     accuracy(fc1_no_retrain_exp_test[c(1:365)], 
+#              yt_test[c(1:365)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(366:730)], 
+#              yt_test[c(366:730)])[,5]))
+# rownames(all.eval_test_sep_year_sarima) <- make.names(
+#                                              c("Test Performance"))
+# colnames(all.eval_test_sep_year_sarima) <- make.names(
+#                                              c("2020","2021"))
+# print(all.eval_test_sep_year_sarima)
 
-# each quarter separate
-cat("Overall Separate SARIMA Quarters Test Performance:","\n")
-qall.eval_test_sep_sarima <- rbind(
-  cbind(
-    accuracy(fc1_no_retrain_exp_test[c(1:90)], 
-             yt_test[c(1:90)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(91:181)], 
-             yt_test[c(91:181)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(182:273)], 
-             yt_test[c(182:273)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(274:365)], 
-             yt_test[c(274:365)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(366:455)], 
-             yt_test[c(366:455)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(456:546)], 
-             yt_test[c(456:546)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(547:638)], 
-             yt_test[c(547:638)])[,5],
-    accuracy(fc1_no_retrain_exp_test[c(639:730)], 
-             yt_test[c(639:730)])[,5]))       
-rownames(qall.eval_test_sep_sarima) <- make.names(
-                                        c("Test Performance"))
-colnames(qall.eval_test_sep_sarima) <- make.names(c("Q1 2020",
-                                             "Q2 2020",
-                                        "Q3 2020","Q4 2020",
-                                        "Q1 2021","Q2 2021",
-                                        "Q3 2021","Q4 2021"))
-print(qall.eval_test_sep_sarima)
+# # each quarter separate
+# cat("Overall Separate SARIMA Quarters Test Performance:","\n")
+# qall.eval_test_sep_sarima <- rbind(
+#   cbind(
+#     accuracy(fc1_no_retrain_exp_test[c(1:90)], 
+#              yt_test[c(1:90)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(91:181)], 
+#              yt_test[c(91:181)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(182:273)], 
+#              yt_test[c(182:273)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(274:365)], 
+#              yt_test[c(274:365)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(366:455)], 
+#              yt_test[c(366:455)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(456:546)], 
+#              yt_test[c(456:546)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(547:638)], 
+#              yt_test[c(547:638)])[,5],
+#     accuracy(fc1_no_retrain_exp_test[c(639:730)], 
+#              yt_test[c(639:730)])[,5]))       
+# rownames(qall.eval_test_sep_sarima) <- make.names(
+#                                         c("Test Performance"))
+# colnames(qall.eval_test_sep_sarima) <- make.names(c("Q1 2020",
+#                                              "Q2 2020",
+#                                         "Q3 2020","Q4 2020",
+#                                         "Q1 2021","Q2 2021",
+#                                         "Q3 2021","Q4 2021"))
+# print(qall.eval_test_sep_sarima)
 
-## Confidence interval analysis ##
+# ## Confidence interval analysis ##
 
-# Confidence interval Analysis for Expanding
-df <- data.frame(CI.exp_noret_test_sarima)
-df$date <-as.Date(data$DATE[(startTest):endTest])
+# # Confidence interval Analysis for Expanding
+# df <- data.frame(CI.exp_noret_test_sarima)
+# df$date <-as.Date(data$DATE[(startTest):endTest])
 
-matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
-        col=c("lightblue","lightblue"), ylim=c(200000, 650000),
-        ylab="Sum daily demand (in MWh)", xlab="Date")
-polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
-        col = "lightblue", border=F)
-polygon(c(df$date, rev(df$date)), c(df$lo80, rev(df$hi80)),
-        col = "cyan", border=F)
-lines(df$date, df$observed,col="purple")
-legend("topright", legend=c("95% CI", "80% CI", "Observed"), lty=1, 
-       col=c("lightblue"," cyan", "purple"), lwd=c(5, 5, 1)
-)
+# matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
+#         col=c("lightblue","lightblue"), ylim=c(200000, 650000),
+#         ylab="Sum daily demand (in MWh)", xlab="Date")
+# polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
+#         col = "lightblue", border=F)
+# polygon(c(df$date, rev(df$date)), c(df$lo80, rev(df$hi80)),
+#         col = "cyan", border=F)
+# lines(df$date, df$observed,col="purple")
+# legend("topright", legend=c("95% CI", "80% CI", "Observed"), lty=1, 
+#        col=c("lightblue"," cyan", "purple"), lwd=c(5, 5, 1)
+# )
 
-cat("Report on the prediction interval for Expanding:")
-# Calculate the % of the observed values fall into the CI
-rep.sarima_test <- rbind(cbind(sum(df$in.CI80), nrow(df), 
-                   sum(df$in.CI80)/nrow(df)*100),
-             cbind(sum(df$in.CI95), nrow(df), 
-                   sum(df$in.CI95)/nrow(df)*100))
-rownames(rep.sarima_test) <- make.names(c("Prediction interval 80%",
-                              "Prediction interval 95%"))
-colnames(rep.sarima_test) <- make.names(c("Observed",
-                                          "Total","Percentage"))
-print(rep.sarima_test)
+# cat("Report on the prediction interval for Expanding:")
+# # Calculate the % of the observed values fall into the CI
+# rep.sarima_test <- rbind(cbind(sum(df$in.CI80), nrow(df), 
+#                    sum(df$in.CI80)/nrow(df)*100),
+#              cbind(sum(df$in.CI95), nrow(df), 
+#                    sum(df$in.CI95)/nrow(df)*100))
+# rownames(rep.sarima_test) <- make.names(c("Prediction interval 80%",
+#                               "Prediction interval 95%"))
+# colnames(rep.sarima_test) <- make.names(c("Observed",
+#                                           "Total","Percentage"))
+# print(rep.sarima_test)
 
-# exposure by quarters
-rep.sarima_test_quarter <- rbind(
-cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
-sum(df$in.CI80[c(1:90,366:455)])/180*100),
-cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
-sum(df$in.CI80[c(91:181,456:546)])/180*100),
-cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
-sum(df$in.CI80[c(182:273,547:638)])/180*100),
-cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
-sum(df$in.CI80[c(274:365,639:730)])/180*100),
-cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
-sum(df$in.CI95[c(1:90,366:455)])/180*100),
-cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
-sum(df$in.CI95[c(91:181,456:546)])/180*100),
-cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
-sum(df$in.CI95[c(182:273,547:638)])/180*100),
-cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
-sum(df$in.CI95[c(274:365,639:730)])/180*100))
+# # exposure by quarters
+# rep.sarima_test_quarter <- rbind(
+# cbind(sum(df$in.CI80[c(1:90,366:455)]), 180,
+# sum(df$in.CI80[c(1:90,366:455)])/180*100),
+# cbind(sum(df$in.CI80[c(91:181,456:546)]), 180,
+# sum(df$in.CI80[c(91:181,456:546)])/180*100),
+# cbind(sum(df$in.CI80[c(182:273,547:638)]), 180,
+# sum(df$in.CI80[c(182:273,547:638)])/180*100),
+# cbind(sum(df$in.CI80[c(274:365,639:730)]), 180,
+# sum(df$in.CI80[c(274:365,639:730)])/180*100),
+# cbind(sum(df$in.CI95[c(1:90,366:455)]), 180,
+# sum(df$in.CI95[c(1:90,366:455)])/180*100),
+# cbind(sum(df$in.CI95[c(91:181,456:546)]), 180,
+# sum(df$in.CI95[c(91:181,456:546)])/180*100),
+# cbind(sum(df$in.CI95[c(182:273,547:638)]), 180,
+# sum(df$in.CI95[c(182:273,547:638)])/180*100),
+# cbind(sum(df$in.CI95[c(274:365,639:730)]), 180,
+# sum(df$in.CI95[c(274:365,639:730)])/180*100))
 
 
-rownames(rep.sarima_test_quarter) <- make.names(c("CI 80% Q1",
-                                         "CI 80% Q2",
-                                         "CI 80% Q3", 
-                                         "CI 80% Q4", 
-                                         "CI 95% Q1",
-                                         "CI 95% Q2",
-                                         "CI 95% Q3", 
-                                         "CI 95% Q4"))
-colnames(rep.sarima_test_quarter) <- make.names(c("Observed",
-                                          "Total","Percentage"))
-print(rep.sarima_test_quarter)
+# rownames(rep.sarima_test_quarter) <- make.names(c("CI 80% Q1",
+#                                          "CI 80% Q2",
+#                                          "CI 80% Q3", 
+#                                          "CI 80% Q4", 
+#                                          "CI 95% Q1",
+#                                          "CI 95% Q2",
+#                                          "CI 95% Q3", 
+#                                          "CI 95% Q4"))
+# colnames(rep.sarima_test_quarter) <- make.names(c("Observed",
+#                                           "Total","Percentage"))
+# print(rep.sarima_test_quarter)
 
 
 ## SUMMARY SARIMA SARIMA(1,1,2)(0,1,1) [7] Expanding window
