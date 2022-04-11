@@ -23,7 +23,7 @@ pdf("visual_output/sarima_exploration.pdf")
 
 # our validation is yt_validation from timeseries_x.R script
 
-plot(yt_train,type="l",
+plot(yt_train,type="l", col = "blue"
      ylab="Texas Daily Demand in Region North-Central(in MW)")
 print("We observe a trend and seasonality in the time series")
 print("We can discard ARIMA models then")

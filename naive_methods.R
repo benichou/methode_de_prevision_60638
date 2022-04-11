@@ -171,23 +171,24 @@ print(accuracy(df_spring_val$fc_mm7 , df_spring_val$SOMME))
 print(accuracy(df_winter_val$fc_mm7 , df_winter_val$SOMME))
 
 
-pdf("./visual_output/Residus.pdf")
+pdf("./visual_output/Residus.pdf", width=7, height=4)
 
 ###Graphiques
 
 
 #Analyse graphique des residus sur la validation
 options(scipen=10000)
-plot(naive_next_day$residuals, lwd=1.5, type="o", 
-ylim=c(-250000,200000), ylab= "Residus (MW/h)", col="blue",
+plot(fc_nextday, lwd=1.5, type="l", lty =2,
+ylim=c(200000,600000), ylab= "Residus (MW/h)", col="blue",
 xlab="Jour", 
-main = "Residus du naive no change sur 
+main = "Prevision de la demande sur 
 l'echantillon validation 2018-2019")
-lines(naive_s$residuals[1:730], type="o",lwd=1.5, col="red")
-lines(naive_mobile3$residuals[1:730], type="o",lwd=1.5, col="yellow")
-lines(naive_mobile7$residuals[1:730], type="o",lwd=1.5, col="green")
+lines(c(out.sample), type="l", col="red")
+lines(fc_s, type="l",lty=2, lwd=1 col="purple")
+lines(fc_mm3, type="l",lwd=1, lty=2, col="lightblue")
+lines(fc_mm7, type="l",lwd=1,lty=2,  col="green")
 abline(0,0)
-legend(x="bottomleft", legend=c("Naive no change",
+legend(x="bottomleft", legend=c("Naive no change", "Obs",
 "Naive seasonal 7j",
 "Moyenne mobile 3j", "Moyenne mobile 7j"), 
 col=c("blue", "red", "yellow", "green"), 
