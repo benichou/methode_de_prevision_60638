@@ -35,6 +35,8 @@ plot(data_ts, col = "blue",
      main = "Evolution of Daily Electricity Demand over time",
      ylab="Texas Daily Demand (in MW)")
 
+dev.off(dev.cur())
+
 #pour la rC)gion North
 data_ts_n = ts(data$NORTH, start=sdate, frequency=365.25)
 plot(data_ts_n, 
