@@ -97,9 +97,9 @@ Q.eval <- rbind(accuracy(fc.exp[1:90], out.sample[1:90])[,1:5],
                 accuracy(fc.exp[547:638], out.sample[547:638])[,1:5],
                 accuracy(fc.exp[639:730], out.sample[639:730])[,1:5])
 
-rownames(Q.eval) <- make.names(c("Q1_2017","Q2_2017","Q3_2017",
-                                 "Q4_2017","Q1_2018","Q2_2018",
-                                 "Q3_2018","Q4_2018"))
+rownames(Q.eval) <- make.names(c("Q1_2018","Q2_2018","Q3_2018",
+                                 "Q4_2018","Q1_2019","Q2_2019",
+                                 "Q3_2019","Q4_2019"))
 print(Q.eval)
 
 Q1.eval <- rbind(accuracy(fc.exp[c(1:90,366:455)], 

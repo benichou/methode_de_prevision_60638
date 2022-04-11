@@ -944,7 +944,7 @@ dev.off(dev.cur())
 # CI.95..Q4      176   180       97.8
 
 #graphics.off()
-dev.off(dev.cur())
+# dev.off(dev.cur())
 
 
 # Diebold Mariano test 
@@ -952,8 +952,8 @@ dev.off(dev.cur())
 ## daily retrained sarima exapnding window vs trained once sarima
 
 
-print((dm.test(c(fc1_daily_retrain_exp)-c(out.sample), 
-              c(c(fc1_no_retrain_exp))-c(out.sample))))
+# print((dm.test(c(fc1_daily_retrain_exp)-c(out.sample), 
+#               c(c(fc1_no_retrain_exp))-c(out.sample))))
 
 #         Diebold-Mariano Test
 
@@ -965,8 +965,8 @@ print((dm.test(c(fc1_daily_retrain_exp)-c(out.sample),
 
 ## daily retrained sarima expanding window vs naive no change
 
-print((dm.test(c(fc1_daily_retrain_exp)-c(out.sample), 
-              c(c(forecast_next_day))-c(out.sample))))
+# print((dm.test(c(fc1_daily_retrain_exp)-c(out.sample), 
+#               c(c(forecast_next_day))-c(out.sample))))
 
 # DM = 10, Forecast horizon = 1, Loss function power = 2, p-value
 # <0.0000000000000002
