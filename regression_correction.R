@@ -568,3 +568,52 @@ print(table_2)
 # Q2 4.292909 0.8791209 0.7142857
 # Q3 3.824086 0.9076087 0.6956522
 # Q4 3.911163 0.9289617 0.8196721
+
+#------------------------------------------------------
+#results
+
+# Validation 
+# Results for Franck 
+#               ME    RMSE      MAE       MPE     MAPE
+# Test set 1303.982 20976.1 15921.74 0.1111377 4.108066
+
+# Couverture 
+#  0.95
+# 0.8452055
+
+# Result 0.8 
+# 0.6753425
+
+# Results for Franck
+#       mapes   cv_0.95   cv_0.80
+# Q1 4.331857 0.8500000 0.7111111
+# Q2 4.261618 0.8241758 0.6263736
+# Q3 4.016730 0.7880435 0.5760870
+# Q4 3.829962 0.9184783 0.7880435
+
+#Test set
+# Results for Franck
+#             ME     RMSE      MAE        MPE     MAPE
+# Test set 1229.67 20296.71 15039.73 0.09132924 3.946035
+
+# Couverture
+# Result 0.95
+# 0.9068493
+
+# Result 0.8 
+# 0.7534247
+#results
+#       mapes   cv_0.95   cv_0.80
+# Q1 3.740571 0.9116022 0.7845304
+# Q2 4.292909 0.8791209 0.7142857
+# Q3 3.824086 0.9076087 0.6956522
+# Q4 3.911163 0.9289617 0.8196721
+
+#changing the name
+armamodel_valid <- c(pred_r_2)
+armamodel_test <- c(pred_test)
+
+
+save(armamodel_valid, file = "armamodel_valid.Rdata")
+save(armamodel_test, file = "armamodel_test.Rdata")
+
