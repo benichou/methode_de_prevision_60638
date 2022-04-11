@@ -806,9 +806,6 @@ rownames(dshwQ.eval3) <- make.names(c("ValQ1    dshw",
                                     "ValQ4      dshw"))
 print(dshwQ.eval3)
 
-<<<<<<< HEAD
-## TODO: compare the best 2 with a diebold mariano
-=======
 
 ## SUMMARY # (4) 
 ## Taylor Method expanding window re-training every year
@@ -882,4 +879,3 @@ print(dm.test((hw.a.val2[c(1:729)]-out.sample[c(1:729)]),
 
 
 
->>>>>>> dev
