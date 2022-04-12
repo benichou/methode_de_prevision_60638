@@ -73,7 +73,7 @@ qqline(arx_7$residuals)
 acf(arx_7$residuals)
 
 #Predictions on validation subset no retrain
-pred_arx_7 <- predict(arx , 
+pred_arx_7 <- predict(arx_7 , 
                     newdata = covariates_df[(end_train+1):end_valid,],
                     interval = 'prediction',
                     level = c(0.95))
@@ -264,10 +264,13 @@ Q.eval <- rbind(accuracy(pred_exp_p[c(1:90,366:455)],
                  accuracy(pred_exp_p[c(182:273, 548:638)], 
                           yt_valid[c(182:273, 548:638)])[,1:5],
                  accuracy(pred_exp_p[c(274:365, 639:730)], 
-                          yt_valid[c(274:365, 639:730)])[,1:5])
+                          yt_valid[c(274:365, 639:730)])[,1:5],
+                accuracy(pred_exp_p[1:730], 
+                         yt_valid[1:730])[,1:5]
+                )
 
 rownames(Q.eval) <- make.names(c("Q1","Q2","Q3",
-                                  "Q4"))
+                                  "Q4", "Overall"))
 
 print(Q.eval)
 
@@ -277,6 +280,19 @@ print(Q.eval)
 #Q3  2991.9586 24126.97 19656.57  0.5026677 4.148843
 #Q4 -2123.9967 16984.80 12341.71 -0.8259611 3.592842
 
+### Coverage on validation set ###
+
+cov.val <- rbind(mean(cv_exp_daily[c(1:90,366:455)]), 
+                     mean(cv_exp_daily[c(91:181,456:547)]), 
+                     mean(cv_exp_daily[c(182:273, 548:638)]),
+                     mean(cv_exp_daily[c(274:365, 639:730)]),
+                     mean(cv_exp_daily[1:730]))
+
+
+rownames(cov.val) <- 
+  make.names(c("Q1 95%","Q2 95%","Q3 95%",
+               "Q4 95%", "Overall 95%"))
+cov.val
 
 ### Predictions on test set ###
 ### For test set, with daily retrain and expanding window, we need to
@@ -464,3 +480,22 @@ print(cov_results)
 #Q3      0.8152174 0.7472527 0.6413043 0.5054945
 #Q4      0.8913043 0.9239130 0.7826087 0.8043478
 #Overall 0.8520548 0.8438356 0.6931507 0.7013699
+
+#Residuals analysis
+par(mfrow=c(1,2))
+plot(arx_7$residuals)
+qqnorm(arx_7$residuals)
+qqline(arx_7$residuals)
+acf2(arx_7$residuals)
+Box.test(arx_7$residuals, lag=7 , type=c("Ljung-Box"))
+
+#Graphique pour la presentation
+par(mfrow=c(1,1))
+plot(final_data$SOMME[2558:(2558+364)], type="l", xlab= "Jours
+     depuis le 1er janvier 2019", main="Observations de la demande 
+     journali??re en 2019",
+     ylab = "Demande en MWh", lwd=1.75)
+abline(v=91, col="red", lty=2)
+abline(v=183, col="red", lty=2)
+abline(v=274, col="red", lty=2)
+
