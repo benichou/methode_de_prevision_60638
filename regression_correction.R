@@ -356,6 +356,7 @@ df_1 <- data.frame(yt_valid ,
                                   pred_r_2_upr_0.8 ,
                                   final_data$quarter[(e-729) : e]
                                   )
+df_1[1,7] <- "Q1"
 
 colnames(df_1) <- c("obs",
                              "pred" , 
@@ -501,6 +502,7 @@ df_2 <- data.frame(yt_test ,
                    pred_test_upr_0.8 ,
                    final_data$quarter[(e-729) : e]
 )
+df_2[1 , 7] <- "Q1"
 
 colnames(df_2) <- c("obs",
                     "pred" , 
@@ -617,3 +619,68 @@ armamodel_test <- c(pred_test)
 save(armamodel_valid, file = "armamodel_valid.Rdata")
 save(armamodel_test, file = "armamodel_test.Rdata")
 
+#Plots for presentation
+#ACF plot
+checkresiduals(model_r_2)
+
+#QQplot to explain the issues
+plot.new()
+
+# Light gray background
+rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4],
+     col = "#ebebeb")
+
+# Add white grid
+grid(nx = NULL, ny = NULL, col = "white", lty = 1,
+     lwd = par("lwd"), equilogs = TRUE)
+
+par(new = TRUE , xpd = FALSE )
+qqnorm(model_r_2$residuals , pch = 1 , make.plot = TRUE )
+qqline(model_r_2$residuals , col = "steelblue" , lwd = 2 ,
+       ylim = 5000)
+
+#r??sidus par saison
+plot.new()
+
+
+# Light gray background
+rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4],
+     col = "#ebebeb")
+
+# Add white grid
+grid(nx = NULL, ny = NULL, col = "white", lty = 1,
+     lwd = par("lwd"), equilogs = TRUE)
+
+# Boxplot r??sidus par saison
+par(new = TRUE )
+boxplot(df_1$pred - df_1$obs ~ df_1$quart, # Data
+        horizontal = FALSE, # Horizontal or vertical plot
+        lwd = 2, # Lines width
+        col = rainbow(12),
+        xlab = "Trimestre",
+        ylab = "R??sidus",  # Y-axis label
+        border = "black",  # Boxplot border color
+        outpch = 25,       # Outliers symbol
+        outbg = "red",   # Outliers color
+        whisklty = 1,      # Whisker line type
+        lty = 1) # Line type (box and median)
+
+#plot qui montre le coverage
+
+plot(df_1$obs[1:365]/1000 , type = 'n' 
+     , ylim=range(min(df_1$lwr_0.95/1000) , max(df_1$upr_0.95/1000)) ,
+     xlab = "Journ??e de l'ensemble de validation" ,
+     ylab = 'Demande quotidienne (MW/h)' ,
+     main = '??valuation de la couverture ?? 0.95')
+polygon( c(time(df_1$obs[1:365]/1000), 
+           rev(time(df_1$obs[1:365]/1000))),
+         c(df_1$lwr_0.95[1:365]/1000 , rev(df_1$upr_0.95[1:365]/1000)) ,
+         col = rgb(0,0,0.6,0.2) , border = FALSE)
+lines(df_1$obs[1:365]/1000 , lty = 1)
+lines(c(df_1$pred[1:365]/1000) , col = 'red', lty = 1 )
+out <- (df_1$obs[1:365]/1000 < df_1$lwr_0.95[1:365]/1000|
+          df_1$obs[1:365]/1000 > df_1$upr_0.95[1:365]/1000)
+points(time(df_1$obs[1:365]/1000)[out],
+       c(df_1$obs[1:365]/1000)[out] , pch = 19)
+legend("topright" , legend = c("Observed" , "Predicted") ,
+       lty = c(1,1) , col = c("black" , "red") , cex = 0.9)
