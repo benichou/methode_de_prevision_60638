@@ -179,7 +179,8 @@ pdf("./visual_output/Residus.pdf", width=7, height=4)
 #Analyse graphique des residus sur la validation
 options(scipen=10000)
 plot(fc_nextday, lwd=1.5, type="l", lty =2,
-ylim=c(200000,600000), ylab= "Residus (MW/h)", col="blue",
+ylim=c(200000,600000), ylab= "Demande d'electricite (MW/h)", 
+col="blue",
 xlab="Jour", 
 main = "Prevision de la demande sur 
 l'echantillon validation 2018-2019")
@@ -211,7 +212,7 @@ lines(naive_mobile3$fitted[plot.start:plot.end],
 lines(naive_mobile7$fitted[plot.start:plot.end],
       type="o" ,col="green", lwd=2)
 legend(x="topright", legend=c("Observations", "Naive no change",
-       "Naive seasonal 7j","Moyenne mobile 3j", "Moyenne mobile 7j"), 
+       "Naive seasonal 7j","Moyenne mobile 3j", "Moyenne mobile 7j"),
        col=c("blue", "red", "yellow", "green"), 
        lty=1, bg="light blue", cex=0.8)
 

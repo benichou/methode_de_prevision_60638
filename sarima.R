@@ -14,7 +14,7 @@
 
 library(astsa)
 
-pdf("visual_output/sarima_exploration.pdf")
+pdf("visual_output/sarima_exploration.pdf", width=8, height=4)
 
 # our target variable, yt, is a time series built in the 
 # timeseries_x.R script
@@ -22,12 +22,13 @@ pdf("visual_output/sarima_exploration.pdf")
 # our train is yt_train from timeseries_x.R script
 
 # our validation is yt_validation from timeseries_x.R script
-
-plot(yt_train,type="l", col = "blue"
+plot(yt_train,type="l", col = "blue",
      ylab="Texas Daily Demand in Region North-Central(in MW)")
 print("We observe a trend and seasonality in the time series")
 print("We can discard ARIMA models then")
 print("The time series is not stationary")
+
+
 
 # acf on the target variable does not show stationarity
 acf2(yt_train)
@@ -434,7 +435,7 @@ print(q.eval)
 # SARIMA.1.1.2.0.1.1..7.Moving.Win.No.Retrain    6.95 5.15 4.35 5.54
 
 ## The quarterly performance is exactly the same across quarters
-pdf("visual_output/sarima_performance_1.pdf")
+pdf("visual_output/sarima_performance_1.pdf", width=7, height=4)
 
 # Prediction interval for SARIMA(1,1,2)(0,1,1) [7] Expanding
 #
@@ -444,15 +445,16 @@ df$date <-as.Date(data$DATE[(endTrain+1):endValid])
 
 matplot(df$date, cbind(df$lo95,df$hi95), type="l", lty=c(1,1),
         col=c("lightblue","lightblue"), ylim=c(200000, 600000),
-        ylab="Texas Daily Demand in Region North-Central(in MW)
-             Expanding Window No Retrain",
+        ylab="Texas Daily Demand in Region North-Central(in MW)",
         xlab="Date")
 polygon(c(df$date, rev(df$date)), c(df$lo95, rev(df$hi95)),
         col = "lightblue", border=F)
 lines(df$date, df$observed,col="purple")
-legend("topright", legend=c("95% Pred. Interval", "Observed"), 
+lines(df$date, df$forecast,col="green", lty=2, lwd=1)
+legend("bottomright", legend=c("95% CI", "Observed", 
+                            "Forecast"), 
        lty=1, 
-       col=c("lightblue","purple"), lwd=c(5, 5, 1))
+       col=c("lightblue","purple"), lwd=c(3, 3, 1))
 
 cat("Report on the prediction interval:")
 # Calculate the % of the observed values fall into the CI
@@ -467,6 +469,7 @@ rownames(rep) <- make.names(c("Prediction interval 80%
                               Expanding Window No retrain"))
 colnames(rep) <- make.names(c("Observed","Total","Percentage"))
 print(rep)
+
 
 
 # exposure per quarter daily
