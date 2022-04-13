@@ -47,6 +47,18 @@ lag7 = c(rep(NA,7), lag7)
 
 time = 1:length(yt)
 
+
+#HDD and CDD lags 1 and 2
+lag_CDD1 = final_data$CDD[1:(length(final_data$CDD)-1)]
+lag_CDD1 = c(NA, lag_CDD1)
+lag_CDD2 = final_data$CDD[1:(length(final_data$CDD)-2)]
+lag_CDD2 = c(NA, NA, lag_CDD2)
+lag_HDD1 = final_data$HDD[1:(length(final_data$HDD)-1)]
+lag_HDD1 = c(NA, lag_HDD1)
+lag_HDD2 = final_data$HDD[1:(length(final_data$HDD)-2)]
+lag_HDD2 = c(NA, NA, lag_HDD2)
+
+
 #Dataframe with all required covariates
 final_data$weekday = as.factor(final_data$weekday)
 covariates_df = final_data
@@ -59,15 +71,22 @@ covariates_df$lag4 = lag4
 covariates_df$lag5 = lag5
 covariates_df$lag6 = lag6
 covariates_df$lag7 = lag7
+covariates_df$month = as.factor(data$month)
+covariates_df$lag_CDD1 = lag_CDD1
+covariates_df$lag_CDD2 = lag_CDD2
+covariates_df$lag_HDD1 = lag_HDD1
+covariates_df$lag_HDD2 = lag_HDD2
+covariates_df$season = as.factor(data$season)
+#covariates_df$weekend = as.factor(data$weekend)
 
 
 #Model with 7 lags
-arx_7 = lm(SOMME ~ ., data=covariates_df, na.action = na.omit, 
-           x=T, subset = seq(beg_train+7 , end_train))
+arx_7 = lm(SOMME ~ .- month, data=covariates_df, na.action = na.omit, 
+           x=T, subset = seq(beg_train+7, end_train))
 
 #Graphical analysis
 par(mfrow=c(2,2))
-plot(arx_7$residuals)
+plot(arx_7$residuals, type="l")
 qqnorm(arx_7$residuals)
 qqline(arx_7$residuals)
 acf(arx_7$residuals)
@@ -79,7 +98,7 @@ pred_arx_7 <- predict(arx_7 ,
                     level = c(0.95))
 
 #Moving window model
-arx_7_mov = lm(SOMME ~ ., data=covariates_df, na.action = na.omit, 
+arx_7_mov = lm(SOMME ~ . -lag_HDD1 - lag_HDD2 - month, data=covariates_df, na.action = na.omit, 
            x=T, subset = seq(beg_train+rp, end_train+rp))
 
 #Predictions on 2nd part validation after retrain with moving window
@@ -90,7 +109,7 @@ pred_arx_7_mov <- predict(arx_7_mov ,
                       level = c(0.95))
 
 #Expanding window model
-arx_7_exp = lm(SOMME ~ ., data=covariates_df, na.action = na.omit, 
+arx_7_exp = lm(SOMME ~ .-lag_HDD1 - lag_HDD2 - month, data=covariates_df, na.action = na.omit, 
                x=T, subset = seq(beg_train+7, end_train+rp))
 
 #Predictions on 2nd part validation after retrain with exp. window
@@ -173,7 +192,7 @@ pred_mov_upr <- c()
    #fit a model using lm with 7 lags of yt
    s = 7 + i
    e = 2191 + i
-   arx_7_daily <- lm(SOMME ~ ., data=covariates_df[s:e,], 
+   arx_7_daily <- lm(SOMME ~ . - month, data=covariates_df[s:e,], 
               na.action = na.omit, x=T
    )
    j = e + 1
@@ -189,8 +208,8 @@ pred_mov_upr <- c()
 ### Accuracy with daily retrain MOVING window model ###
 accuracy(pred_mov_p, covariates_df$SOMME[2193:2922])
 
-#                ME     RMSE      MAE        MPE    MAPE
-#Test set -144.6148 20857.59 15772.07 -0.3429603 4.02882
+#           ME  RMSE   MAE    MPE MAPE
+#Test set -124 20496 15345 -0.295 3.94
 
 
 ### Coverage with daily retrain MOVING window model ###
@@ -205,7 +224,7 @@ for (i in seq(1, length(pred_mov_p))){
 }
 
 print(mean(cv_mov_daily))
-
+#0.853
 
 ### ARX 7 model with daily retrain and EXPANDING window ###
 
@@ -217,7 +236,7 @@ for (i in 1:nrow(yt_valid)){
   #fit a model using lm with 7 lags of yt
   s = 8
   e = 2191 + i
-  arx_7_daily <- lm(SOMME ~ ., data=covariates_df[s:e,], 
+  arx_7_daily <- lm(SOMME ~ . - month, data=covariates_df[s:e,], 
                     na.action = na.omit, x=T
   )
   j = e + 1
@@ -233,8 +252,8 @@ for (i in 1:nrow(yt_valid)){
 ### Accuracy with daily retrain EXPANDING window model ###
 accuracy(pred_exp_p, covariates_df$SOMME[2193:2922])
 
-#                ME     RMSE      MAE        MPE    MAPE
-#Test set -58.92122 20871.43 15777.04 -0.3355937 4.026368
+#         ME  RMSE   MAE    MPE MAPE
+#Test set 17 20518 15353 -0.269 3.94
 
 
 ### Coverage with daily retrain EXPANDING window model ###
@@ -249,6 +268,7 @@ for (i in seq(1, length(pred_exp_p))){
 }
 
 print(mean(cv_exp_daily))
+#0.844
 
 ###Barely any difference between expanding and moving window in terms
 ###of coverage at 95% and MAPE
@@ -257,15 +277,15 @@ print(mean(cv_exp_daily))
 
 ### Quarterly evaluation of best model ###
 
-Q.eval <- rbind(accuracy(pred_exp_p[c(1:90,366:455)], 
+Q.eval <- rbind(accuracy(pred_mov_p[c(1:90,366:455)], 
                           yt_valid[c(1:90,366:455)])[,1:5], 
-                 accuracy(pred_exp_p[c(91:181,456:547 )], 
+                 accuracy(pred_mov_p[c(91:181,456:547 )], 
                           yt_valid[c(91:181,456:547)])[,1:5],
-                 accuracy(pred_exp_p[c(182:273, 548:638)], 
+                 accuracy(pred_mov_p[c(182:273, 548:638)], 
                           yt_valid[c(182:273, 548:638)])[,1:5],
-                 accuracy(pred_exp_p[c(274:365, 639:730)], 
+                 accuracy(pred_mov_p[c(274:365, 639:730)], 
                           yt_valid[c(274:365, 639:730)])[,1:5],
-                accuracy(pred_exp_p[1:730], 
+                accuracy(pred_mov_p[1:730], 
                          yt_valid[1:730])[,1:5]
                 )
 
@@ -274,19 +294,20 @@ rownames(Q.eval) <- make.names(c("Q1","Q2","Q3",
 
 print(Q.eval)
 
-#           ME     RMSE      MAE        MPE     MAPE
-#Q1  -277.3404 21523.00 15529.88 -0.5635001 4.258159
-#Q2  -818.6025 20245.73 15594.71 -0.4566379 4.111798
-#Q3  2991.9586 24126.97 19656.57  0.5026677 4.148843
-#Q4 -2123.9967 16984.80 12341.71 -0.8259611 3.592842
+#           ME  RMSE   MAE    MPE MAPE
+#Q1        426 20868 14945 -0.213 4.12
+#Q2      -1214 20363 15482 -0.570 4.10
+#Q3       2099 23287 18890  0.295 4.01
+#Q4      -1789 16996 12076 -0.689 3.54
+#Overall  -124 20496 15345 -0.295 3.94
 
 ### Coverage on validation set ###
 
-cov.val <- rbind(mean(cv_exp_daily[c(1:90,366:455)]), 
-                     mean(cv_exp_daily[c(91:181,456:547)]), 
-                     mean(cv_exp_daily[c(182:273, 548:638)]),
-                     mean(cv_exp_daily[c(274:365, 639:730)]),
-                     mean(cv_exp_daily[1:730]))
+cov.val <- rbind(mean(cv_mov_daily[c(1:90,366:455)]), 
+                     mean(cv_mov_daily[c(91:181,456:547)]), 
+                     mean(cv_mov_daily[c(182:273, 548:638)]),
+                     mean(cv_mov_daily[c(274:365, 639:730)]),
+                     mean(cv_mov_daily[1:730]))
 
 
 rownames(cov.val) <- 
@@ -294,13 +315,19 @@ rownames(cov.val) <-
                "Q4 95%", "Overall 95%"))
 cov.val
 
+#Q1.95.      0.861
+#Q2.95.      0.836
+#Q3.95.      0.781
+#Q4.95.      0.935
+#Overall.95. 0.853
+
 ### Predictions on test set ###
 ### For test set, with daily retrain and expanding window, we need to
 ### fit the model on the train AND validation sample and predict on 
 ### whole test set. That way, the model parameters will be up to date 
 ### to last day of validation.
 
-arx_test <- lm(SOMME ~ ., data=covariates_df[beg_train:end_valid,], 
+arx_test <- lm(SOMME ~ . - month, data=covariates_df[beg_train:end_valid,], 
                   na.action = na.omit, x=T)
 
 pred_test <- na.omit(predict(arx_test, 
@@ -314,8 +341,8 @@ pred_test_80 <- na.omit(predict(arx_test,
 ### Accuracy with daily retrain EXPANDING window model on TEST SET###
 accuracy(pred_test[,1], covariates_df$SOMME[(end_valid+1):end_test])
 
-              #ME     RMSE      MAE        MPE     MAPE
-#Test set -1933.509 22291.16 16563.02 -0.9170829 4.352689
+#            ME  RMSE   MAE    MPE MAPE
+#Test set -1326 21560 15623 -0.662  4.1
 
 
 ### Quarterly evaluation of best model for TEST SET ###
@@ -327,18 +354,22 @@ Q.eval.test <- rbind(accuracy(pred_test[c(1:90,366:455),1],
                 accuracy(pred_test[c(182:273, 548:638),1], 
                          yt_test[c(182:273, 548:638)])[,1:5],
                 accuracy(pred_test[c(274:365, 639:730),1], 
-                         yt_test[c(274:365, 639:730)])[,1:5])
+                         yt_test[c(274:365, 639:730)])[,1:5],
+                accuracy(pred_test[1:730], 
+                         yt_test[1:730])[,1:5]
+                )
 
 rownames(Q.eval.test) <- make.names(c("Q1","Q2","Q3",
-                                 "Q4"))
+                                 "Q4", "Overall Test"))
 
 print(Q.eval.test)
 
-#          ME     RMSE      MAE       MPE     MAPE
-#Q1 -3269.143 24430.43 15825.91 -1.172896 4.249645
-#Q2 -8090.890 21694.61 17329.50 -2.683579 4.989126
-#Q3  7092.231 24874.78 19969.90  1.322838 4.323427
-#Q4 -3479.682 17436.15 13133.42 -1.137682 3.849616
+#                ME  RMSE   MAE    MPE MAPE
+#Q1            -778 23971 14505 -0.381 3.88
+#Q2           -6598 20556 15977 -2.206 4.56
+#Q3            4415 23736 18867  0.725 4.11
+#Q4           -2329 17360 13137 -0.781 3.85
+#Overall.Test -1326 21560 15623 -0.662 4.10
 
 
 ### Quarterly evaluation PER YEAR of test set of best model ###
@@ -374,19 +405,20 @@ rownames(Q.eval.2021) <- make.names(c("Q1 2021","Q2 2021","Q3 2021",
 print(Q.eval.2020)
 print(Q.eval.2021)
 
-#                ME     RMSE      MAE       MPE     MAPE
-#Q1.2020  -3096.219 17069.92 13350.98 -1.096661 3.857853
-#Q2.2020 -11314.383 24797.47 19863.88 -3.701126 5.744332
-#Q3.2020   7867.630 22794.24 17785.39  1.569713 3.849847
-#Q4.2020  -5121.730 18576.20 13209.96 -1.596530 3.828000
-#Overall -2892.180 21049.82 16056.92 -1.199916 4.318638
 
-#               ME     RMSE      MAE        MPE     MAPE
-#Q1.2021 -3442.068 30038.48 18300.83 -1.2491312 4.641438
-#Q2.2021 -4902.434 18109.82 14822.67 -1.6770924 4.242128
-#Q3.2021  6308.312 26814.58 22178.42  1.0732500 4.802211
-#Q4.2021 -1837.635 16216.14 13056.87 -0.6788342 3.871232
-#Overall  -974.8385 23466.93 17069.12 -0.6342501 4.386739
+#                ME  RMSE   MAE    MPE MAPE
+#Q1.2020       -436 15843 12139 -0.275 3.48
+#Q2.2020      -8325 23023 17866 -2.775 5.10
+#Q3.2020       4936 22072 16851  0.878 3.66
+#Q4.2020      -4089 18086 12886 -1.284 3.74
+#Overall.2020 -1970 19982 14943 -0.862 3.99
+
+#                ME  RMSE   MAE    MPE MAPE
+#Q1.2021      -1119 29971 16871 -0.487 4.28
+#Q2.2021      -4889 17782 14110 -1.644 4.03
+#Q3.2021       3889 25308 20906  0.571 4.56
+#Q4.2021       -568 16602 13388 -0.278 3.96
+#Overall.2021  -682 23029 16303 -0.462 4.21
 
 ### Overall coverage on TEST SET at 0.95 ###
 
@@ -401,7 +433,7 @@ for (i in seq(1, length(pred_test[,1]))){
 }
 
 print(mean(cv_test))
-#0.8479452#
+#0.859#
 
 ### Overall coverage on TEST SET at 0.80 ###
 
@@ -416,7 +448,7 @@ for (i in seq(1, length(pred_test_80[,1]))){
 }
 
 print(mean(cv_test_80))
-#0.6972603
+#0.696
 
 ### Coverage per quarter on test set ###
 
@@ -474,12 +506,12 @@ colnames(cov_results) <-
 
 print(cov_results)
 
-#         X2020.95  X2021.95  X2020.80  X2020.95
-#Q1      0.9111111 0.8222222 0.7444444 0.7111111
-#Q2      0.7912088 0.8804348 0.6043956 0.7826087
-#Q3      0.8152174 0.7472527 0.6413043 0.5054945
-#Q4      0.8913043 0.9239130 0.7826087 0.8043478
-#Overall 0.8520548 0.8438356 0.6931507 0.7013699
+#           X2020.95 X2021.95 X2020.80 X2020.95
+#Q1         0.900    0.878    0.767    0.711
+#Q2         0.780    0.902    0.648    0.761
+#Q3         0.837    0.758    0.641    0.495
+#Q4         0.880    0.935    0.783    0.761
+#Overall    0.849    0.868    0.710    0.682
 
 #Residuals analysis
 par(mfrow=c(1,2))
