@@ -31,9 +31,12 @@ data_ts = ts(data$SOMME, start=sdate, frequency=365.25)
 #grahpique de la demande totale jounraliC(re d'C)lectricitC) 
 # 01-01-2012 
 #au 30-12-2021 pour la rC)gion totale
-plot(data_ts, col = "blue", 
+pdf("./visual_output/overall_demand.pdf", width=15, height=5)
+plot(data_ts, col = "black", 
      main = "Evolution of Daily Electricity Demand over time",
      ylab="Texas Daily Demand (in MW)")
+
+dev.off(dev.cur())
 
 #pour la rC)gion North
 data_ts_n = ts(data$NORTH, start=sdate, frequency=365.25)

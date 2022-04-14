@@ -1,4 +1,3 @@
-#
 # Program: functions.R
 #
 # Purpose: script that contain all utility functions used 
@@ -17,10 +16,10 @@
 # et d'une end date
 scatter_period <- function(tsx , tsy, start, end ,
                              xlab , ylab , main) {
-
-#tsx : time series en x doit etre un objet timeSeries
-#tsy : time series en y doit etre aussi un objet timeSeries
-    
+  
+  #tsx : time series en x doit etre un objet timeSeries
+  #tsy : time series en y doit etre aussi un objet timeSeries
+  
   #les deux series chronos doivent etre des timeSeries object pour
   #que ca fonctionne. Utilise med_t et total dem
   ts1_wind = window(tsx , start = start , end = end)
@@ -144,4 +143,17 @@ stack_weeks <- function(df, year_list, week_list, year_col,
       }
       return(list(north_vector, north_cen_vector, east_vector, 
              somme_vector))
-                        }
+}
+
+#function to create validation and training sets
+wind_t <- function(ts , set) {
+  
+  ts <- timeSeries(ts , final_data$DATE)
+  
+  if (set == 't') {
+    return(window(ts , start = '2012-01-01' , end ='2017-12-31'))
+  } else {
+    return(window(ts , start = '2018-01-01' , end = '2019-12-31'))
+  }
+}
+
