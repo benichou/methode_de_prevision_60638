@@ -28,7 +28,7 @@ load('master_df.Rdata')
 
 pdf("visual_output/correction_phase1.pdf")
 
-#10 Avril 2021 - analyse de sensibilité du bruit /2 
+#10 Avril 2021 - analyse de sensibilitï¿½ du bruit /2 
 #  
 
 #https://www.nrel.gov/docs/fy12osti/56130.pdf
@@ -128,7 +128,8 @@ for (i in seq(1 , length(data$DATE))) {
 #Plot final cp against temps
 plot(x = cp_final , y = data$SOMME ,
      main = 
-       paste("La demande contre l'effet de refroissiement Tref: ",16), 
+       paste("La demande contre l'effet de refroissiement Tref: ",
+       16), 
      xlab = 'Effet de refroidissement' , 
      ylab = "Somme de la demande d'??lectricit??" ,
      frame = FALSE)
@@ -210,7 +211,8 @@ for (i in seq(1 , length(data$DATE))) {
 #Plot final Humidit??
 plot(x = humidex_final , y = data$SOMME ,
      main = 
-       paste("La demande contre l'effet de refroissiement Tref: ",22), 
+       paste("La demande contre l'effet de refroissiement Tref: ",
+       22), 
      xlab = 'Humidit?? transform??e' , 
      ylab = "Somme de la demande d'??lectricit??" ,
      frame = FALSE)

@@ -170,7 +170,6 @@ print(accuracy(df_summer_val$fc_mm7 , df_summer_val$SOMME))
 print(accuracy(df_spring_val$fc_mm7 , df_spring_val$SOMME))
 print(accuracy(df_winter_val$fc_mm7 , df_winter_val$SOMME))
 
-
 pdf("./visual_output/Residus.pdf", width=7, height=4)
 
 ###Graphiques
@@ -184,8 +183,8 @@ col="blue",
 xlab="Jour", 
 main = "Prevision de la demande sur 
 l'echantillon validation 2018-2019")
-lines(c(out.sample), type="l", col="red")
-lines(fc_s, type="l",lty=2, lwd=1 col="purple")
+lines(c(data_val_ts), type="l", col="red")
+lines(fc_s, type="l",lty=2, lwd=1, col="purple")
 lines(fc_mm3, type="l",lwd=1, lty=2, col="lightblue")
 lines(fc_mm7, type="l",lwd=1,lty=2,  col="green")
 abline(0,0)

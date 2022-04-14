@@ -48,7 +48,9 @@ print("timeseries_x script completed successfully")
 print("Launching section for phase 3")
 source("./sarima.R")
 print("Run regressions section - correction for phase 2")
-source("./regression_correction.R")
+# source("./regression_correction.R") # very heavy so not ran
+# but you can run it to go in the details of our linear regression
+# with ARMA errors
 print("Run ARX section")
 source("./arx_model.R")
 print("Run Diebold Mariano comparison on validation forecast 
